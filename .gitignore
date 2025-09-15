@@ -1,4 +1,4 @@
 venv
 __pycache__
-testgpsonesp/.pio/build/esp32-c3-devkitc-02/.cmake/api/v1/reply/directory-esp-idf.esp_http_client-60082e6c8025e2bfa3b3.json
-.pio/build/
+*/.pio/
+.vscode
