@@ -1,19 +1,41 @@
+{% load static %}
 <form action="{% url 'polls:vote' question.id %}" method="post">
   {% csrf_token %}
   <fieldset>
     <legend><h1>{{ question.question_text }}</h1></legend>
     {% if error_message %}
-    <p><strong>{{ error_message }}</strong></p>
-    {% endif %} {% for choice in question.choice_set.all %}
-    <input
-      type="radio"
-      name="choice"
-      id="choice{{ forloop.counter }}"
-      value="{{ choice.id }}"
-    />
-    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label
-    ><br />
+      <p><strong>{{ error_message }}</strong></p>
+    {% endif %}
+    {% for choice in question.choice_set.all %}
+      <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+      <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
     {% endfor %}
   </fieldset>
   <input type="submit" value="Vote" />
 </form>
+
+<hr />
+
+<!-- Web Bluetooth test panel -->
+<section style="margin-top:1rem; padding:1rem; border:1px solid #ddd; border-radius:8px;">
+  <h2>BLE Test: ESP32 LED</h2>
+  <p id="ble-log">Not connected.</p>
+  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+    <button type="button" id="ble-connect">Connect</button>
+    <button type="button" id="ble-blink">Blink</button>
+    <button type="button" id="ble-on">LED ON</button>
+    <button type="button" id="ble-off">LED OFF</button>
+    <button type="button" id="ble-disconnect">Disconnect</button>
+  </div>
+</section>
+
+<script type="module">
+  import { connectESP32, ledOn, ledOff, blink, disconnectESP32 } from "{% static 'polls/ble.js' %}";
+
+  // Web Bluetooth must be triggered by a user gesture (button click).
+  document.getElementById('ble-connect').addEventListener('click', connectESP32);
+  document.getElementById('ble-on').addEventListener('click', ledOn);
+  document.getElementById('ble-off').addEventListener('click', ledOff);
+  document.getElementById('ble-blink').addEventListener('click', blink);
+  document.getElementById('ble-disconnect').addEventListener('click', disconnectESP32);
+</script>
