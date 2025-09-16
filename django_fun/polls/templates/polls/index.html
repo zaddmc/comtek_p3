@@ -70,13 +70,16 @@
 </head>
 <body>
   <div class="container">
-    <h1 style="flex-wrap: nowrap;">Bluetooth Connection</h1>
-    <p>Welcome to the Bluetooth connection page.</p>
-    <p>Connect to your Bluetooth device</p>
-    <input type="text" id="unlock" placeholder="Enter code">
-    <br>
-    <button id="connect">Connect to Device</button>
-    <div class="footer">This connection is secure</div>
-  </div>
+{% load static %}
+<link rel="stylesheet" href="{% static "polls/style.css" %}"
+{% if latest_question_list %}
+<ul>
+  {% for question in latest_question_list %}
+    <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No polls are available.</p>
+{% endif %}  </div>
 </body>
 </html>
