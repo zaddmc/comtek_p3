@@ -1,20 +1,15 @@
 {% load static %}
-<link rel="stylesheet" href="{% static "polls/style.css" %}"
-<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Bluetooth Connection</title>
+  <link rel="stylesheet" href="{% static 'polls/style.css' %}">
 </head>
 <body>
   <div class="container">
-{% if latest_question_list %}
-<ul>
-  {% for question in latest_question_list %}
-    <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
-  {% endfor %}
-</ul>
-{% else %}
-<p>No polls are available.</p>
-{% endif %}  </div>
+    <h1>Bluetooth Connection</h1>
+    <button id="connectButton">Connect to Bluetooth Device</button>
+    <p id="status">Status: Not connected</p>
+    </div>
+  </div>
 </body>
 </html>
