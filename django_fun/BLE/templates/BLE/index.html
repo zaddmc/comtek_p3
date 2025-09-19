@@ -1,0 +1,28 @@
+{% load static %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+   <title>Bluetooth Connection</title>
+  <link rel="stylesheet" href="{% static 'BLE/style.css' %}">
+</head>
+<body>
+  <div class="container">
+    <h1>Bluetooth Connection</h1>
+    <button id="connectBtn">Connect to Bluetooth</button>
+    <p id="status">Status</p>
+    <p id="deviceId">Device id: -</p>
+  </div>
+  <script>
+    let button = document.getElementById("connectBtn");
+
+    button.addEventListener("click", async () => {
+        let device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true
+        });
+    });
+
+  </script>
+
+</body>
+</html>
