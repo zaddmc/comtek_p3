@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
    <title>Bluetooth Connection</title>
-  <link rel="stylesheet" href="{% static 'BLE/style.css' %}">
+  <link rel="stylesheet" href="{% static 'BLE/css/style.css' %}">
 </head>
 <body>
   <div class="container">
-    <div class="button-container" style="position: absolute; top: 10px; right: 10px;">
+    <div class="button-container" >
       <button onclick="window.location.href='/'">Back</button>
     </div>
     <h1>Bluetooth Connection</h1>
@@ -16,14 +16,7 @@
     <p id="status">Status</p>
     <p id="deviceId">Device id: -</p>
   </div>
-  <script>
-    let button = document.getElementById("connectBtn");
-
-    button.addEventListener("click", async () => {
-        let device = await navigator.bluetooth.requestDevice({
-            acceptAllDevices: true
-        });
-    });
+  <script src="BLE/js/index.js">
 
   </script>
 </body>

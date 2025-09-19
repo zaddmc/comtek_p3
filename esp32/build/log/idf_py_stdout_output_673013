@@ -1,0 +1,99 @@
+Command: /home/hoothoot/.espressif/python_env/idf5.5_py3.13_env/bin/python /home/hoothoot/esp/esp-idf/tools/idf_monitor.py -p /dev/ttyUSB0 -b 115200 --toolchain-prefix riscv32-esp-elf- --target esp32c3 --revision 3 --decode-panic backtrace /home/hoothoot/Programming/Projects/comtek_p3/esp32/build/hello_world.elf /home/hoothoot/Programming/Projects/comtek_p3/esp32/build/bootloader/bootloader.elf -m '/home/hoothoot/.espressif/python_env/idf5.5_py3.13_env/bin/python' '/home/hoothoot/esp/esp-idf/tools/idf.py'
+00
+[0;32mI (195) boot: Disabling RNG early entropy source...[0m
+[0;32mI (206) cpu_start: Unicore app[0m
+ESP-ROM:esp32c3-api1-20210207
+Build:Feb  7 2021
+rst:0x1 (POWERON),boot:0xc (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fcd5820,len:0x15ac
+load:0x403cbf10,len:0xc34
+load:0x403ce710,len:0x2fd0
+entry 0x403cbf1a
+[0;32mI (30) boot: ESP-IDF v5.5.1-dirty 2nd stage bootloader[0m
+[0;32mI (30) boot: compile time Sep 19 2025 18:25:39[0m
+[0;32mI (30) boot: chip revision: v0.3[0m
+[0;32mI (31) boot: efuse block revision: v1.2[0m
+[0;32mI (34) boot.esp32c3: SPI Speed      : 80MHz[0m
+[0;32mI (38) boot.esp32c3: SPI Mode       : DIO[0m
+[0;32mI (42) boot.esp32c3: SPI Flash Size : 2MB[0m
+[0;32mI (46) boot: Enabling RNG early entropy source...[0m
+[0;32mI (50) boot: Partition Table:[0m
+[0;32mI (53) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (59) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (66) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (72) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (79) boot: End of partition table[0m
+[0;32mI (82) esp_image: segment 0: paddr=00010020 vaddr=3c070020 size=14944h ( 84292) map[0m
+[0;32mI (103) esp_image: segment 1: paddr=0002496c vaddr=3fc94c00 size=025ach (  9644) load[0m
+[0;32mI (105) esp_image: segment 2: paddr=00026f20 vaddr=40380000 size=090f8h ( 37112) load[0m
+[0;32mI (114) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=64294h (410260) map[0m
+[0;32mI (180) esp_image: segment 4: paddr=000942bc vaddr=403890f8 size=0ba00h ( 47616) load[0m
+[0;32mI (189) esp_image: segment 5: paddr=0009fcc4 vaddr=50000000 size=00020h (    32) load[0m
+[0;32mI (195) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (195) boot: Disabling RNG early entropy source...[0m
+[0;32mI (206) cpu_start: Unicore app[0m
+[0;32mI (215) cpu_start: Pro cpu start user code[0m
+[0;32mI (215) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (215) app_init: Application information:[0m
+[0;32mI (215) app_init: Project name:     hello_world[0m
+[0;32mI (219) app_init: App version:      9b70dec-dirty[0m
+[0;32mI (223) app_init: Compile time:     Sep 19 2025 18:25:31[0m
+[0;32mI (228) app_init: ELF file SHA256:  211faa1f9...[0m
+[0;32mI (233) app_init: ESP-IDF:          v5.5.1-dirty[0m
+[0;32mI (237) efuse_init: Min chip rev:     v0.3[0m
+[0;32mI (241) efuse_init: Max chip rev:     v1.99 [0m
+[0;32mI (245) efuse_init: Chip rev:         v0.3[0m
+[0;32mI (249) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (255) heap_init: At 3FC99C90 len 00026370 (152 KiB): RAM[0m
+[0;32mI (260) heap_init: At 3FCC0000 len 0001C710 (113 KiB): Retention RAM[0m
+[0;32mI (266) heap_init: At 3FCDC710 len 00002950 (10 KiB): Retention RAM[0m
+[0;32mI (272) heap_init: At 50000020 len 00001FC8 (7 KiB): RTCRAM[0m
+[0;32mI (278) spi_flash: detected chip: generic[0m
+[0;32mI (281) spi_flash: flash io: dio[0m
+[0;33mW (284) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (297) sleep_gpio: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (303) sleep_gpio: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (309) coexist: coex firmware version: b0bcc39[0m
+[0;32mI (328) coexist: coexist rom version 9387209[0m
+[0;32mI (328) main_task: Started on CPU0[0m
+[0;32mI (328) main_task: Calling app_main()[0m
+[0;32mI (328) SKIBIDI_TAG: example configured to blink addressable led![0m
+[0;32mI (338) SKIBIDI_TAG: [0m
+Opening Non-Volatile Storage (NVS) handle...
+[0;32mI (338) SKIBIDI_TAG: [0m
+Reading counter from NVS...
+[0;32mI (338) SKIBIDI_TAG: Read counter = 0[0m
+[0;32mI (338) SKIBIDI_TAG: [0m
+Reading KEY from NVS...
+[0;32mI (348) SKIBIDI_TAG: Read key= $$$69SuGOi_DeSu420$$$[0m
+[0;32mI (348) BLE_INIT: BT controller compile version [2edb0b0][0m
+[0;32mI (358) BLE_INIT: Using main XTAL as clock source[0m
+[0;32mI (358) BLE_INIT: Feature Config, ADV:1, BLE_50:1, DTM:1, SCAN:1, CCA:0, SMP:1, CONNECT:1[0m
+[0;32mI (368) BLE_INIT: Bluetooth MAC: 58:cf:79:da:49:06[0m
+[0;32mI (378) phy_init: phy_version 1201,bae5dd99,Mar  3 2025,15:36:21[0m
+[0;32mI (408) SKIBIDI_TAG: nimble host task has been started![0m
+[0;32mI (418) NimBLE: GAP procedure initiated: stop advertising.[0m
+
+[0;32mI (418) SKIBIDI_TAG: device address: 06:49:DA:79:CF:58[0m
+[0;32mI (418) NimBLE: GAP procedure initiated: advertise; [0m
+[0;32mI (418) NimBLE: disc_mode=2[0m
+[0;32mI (418) NimBLE:  adv_channel_map=0 own_addr_type=0 adv_filter_policy=0 adv_itvl_min=800 adv_itvl_max=816[0m
+[0;32mI (428) NimBLE: [0m
+
+[0;32mI (438) SKIBIDI_TAG: advertising started![0m
+[0;32mI (438) main_task: Returned from app_main()[0m
+[0;32mI (12938) SKIBIDI_TAG: connection established; status=0[0m
+[0;32mI (12938) NimBLE: GAP procedure initiated: [0m
+[0;32mI (12938) NimBLE: connection parameter update; conn_handle=1 itvl_min=48 itvl_max=48 latency=3 supervision_timeout=960 min_ce_len=0 max_ce_len=0[0m
+[0;32mI (12948) NimBLE: [0m
+
+[1;31mE (15098) SKIBIDI_TAG: SUCCESSFULLY READ SECRET KEY[0m
+[0;32mI (15098) SKIBIDI_TAG: characteristic write; conn_handle=1 attr_handle=16[0m
+RECIVED DATA: $$$69SuGOi_DeSu420$$$
+RIGHT CODE
+[1;31mE (21578) SKIBIDI_TAG: SUCCESSFULLY READ SECRET KEY[0m
+[0;32mI (21578) SKIBIDI_TAG: characteristic write; conn_handle=1 attr_handle=16[0m
+RECIVED DATA: nah
+WRONG CODE
