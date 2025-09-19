@@ -17,6 +17,7 @@
           });
         } catch (error) {
           console.error("Error writting to nfc tag: ", error);
+          document.getElementById("test").innerText = error;
         }
       }
     </script>
