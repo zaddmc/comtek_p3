@@ -4,11 +4,110 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="{% static "mysite/style.css" %}">
         <title>Home page</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .status-container {
+                margin: 30px 0;
+                padding: 15px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+            }
+            .status {
+                font-weight: bold;
+                padding: 5px 10px;
+                border-radius: 4px;
+                display: inline-block;
+            }
+            .locked {
+                background-color: #ffcccc;
+                color: #cc0000;
+            }
+            .unlocked {
+                background-color: #ccffcc;
+                color: #006600;
+            }
+            button {
+                padding: 8px 16px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            button:hover {
+                background-color: #45a049;
+            }
+            code {
+                background-color: #f5f5f5;
+                padding: 2px 5px;
+                border-radius: 3px;
+            }
+        </style>
     </head>
     <body>
         <h1>Welcome to mysite</h1>
-    
+        
+        <div class="status-container">
+            <h2>Suitcase <code>S1</code></h2>
+            <p>Status: <span id="state" class="status">…</span></p>
+            <button id="toggle">…</button>
+            <p><small>Click to toggle between <b>Unlock</b> and <b>Lock</b>.</small></p>
+        </div>
+
+        <script>
+            // --- CSRF helper from Django docs ---
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+            const csrftoken = getCookie('csrftoken');
+
+            const id = "S1";
+            const stateEl = document.getElementById('state');
+            const btn = document.getElementById('toggle');
+
+            function render(state){
+                stateEl.textContent = state;
+                stateEl.className = "status " + (state === "UNLOCKED" ? "unlocked" : "locked");
+                btn.textContent = (state === "LOCKED") ? "Unlock" : "Lock";
+            }
+
+            async function fetchState(){
+                try{
+                    const r = await fetch(`/api/state/${id}`);
+                    const j = await r.json();
+                    render(j.state || "LOCKED");
+                } catch (e) {
+                    stateEl.textContent = "ERROR";
+                    stateEl.className = "status";
+                    btn.textContent = "Retry";
+                }
+            }
+
+            async function toggle(){
+                const current = stateEl.textContent;
+                const next = (current === "LOCKED") ? "UNLOCKED" : "LOCKED";
+                await fetch(`/api/state/${id}/set`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": csrftoken
+                    },
+                    body: new URLSearchParams({state: next})
+                });
+                fetchState();
+            }
+
+            btn.addEventListener('click', toggle);
+            fetchState();
+            setInterval(fetchState, 1500); // keep UI fresh if multiple admins/devices
+        </script>
     </body>
 </html>

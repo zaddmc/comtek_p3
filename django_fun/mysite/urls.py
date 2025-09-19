@@ -22,6 +22,8 @@ from . import views
 
 app_name = "mysite"
 urlpatterns = [
+    path("api/state/<str:suitcase_id>", views.get_state, name="get_state"),
+    path("api/state/<str:suitcase_id>/set", views.set_state, name="set_state"),
     path("", views.index, name="index"),
     path("polls/", include("polls.urls")),
     path("admin/", admin.site.urls),
