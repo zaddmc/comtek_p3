@@ -1,4 +1,6 @@
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Bluetooth Connection</title>
@@ -7,9 +9,48 @@
 <body>
   <div class="container">
     <h1>Bluetooth Connection</h1>
-    <button id="connectButton">Connect to Bluetooth Device</button>
-    <p id="status">Status: Not connected</p>
-    </div>
+    <button id="connectBtn">Connect to Bluetooth</button>
+    <p id="status">Status</p>
+    <p id="deviceId">Device id: -</p>
   </div>
+  <script>
+    const connectBtn = document.getElementById("connectBtn");
+    const disconnectBtn = document.getElementById("disconnectBtn");
+    const status = document.getElementById("status");
+
+    connectBtn.addEventListener("click", async () => {
+      try {
+        status.textContent = "scanning for devices...";
+
+        device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true
+        });
+        status.textContent = "connecting to the device...";
+
+        server = await device.gatt.connect();
+        status.textContent = `connected to the device: ${device.name || "unknown device"}`;
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+
+        device.addEventListener("gattserverdisconnected",() => {
+          status.textContent = "device disconnected";
+          connectBtn.disabled = false;
+          disconnectBtn.disabled = true;
+        });
+      } catch (error) {
+        status.textContent = `error: ${error}`;
+      }
+    });
+
+    if (false) {
+      connectBtn.addEventListener("click", async () => {
+        if (device && device.gatt.connected) {
+          device.gatt.disconnect();
+        }
+      });
+    }
+
+  </script>
+
 </body>
 </html>
