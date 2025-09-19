@@ -7,6 +7,18 @@
     <h1>NFC Web Api test</h1>
     <button type="Activator" onclick="myfunction();">Activate Code</button>
     <p id="test">Default Text</p>
-    <script src="script.js"></script>
+    <script>
+      async function myfunction() {
+        document.getElementById("test").innerText = "This is javascript";
+        try {
+          const ndef = new NDEFWrite();
+          await ndef.write({
+            records: [{ recordType: "Text", data: "Hello NFC!" }],
+          });
+        } catch (error) {
+          console.error("Error writting to nfc tag: ", error);
+        }
+      }
+    </script>
   </body>
 </html>
