@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "hello_world",
-    "project_version":    "9b70dec-dirty",
+    "project_version":    "e24afec-dirty",
     "project_path":       "/home/hoothoot/Programming/Projects/comtek_p3/esp32",
     "idf_path":           "/home/hoothoot/esp/esp-idf",
     "build_dir":          "/home/hoothoot/Programming/Projects/comtek_p3/esp32/build",
