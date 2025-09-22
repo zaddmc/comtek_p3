@@ -3,3 +3,4 @@ __pycache__
 */.pio/
 *cache
 .vscode
+*build*
