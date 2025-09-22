@@ -3,4 +3,7 @@ __pycache__
 */.pio/
 *cache
 .vscode
-*build*
+build
+managed_components
+sdkconfig.old
+dependencies.lock
