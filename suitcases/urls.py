@@ -2,9 +2,9 @@
 
 from django.urls import path
 
-from .views import SuitcaseGetView
+from .views import SuitcaseDisplayView
 
 
 urlpatterns = [
-        path("get/<slug:uuid>",SuitcaseGetView.as_view(),name="get_suitcase"),
+        path("<slug:uuid>",SuitcaseDisplayView.as_view(),name="display_suitcase"),
 ]

@@ -1,0 +1,23 @@
+{% if user.is_authenticated %}
+<h1>User: {{username}}</h1>
+<h1>Your suitcases</h1>
+<ul>
+	{% for suitcase in object_list %}
+	{% if suitcase.rented_by.uuid == user_uuid%}
+	<a href="/suitcases/{{suitcase.uuid}}">{{suitcase.uuid}}</a>
+	<br>
+	{% endif %}
+	{% empty %}
+	<li>No rented suitcases</li>
+	{% endfor %}
+
+</ul>
+<a href="/">See not rented</a>
+<form action="{% url 'logout' %}" method="post">
+  {% csrf_token %}
+  <button type="submit">Log Out</button>
+</form>
+{% else %}
+<p>You are not logged in</p>
+<a href="{% url 'login' %}">Log In</a>
+{% endif %}
