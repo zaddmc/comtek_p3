@@ -1,4 +1,5 @@
 build
+.cache/
 .env
 __pychache__/
 node_modules
