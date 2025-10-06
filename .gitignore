@@ -1,6 +1,7 @@
 build
 .env
-__pychache__
+__pychache__/
 node_modules
 venv
 
+*.pyc
