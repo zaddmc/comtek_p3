@@ -1,3 +1,5 @@
+from enum import unique
+from ssl import Options
 import uuid
 from django.db import models
 from django.core.signing import Signer
@@ -14,8 +16,12 @@ class Suitcase(models.Model):
     rented_date = models.DateField(blank=True,null=True)
     expiration_date = models.DateField(blank=True,null=True)
 
+    name = models.CharField(max_length=20, unique=True)
 
     objects = models.Manager()
+
+    def __str__(self):
+        return self.name
 
     def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None):
 
@@ -42,8 +48,6 @@ class SuitcaseBleInfo(models.Model):
         super().save(*args, force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
 
         return
-
-
 
 
 
