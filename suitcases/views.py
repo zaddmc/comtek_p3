@@ -5,7 +5,7 @@ from django.http import HttpRequest,HttpResponse, HttpResponseRedirect
 from http import HTTPStatus
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-
+from .models import Suitcase
 
 
 class SuitcaseDisplayView(LoginRequiredMixin,DetailView):

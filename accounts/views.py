@@ -13,7 +13,7 @@ class CustomUserCreate(UserCreationForm):
 
 class SignUpView(CreateView):
     form_class = CustomUserCreate 
-    success_url = reverse_lazy("/")
+    success_url = "/"
     template_name = "registration/signup.html"
     def get(self, request, *args, **kwargs):
         if(self.request.user.is_authenticated):
