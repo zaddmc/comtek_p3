@@ -5,6 +5,7 @@ from django.db import models
 from django.core.signing import Signer
 from accounts.models import User
 
+
 class Suitcase(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4,editable=False,unique=True,primary_key=True)
 
@@ -17,11 +18,7 @@ class Suitcase(models.Model):
     expiration_date = models.DateField(blank=True,null=True)
 
     name = models.CharField(max_length=20, unique=True)
-
     objects = models.Manager()
-
-    def __str__(self):
-        return self.name
 
     def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None):
 
@@ -48,6 +45,5 @@ class SuitcaseBleInfo(models.Model):
         super().save(*args, force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
 
         return
-
 
 

@@ -1,5 +1,5 @@
+from unicodedata import name
 from django.contrib import admin
-from .models import Suitcase
 
 # Register your models here.
 
@@ -14,3 +14,5 @@ admin.site.register(SuitcaseBleInfo)
 
 class SuitcaseAdmin(admin.ModelAdmin):
     list_display = ("name")
+
+
