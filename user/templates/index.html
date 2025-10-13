@@ -5,7 +5,7 @@
 	{% for suitcase in object_list %}
 	{% if not suitcase.rented %}
 
-	<a href="/suitcases/{{suitcase.uuid}}">{{suitcase.uuid}}</a>
+	<a href="/suitcases/{{suitcase.uuid}}">{{suitcase.name}}</a>
 	<br>
 	{% endif %}
 	{% empty %}

@@ -3,8 +3,8 @@
 <h1>Your suitcases</h1>
 <ul>
 	{% for suitcase in object_list %}
-	{% if suitcase.rented_by.uuid == user_uuid and suitcase.rented_by%}
-	<a href="/suitcases/{{suitcase.uuid}}">{{suitcase.uuid}}</a>
+	{% if suitcase.rented_by.uuid == user_uuid%}
+	<a href="/suitcases/{{suitcase.uuid}}">{{suitcase.name}}</a>
 	<br>
 	{% endif %}
 	{% empty %}
