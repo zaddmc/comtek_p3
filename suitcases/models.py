@@ -1,24 +1,33 @@
 from enum import unique
+from sre_parse import CATEGORIES
 from ssl import Options
+from unicodedata import category
 import uuid
 from django.db import models
 from django.core.signing import Signer
+from django.db.models.base import CASCADE
 from accounts.models import User
 
+
+class Category(models.Model):
+    name = models.CharField(max_length=256)
 
 class Suitcase(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4,editable=False,unique=True,primary_key=True)
 
     rented_by = models.ForeignKey(User,null=True,blank=True,on_delete=models.SET_NULL)
     rented = models.BooleanField()
-
     created_at = models.DateField(auto_now_add=True)
-
     rented_date = models.DateField(blank=True,null=True)
     expiration_date = models.DateField(blank=True,null=True)
 
     name = models.CharField(max_length=20, unique=True)
     objects = models.Manager()
+    categories = models.ManyToManyField(Category)
+
+    def getCategories(self):
+        return [category.name for category in self.categories.all()]
+        
 
     def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None):
 
@@ -29,7 +38,7 @@ class Suitcase(models.Model):
             suitcase_info.save()
 
         return
-
+    
 
 class SuitcaseBleInfo(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4,editable=False,unique=True,primary_key=True)

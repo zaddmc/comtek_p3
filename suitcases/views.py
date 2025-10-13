@@ -20,7 +20,7 @@ class SuitcaseDisplayView(LoginRequiredMixin,DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
+        context["categories"] = self.object.getCategories()
         context["renter_uuid"] = "" 
         if(self.object.rented):
             renter_uuid = self.object.rented_by.uuid
@@ -58,6 +58,8 @@ class SuitcaseDisplayView(LoginRequiredMixin,DetailView):
         suitcase.save()
 
         return HttpResponseRedirect(request.path)
+
+
     def get(self, request:HttpRequest, uuid:str):
 
         suitcase:Suitcase = Suitcase.objects.get(uuid=uuid)
@@ -67,6 +69,8 @@ class SuitcaseDisplayView(LoginRequiredMixin,DetailView):
                 
         self.object = suitcase  # Set self.object explicitly here
         return render(request,self.template_name,self.get_context_data())
+
+
     def post(self,request:HttpRequest,uuid:str):
         real_method = request.POST.get("_method")
         if(real_method == "put"):

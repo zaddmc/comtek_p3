@@ -5,8 +5,16 @@
 <h2>Rented?: {{object.rented}}</h2>
 <h2>Renter name: {{object.rented_by}}</h2>
 <h2>Suitcase name: {{object.name}}<h2>
-
 <h2>Renter uuid: {{renter_uuid}}</h2>
+
+<ul>
+{% for category in categories %}
+  <li>
+    {{category}}
+  </li>
+{% endfor %}
+</ul>
+
 {% if messages %}
 <ul class="messages">
     {% for message in messages %}
