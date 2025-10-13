@@ -1,6 +1,6 @@
 {% if user.is_authenticated %}
-<h1>User: {{username}}</h1>
-<h1>Not rented suitcases</h1>
+<h1 style="font-family: Verdana, Geneva, Tahoma, sans-serif;">User: {{username}}</h1>
+<h1 style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Not rented suitcases</h1>
 <ul>
 	{% for suitcase in object_list %}
 	{% if not suitcase.rented %}
@@ -9,7 +9,7 @@
 	<br>
 	{% endif %}
 	{% empty %}
-	<li>No availabe suitcases</li>
+	<li style="font-family: Verdana, Geneva, Tahoma, sans-serif;">No availabe suitcases</li>
 	{% endfor %}
 
 </ul>
