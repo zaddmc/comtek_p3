@@ -1,13 +1,9 @@
-from django.http import HttpRequest, HttpResponse
-from django.views.generic import ListView, View 
+from django.views.generic import ListView 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from suitcases.models import Suitcase
 
-
-# Create your views here.
-
-class ClassicView(LoginRequiredMixin,ListView):
+class NonRentedView(LoginRequiredMixin,ListView):
     model = Suitcase 
     template_name = "index.html"
     login_url = "/accounts/login"
@@ -15,6 +11,9 @@ class ClassicView(LoginRequiredMixin,ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
+        print(context.keys())
+
+        context["object_list"] = [obj for obj in context["object_list"] if not obj.rented]
         context["username"] = self.request.user.username
         return context
 
@@ -28,11 +27,10 @@ class RentedView(LoginRequiredMixin,ListView):
         context = super().get_context_data(object_list=object_list, **kwargs)
         context["username"] = self.request.user.username
         context["user_uuid"] = self.request.user.uuid
-        return context
 
-class TestView(View):
-    def get(self,request:HttpRequest):
-        return HttpResponse(status=200)
+        context["object_list"] = [obj for obj in context["object_list"] if obj.rented and obj.rented_by.uuid == self.request.user.uuid]
+
+        return context
 
 
 
