@@ -1,46 +1,71 @@
-<h1 style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Login to your account</h1>
-<h2 style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Log In</h2>
+<h1 style="margin-bottom: 1px" style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Sign in</h1>
+<h3 style="margin-top: 1px" style="font-family: Verdana, Geneva, Tahoma, sans-serif;">To continue to front page</h3>
 <form method="post">
+    {% csrf_token %}
     {{ form.non_field_errors }}
+
     <div class="fieldWrapper">
-        {{ form.username.errors }}
-        <label for="{{ form.username.id_for_label }}">Username:</label>
-        {{ form.username }}
+      {{ form.username.errors }}
+      <input 
+        type="text" 
+        name="{{ form.username.name }}" 
+        id="{{ form.username.id_for_label }}" 
+        placeholder="Username"
+      />
     </div>
-    <div class="fieldWrapper">
-        {{ form.password.errors }}
-        <label for="{{ form.password.id_for_label }}">Password:</label>
-        {{ form.password }}
+
+    <div class="fieldWrapper" style="margin-top: 7px">
+      {{ form.password.errors }}
+      <input 
+        type="password" 
+        name="{{ form.password.name }}" 
+        id="{{ form.password.id_for_label }}" 
+        placeholder="Password"
+      />
     </div>
-    
-    
-    <button type="submit">Login</button>
+
+    <button type="submit" style="margin-top: 10px;">Sign In</button>
 </form>
-<h2 style="font-family: Verdana, Geneva, Tahoma, sans-serif;">No account?</h2>
+
+<h3 style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Don't have an account?</h3>
 <a href="/accounts/signup" style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Sign up</a>
 
 <style>
-    /* From Uiverse.io by Praashoo7 */ 
-  input{
-    
-    border: none;
-    outline: none;
-    border-radius: 15px;
-    padding: 1em;
-    background-color: #ccc;
-    box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
-    transition: 300ms ease-in-out;
-    
-  }
-  input:focus{
-    background-color: white;
-    transform: scale(1.05);
-    box-shadow: 13px 13px 100px #969696,
-              -13px -13px 100px #ffffff;
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+  line-height: 1.5;
+  min-height: 100vh;
+  background: #ffffff;
+  flex-direction: column;
+  margin: 0;
+}
 
-  }
-  /* From Uiverse.io by SpatexDEV */ 
+
+/* From Uiverse.io by Praashoo7 */ 
+input{
+  margin: 0 auto;
+  border: none;
+  outline: none;
+  border-radius: 15px;
+  padding: 1em;
+  background-color: #ccc;
+  box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
+  transition: 300ms ease-in-out;
+  
+}
+input:focus{
+  background-color: white;
+  transform: scale(1.05);
+  box-shadow: 13px 13px 100px #969696,
+            -13px -13px 100px #ffffff;
+
+}
+/* From Uiverse.io by SpatexDEV */ 
 button {
+  margin: auto;
   border: none;
   display: flex;
   padding: 0.75rem 1.5rem;
