@@ -1,5 +1,5 @@
-<h1 style="margin-bottom: 1px" style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Sign in</h1>
-<h3 style="margin-top: 1px" style="font-family: Verdana, Geneva, Tahoma, sans-serif;">To continue to front page</h3>
+<h1 style="margin-bottom: 1px" >Sign in</h1>
+<h3 style="margin-top: 1px" >To continue to front page</h3>
 <form method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}
@@ -27,8 +27,8 @@
     <button type="submit" style="margin-top: 10px;">Sign In</button>
 </form>
 
-<h3 style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Don't have an account?</h3>
-<a href="/accounts/signup" style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Sign up</a>
+<h3>Don't have an account?</h3>
+<a href="/accounts/signup">Sign up</a>
 
 <style>
 body {
@@ -40,9 +40,16 @@ body {
   min-height: 100vh;
   background: #ffffff;
   flex-direction: column;
+  flex: auto;
   margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
+.fieldwrapper{
+  display: grid;
+  place-items: center;
+
+}
 
 /* From Uiverse.io by Praashoo7 */ 
 input{
@@ -54,7 +61,9 @@ input{
   background-color: #ccc;
   box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
   transition: 300ms ease-in-out;
-  
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 input:focus{
   background-color: white;
