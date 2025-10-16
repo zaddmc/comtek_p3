@@ -6,7 +6,7 @@
 <form method="POST" novalidate>
 	{% csrf_token %}
 	<h2>Sign Up</h2>
-	{{ form.as_p }}		
+	{{ form.as_p }}
 	<button type="submit" href="/accounts/login">Submit</button>
   <a href="/accounts/login">Back</a>
 </form>
@@ -19,7 +19,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   line-height: 1.5;
   min-height: 100vh;
   background: #f3f3f3;
@@ -27,9 +27,9 @@ body {
   margin: 0;
 }
 
-/* From Uiverse.io by Praashoo7 */ 
+/* From Uiverse.io by Praashoo7 */
 input{
-  
+
   border: none;
   outline: none;
   border-radius: 15px;
@@ -37,7 +37,7 @@ input{
   background-color: #ccc;
   box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
   transition: 300ms ease-in-out;
-  flex-direction: auto;  
+  flex-direction: auto;
 }
 input:focus{
   background-color: white;
@@ -46,7 +46,7 @@ input:focus{
             -13px -13px 100px #ffffff;
 
 }
-/* From Uiverse.io by SpatexDEV */ 
+/* From Uiverse.io by SpatexDEV */
 button {
   margin: auto;
   border: none;
