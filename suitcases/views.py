@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.urls import reverse, reverse_lazy
 from django.views.generic.detail import DetailView
 from .forms import RentForm
 from django.http import HttpRequest,HttpResponse, HttpResponseRedirect  
@@ -13,7 +14,7 @@ class SuitcaseDisplayView(LoginRequiredMixin,DetailView):
     template_name = "get_suitcase.html"
     slug_url_kwarg = "uuid"
     slug_field = "uuid"
-    login_url = "/accounts/login"
+    login_url = reverse_lazy("login")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
