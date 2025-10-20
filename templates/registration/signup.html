@@ -21,7 +21,7 @@
 </form>
 
 <script type="module">
-	import {setup} from "{% static 'js/signup.js'%}";
+	import {setup} from "{% static 'accounts/js/signup.js'%}";
 	const CVR_API_URL = "{% url 'fetch-cvr-no-args' %}" + "/" ;
 	setup(CVR_API_URL);
 </script>

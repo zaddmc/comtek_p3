@@ -1,0 +1,19 @@
+.notuser {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: sans-serif;
+	line-height: 1.5;
+	min-height: 100vh;
+	background: #ffffff;
+	flex-direction: column;
+	flex: auto;
+	margin: 0;
+	font-family: Arial, Helvetica, sans-serif;
+
+}
+
+.userfield {
+	font-family: Arial, Helvetica, sans-serif;
+
+}

@@ -1,3 +1,5 @@
+{% load static %}
+<link ref="stylesheet" href="{% static 'user/js/index.css'%}">
 {% if user.is_authenticated %}
 <h1 class="userfield">User: {{username}}</h1>
 <div class="notuser">
@@ -26,28 +28,3 @@
 <a href="{% url 'login' %}">Log In</a>
 {% endif %}
 </div>
-<style>
-	
-	.notuser{
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-family: sans-serif;
-		line-height: 1.5;
-		min-height: 100vh;
-		background: #ffffff;
-		flex-direction: column;
-		flex: auto;
-		margin: 0;
-		font-family: Arial, Helvetica, sans-serif;
-	}
-	
-	.userfield{
-		font-family: Arial, Helvetica, sans-serif;
-		
-		
-	}
-	
-	
-
-</style>
