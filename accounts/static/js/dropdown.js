@@ -18,6 +18,7 @@ function set_input_val(input, company_info) {
 		input.input.value = company_info.name;
 		input.cvr_input.value = company_info.cvr_number.toString();
 		input.industricode_input.value = company_info.industrycode;
+		input.div.style.display = "none";
 	};
 }
 /**

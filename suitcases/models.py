@@ -1,13 +1,8 @@
-from enum import unique
-from sre_parse import CATEGORIES
-from ssl import Options
-from unicodedata import category
 from datetime import datetime
 from hashlib import sha256
 import uuid
 from django.db import models
 from django.core.signing import Signer
-from django.db.models.base import CASCADE
 from accounts.models import User
 from suitcases.forms import RentForm
 
@@ -33,7 +28,6 @@ class Suitcase(models.Model):
         
 
     def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None):
-
         super().save(*args, force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
         if not hasattr(self,"suitcasebleinfo"):
             suitcase_info = SuitcaseBleInfo(suitcase=self)
@@ -45,6 +39,7 @@ class Suitcase(models.Model):
         self.rented_by = None 
         self.rented_date= None 
         self.expiration_date= None 
+
     def rent(self,user:User,rent_form:RentForm) -> str|None:
         self.rented_by = user
         self.rented = True 
