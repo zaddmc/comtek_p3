@@ -3,16 +3,16 @@
 <body>
 	<div class="taskbar">
 		<div class="taskbar_tabs">
-		<a>Home</a>
-		<a>Products</a>
-		<a>Pricing</a>
-		<a>About</a>
+			<a href="{% url 'front-page'%}">Home</a>
+			<a href="{% url 'front-page-products'%}">Products</a>
+			<a href="{% url 'front-page-pricing'%}">Pricing</a>
+			<a href="{% url 'front-page-about'%}">About</a>
 		</div>
 		<div class="taskbar_login">
 			{% if user.is_authenticated %}
 			<a>{{ user.username}}</a>
 			{% else %}
-			<a>Login</a>
+			<a href="{%url 'login'%}">Login</a>
 			{% endif%}
 		</div>
 	</div>
