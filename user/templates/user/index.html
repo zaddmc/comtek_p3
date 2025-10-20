@@ -1,8 +1,9 @@
 {% load static %}
 
-<link rel="stylesheet" href="{% static 'user/css/index.css'%}">
 {% if user.is_authenticated %}
-<h1 class="userfield">User: {{username}}</h1>
+{% include "home/taskbar.html"%}
+<link rel="stylesheet" href="{% static 'home/css/common.css' %}">
+<link rel="stylesheet" href="{% static 'user/css/index.css'%}">
 <div class="notuser">
 <h1 >Available suitcases</h1>
 <ul style="list-style-type: none; margin: 0; padding: 0;">

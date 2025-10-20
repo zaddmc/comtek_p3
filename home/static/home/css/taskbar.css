@@ -1,0 +1,61 @@
+.taskbar {
+	position: fixed;
+	top: 0px;
+	background: radial-gradient(circle, rgba(251, 146, 60, 1) 0%, rgba(225, 29, 72, 1) 100%);
+	width: 100%;
+	height: 2.5em;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 1.5em;
+
+}
+
+.taskbar_login,
+.taskbar_tabs {
+	display: flex;
+	flex-direction: row;
+	align-items: end;
+	justify-content: space-evenly;
+
+}
+
+.website_title {
+	margin: 0px;
+}
+
+.website_title>a {
+	text-decoration: none;
+	color: yellow;
+}
+
+.taskbar_login {
+	display: flex;
+	flex-direction: row;
+	justify-content: end;
+}
+
+.taskbar>*>a {
+	color: rgb(125, 125, 255);
+	text-decoration: none;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: 100%;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
+
+.taskbar>*>a:hover {
+	color: rgb(255, 125, 125);
+	background-color: rgb(125, 125, 255);
+}
+
+.taskbar_tabs,
+.taskbar_login,
+.taskbar_title {
+	height: 100%;
+	width: 33%;
+
+}

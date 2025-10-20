@@ -6,32 +6,3 @@ html {
 	height: 100%;
 
 }
-
-.taskbar {
-	background-color: rgb(255, 125, 125);
-	width: 100%;
-	display: inline-block;
-	font-size: 1.5em;
-
-}
-
-.taskbar_tabs>a,
-.taskbar_login>a {
-	color: rgb(125, 125, 255);
-
-	text-decoration: none;
-}
-
-.taskbar_tabs>a:hover,
-.taskbar_login>a:hover {
-	color: rgb(255, 125, 125);
-	background-color: rgb(125, 125, 255);
-}
-
-.taskbar_login {
-	align-items: end;
-	position: absolute;
-	right: 0px;
-	top: 0px;
-
-}

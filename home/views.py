@@ -11,7 +11,7 @@ class AboutView(TemplateView):
 class ProductView(TemplateView):
     template_name = "home/product.html"
 
-class Pricing(TemplateView):
+class PricingView(TemplateView):
     template_name = "home/pricing.html"
 
 

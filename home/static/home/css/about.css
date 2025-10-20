@@ -1,0 +1,35 @@
+.content {
+	display: flex;
+	flex-direction: column;
+	height: 300%;
+	width: 100%;
+}
+
+.elem {
+	display: flex;
+	flex-direction: row;
+	height: 33%;
+	width: 100% - 2em;
+	margin: 5em;
+	background: rgb(255, 192, 203);
+}
+
+.elem>img {
+	width: 50%;
+	height: 100%;
+}
+
+.elem_text {
+	width: 50%;
+	color: rgb(175, 175, 255);
+	font-family: Arial, Helvetica, sans-serif;
+	padding: 1em;
+}
+
+.elem_text>h1 {
+	font-size: 3em;
+}
+
+.elem_text>p {
+	font-size: 1.5em;
+}
