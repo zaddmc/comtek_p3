@@ -1,3 +1,4 @@
+from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -6,7 +7,7 @@ from suitcases.models import Suitcase
 class NonRentedView(LoginRequiredMixin,ListView):
     model = Suitcase 
     template_name = "index.html"
-    login_url = "/accounts/login"
+    login_url = reverse_lazy("login")
 
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -20,7 +21,7 @@ class NonRentedView(LoginRequiredMixin,ListView):
 class RentedView(LoginRequiredMixin,ListView):
     model = Suitcase 
     template_name = "rented.html"
-    login_url = "/accounts/login"
+    login_url = reverse_lazy("login")
 
 
     def get_context_data(self, *, object_list=None, **kwargs):

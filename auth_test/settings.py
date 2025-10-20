@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "accounts",
     "suitcases",
     "user",
+    "external",
+    "home"
 ]
 
 MIDDLEWARE = [

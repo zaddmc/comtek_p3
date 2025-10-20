@@ -18,9 +18,10 @@ from django.contrib import admin
 from django.urls import path,include
 
 urlpatterns = [
-        path("", include("user.urls")),  # new
-        path("suitcases/", include("suitcases.urls")),  # new
-        path("accounts/", include("accounts.urls")),  # new
-        path("accounts/", include("django.contrib.auth.urls")),
-        path('admin/', admin.site.urls),
+        path("", include("user.urls"), name="home"),   
+        path("suitcases/", include("suitcases.urls"),name="suitcase-home"),   
+        path("external/", include("external.urls"),name="external-home"),   
+        path("accounts/", include("accounts.urls"),name="cust-accounts-home"),   
+        path("accounts/", include("django.contrib.auth.urls"),name="accounts-home"),
+        path('admin/', admin.site.urls,name="admin"),
 ]

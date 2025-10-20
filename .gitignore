@@ -4,5 +4,5 @@ build
 __pychache__/
 node_modules
 venv
-
+.venv
 *.pyc
