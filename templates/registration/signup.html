@@ -1,21 +1,30 @@
 
 {% block content %}
-
-<h1>Create an account</h1>
 {% load static %}
-<h1>Signus uppus</h1>
+<h1>Create an account</h1>
 
 <form method="POST" novalidate>
 	{% csrf_token %}
 	<h2>Sign Up</h2>
 	{{ form.as_p }}
+	<button id="drop_down_button" type="button">Show</button>
+	<div id="drop_down">
+	<ul id="drop_down_values">
+	</ul>
+	</div>
+	<br>
 	<button type="submit" href="/accounts/login">Submit</button>
   <a href="/accounts/login">Back</a>
 </form>
 
+<script type="module">
+	import {setup} from "{% static 'js/signup.js'%}";
+	const CVR_API_URL = "{% url 'fetch-cvr-no-args' %}" + "/" ;
+	setup(CVR_API_URL);
+</script>
 
+{% endblock content %}
 
-{% endblock content%}
 <style>
 body {
   display: flex;
@@ -90,20 +99,4 @@ button svg {
   height: 1.25rem;
 }
 </style>
-	{{ form.as_p }}		
-	<button id="drop_down_button" type="button">Show</button>
-	<div id="drop_down">
-	<ul id="drop_down_values">
-	</ul>
-	</div>
-	<br>
-	<input type="submit"/>
-</form>
 
-<script type="module">
-	import {setup} from "{% static 'js/signup.js'%}";
-	const CVR_API_URL = "{% url 'fetch-cvr-no-args' %}" + "/" ;
-	setup(CVR_API_URL);
-</script>
-
-{% endblock content %}
