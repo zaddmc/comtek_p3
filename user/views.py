@@ -6,7 +6,7 @@ from suitcases.models import Suitcase
 
 class NonRentedView(LoginRequiredMixin,ListView):
     model = Suitcase 
-    template_name = "index.html"
+    template_name = "user/index.html"
     login_url = reverse_lazy("login")
 
 
@@ -20,7 +20,7 @@ class NonRentedView(LoginRequiredMixin,ListView):
 
 class RentedView(LoginRequiredMixin,ListView):
     model = Suitcase 
-    template_name = "rented.html"
+    template_name = "user/rented.html"
     login_url = reverse_lazy("login")
 
 

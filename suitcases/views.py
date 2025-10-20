@@ -11,7 +11,7 @@ from .models import Suitcase
 
 class SuitcaseDisplayView(LoginRequiredMixin,DetailView):
     model = Suitcase
-    template_name = "get_suitcase.html"
+    template_name = "suitcase/get_suitcase.html"
     slug_url_kwarg = "uuid"
     slug_field = "uuid"
     login_url = reverse_lazy("login")
