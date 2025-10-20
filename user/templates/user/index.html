@@ -1,5 +1,6 @@
 {% load static %}
-<link ref="stylesheet" href="{% static 'user/js/index.css'%}">
+
+<link rel="stylesheet" href="{% static 'user/css/index.css'%}">
 {% if user.is_authenticated %}
 <h1 class="userfield">User: {{username}}</h1>
 <div class="notuser">

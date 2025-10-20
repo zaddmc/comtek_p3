@@ -1,5 +1,5 @@
 {% load static%}
-<link ref="stylesheet" href="{% static 'user/css/rented.css' %}">
+<link rel="stylesheet" href="{% static 'user/css/rented.css' %}">
 
 {% if user.is_authenticated %}
 <h1 class="userfield" style="position: absolute;">User: {{username}}</h1>
@@ -16,7 +16,7 @@
 	{% endfor %}
 
 </ul>
-<a href="/">See not rented</a>
+<a href="{% url 'non-rented-view' %}">See not rented</a>
 <form action="{% url 'logout' %}" method="post">
   {% csrf_token %}
   <button type="submit">Log Out</button>
