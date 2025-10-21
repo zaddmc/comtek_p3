@@ -4,6 +4,7 @@
 #include "freertos/projdefs.h"
 #include "freertos/task.h"
 #include "hal/gpio_types.h"
+#include <string.h>
 
 const gpio_num_t xPins[] = {GPIO_NUM_19, GPIO_NUM_18, GPIO_NUM_10};
 const int xPinsSize = 3;
@@ -23,19 +24,32 @@ void app_main(void) {
         gpio_set_level(yPins[i], 0);
     }
 
+    char keypad_input[100] = {""};
+    int input_idx = 0;
     while (true) {
         for (int i = 0; i < yPinsSize; i++) {
             gpio_set_level(yPins[i], 1);
             for (int j = 0; j < xPinsSize; j++) {
                 if (gpio_get_level(xPins[j])) {
-                    ESP_LOGI(TAG, "Value %c Was pressed",
-                             KEYPAD_VALS[i * xPinsSize + j]);
+                    char ch = KEYPAD_VALS[i * xPinsSize + j];
+                    ESP_LOGI(TAG, "Value %c Was pressed", ch);
+                    if (ch == '#' || ch == '*') {
+                        if (ch == '#') {
+                            ESP_LOGI(TAG, "Value %s Was pressed", keypad_input);
+                        }
+                        while (input_idx) {
+                            keypad_input[--input_idx] = '\0';
+                        }
+                    } else {
+                        keypad_input[input_idx++] = ch;
+                    }
                 }
                 // Wait for release
                 while (gpio_get_level(xPins[j])) {
                     vTaskDelay(pdMS_TO_TICKS(10));
                 }
             }
+
             gpio_set_level(yPins[i], 0);
         }
         vTaskDelay(pdMS_TO_TICKS(50));
