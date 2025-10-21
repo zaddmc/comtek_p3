@@ -10,19 +10,22 @@
 	flex-direction: row;
 	height: 33%;
 	width: 100% - 2em;
-	margin: 5em;
-	background: rgb(255, 192, 203);
+	margin: 10em;
+	background: var(--primary);
+	border: solid;
+	border-radius: 2em;
+	border-color: var(--primary);
 }
 
 .elem>img {
+	border-radius: 2em;
 	width: 50%;
 	height: 100%;
 }
 
 .elem_text {
 	width: 50%;
-	color: rgb(175, 175, 255);
-	font-family: Arial, Helvetica, sans-serif;
+	color: var(--background);
 	padding: 1em;
 }
 
@@ -32,4 +35,22 @@
 
 .elem_text>p {
 	font-size: 1.5em;
+}
+
+.ninja-figure {
+	top: 23vh;
+	left: 3vw;
+	transform: rotate(-10deg);
+}
+
+.mario-figure {
+	top: 67vh;
+	left: 90vw;
+	transform: rotate(27deg);
+}
+
+.dragon-figure {
+	top: 101vh;
+	left: 67vw;
+	transform: rotate(-27deg);
 }

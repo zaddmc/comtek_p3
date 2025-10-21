@@ -1,0 +1,16 @@
+{% load static %}
+<html>
+	<head>
+		<link rel="stylesheet" href="{% static 'common/css/common.css'%}">
+		<script src="{% static 'common/js/common.js'%}" defer></script>
+		<link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+	</head>
+	<main>
+		<body>
+			{% include 'common/taskbar.html'%}
+			{% block main %}
+			{% endblock %}
+		</body>
+	</main>
+
+</html>
