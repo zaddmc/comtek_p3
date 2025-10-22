@@ -9,6 +9,22 @@
 	color: var(--text);
 }
 
+html[data-theme='light'] {
+	--primary: #FF7A00;
+	--secondary: #FF7A00;
+	--background: #FFD6A5;
+	--text: #1F3B73;
+	--accent: #1F3B73;
+}
+
+html[data-theme='dark'] {
+	--primary: #FF7A00;
+	--secondary: #ff7a00;
+	--background: #0F1C3A;
+	--text: #F4CDA0;
+	--accent: #FF7A00;
+}
+
 html,
 body,
 main {
@@ -56,4 +72,18 @@ main {
 	100% {
 		transform: rotate(0deg) scale(1.1);
 	}
+}
+
+
+.color_toggle {
+	position: absolute;
+	right: 3vw;
+	top: 7rem;
+}
+
+#theme_toggle {
+	width: 2rem;
+	height: 2rem;
+	background-color: var(--accent);
+	color: var(--background);
 }

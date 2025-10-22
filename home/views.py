@@ -1,4 +1,4 @@
-from django.http import request
+from django.http import HttpResponse, request
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.base import TemplateView 
@@ -13,5 +13,13 @@ class ProductView(TemplateView):
 
 class PricingView(TemplateView):
     template_name = "home/pricing.html"
+
+class ContactView(TemplateView):
+    template_name = "home/contact.html"
+
+class WIPView(View):
+    def get(self,request:request.HttpRequest):
+        return HttpResponse("W.I.P".encode())
+
 
 

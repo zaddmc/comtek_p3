@@ -10,8 +10,7 @@ class CustomUserCreate(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User 
-        fields = ["username","password1","password2"]
-        help_texts = {"username":None} # Remove username help text.
+        fields = ["first_name","last_name","password1","password2"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

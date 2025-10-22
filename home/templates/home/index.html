@@ -1,6 +1,7 @@
-{% load static %}
 
-{% include "common/taskbar.html" %}
-<link rel="stylesheet" href="{% static 'common/css/common.css'%}">
+{% extends "common/common.html"%}
+{% block main %}
+{% load static %}
 <link rel="stylesheet" href="{% static 'home/css/index.css'%}">
 <h1>Hello World</h1>
+{% endblock %}

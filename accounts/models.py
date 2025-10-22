@@ -10,6 +10,7 @@ class User(AbstractUser):
     uuid = models.UUIDField(default=uuid.uuid4,editable=False,unique=True,primary_key=True)
 
     def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.username = self.get_full_name()
         super().save(*args, force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
         return
 
