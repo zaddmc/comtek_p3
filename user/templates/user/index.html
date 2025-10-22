@@ -4,29 +4,100 @@
 {% include "common/taskbar.html"%}
 <link rel="stylesheet" href="{% static 'common/css/common.css' %}">
 <link rel="stylesheet" href="{% static 'user/css/index.css'%}">
-<div class="notuser">
-<h1 >Available suitcases</h1>
-<ul style="list-style-type: none; margin: 0; padding: 0;">
-	{% for suitcase in object_list %}
-	{% if not suitcase.rented %}
+<script src="{% static 'user/js/quiz.js' %}" defer></script>
 
-	<a href="/suitcases/{{suitcase.uuid}}">{{suitcase.name}}</a>
-	<br>
-	{% endif %}
-	{% empty %}
-	<li>No availabe suitcases</li>
-	{% endfor %}
-
-</ul>
-<br/>
-<a href="rented">Your rents</a>
-<form action="{% url 'logout' %}" method="post">
-  {% csrf_token %}
-  <button type="submit">Log Out</button>
-</form>
-{% else %}
-<p>You are not logged in</p>
-<h1>NICE</h1>
-<a href="{% url 'login' %}">Log In</a>
-{% endif %}
+<!-- Our Modal object for the quiz-->
+<div id="quizModal" class="modal">
+	<div class="modal-content">
+		<span class="close">&times;</span>
+		<h2>Find the best suitcase for your needs</h2>
+		<!-- Quiz Questions go here-->
+		<div id="quizContainer">
+			<div class="quiz-step active" id="step1">
+				<h3>Hvad er den forventet mængde af deltagende til aktiviteter der inkluderer kufferten?</h3>
+				<div class="options">
+					<button class="option-btn" data-value ="1-4">1-4 personer</button>
+					<button class="option-btn" data-value ="5-8">5-8 personer</button>
+					<button class="option-btn" data-value ="9-12">9-12 personer</button>
+					<button class="option-btn" data-value ="13-16">13-16 personer</button>
+				</div>
+			</div>
+			<div class="quiz-step" id="step2">
+				<h3>Hvilken afdeling skal kufferten bruges til?</h3>
+				<div class="options">
+					<button class="option-btn" data-value ="R&D">R&D-afdelingen</button>
+					<button class="option-btn" data-value ="HR">HR-afdelingen</button>
+					<button class="option-btn" data-value ="PR">markedsføringsafdelingen</button>
+					<button class="option-btn" data-value ="Accounting">Finansafdelingen</button>					
+				</div>
+			</div>
+			<div class="quiz-step" id="step3">
+				<h3>Hvad er formålet med at anvende Figure-It-Out's produkt hos jer?</h3>
+				<div class="options">
+					<button class="option-btn" data-value ="Team Building">Teambuilding</button>
+					<button class="option-btn" data-value ="Brainstorming">ideudvikling</button>
+					<button class="option-btn" data-value ="Creativity">Kreativitet</button>
+					<button class="option-btn" data-value ="Communication">Kommunikation</button>
+				</div>
+			</div>		
+		</div>
+		<!-- Navigation buttons for the quiz modal-->
+		<div class="quiz-nav">
+			<button id ="prevBtn" class="nav-btn" disabled>Forrige</button>
+			<span id="stepIndicator">Spørgsmål 1 of 3</span>
+			<button id="nextBtn" class="nav-btn">Næste</button>
+			<button id="submitQuiz" class="nav-btn" style="display:none;">Afslut</button>
+		</div>
+	</div>
 </div>
+
+<!-- Main Content of the Page-->
+<div class="notuser">
+	<div class="welcome-section">
+		<h1>Velkommen til Figure-It-Out!</h1>
+		<p>Find den perfekte kuffert til dig og dit holds behov.</p>
+		<div class="action-buttons">
+			<button id="startQuiz" class="cta-btn">Start Quiz og find den perfekte makker for jer.</button>
+			<button id="browseSuitcases" class="secondary-btn">Se alle kufferter.</button>
+		</div>
+	</div>
+
+	<!-- List of all suitcases not done anything to yet but coming soon (hidden by def)-->
+	<div id="suitcasesList" class="suitcases-list" style ="display: none;">
+		<h1>Tilgængelige Kufferter</h1>
+		<ul style="list-style-type: none; margin: 0; padding: 0;">
+			{% for suitcase in object_list %}
+				{% if not suitcase.rented %}
+					<li class="suitcase-item">
+						<a href="/suitcases/{{suitcase.id}}">{{suitcase.name}}</a>
+					</li>
+				{% endif %}
+			{% empty %}
+				<li>No available suitcases</li>
+			{% endfor %} {# <- FIX: tilføjet manglende % #}
+		</ul>
+		<br/>
+		<a href="rented">lejet kufferter</a>
+	</div>
+
+	<!-- Recommendation System
+	TODO: Make logic cause no brain yet brain evolving still-->
+	<div id="recommendedSection" class="recommended-section" style="display: none;">
+		<h2>Vores forslag til jeres nye partner</h2>
+		<div id="recommendedContent">
+			<!--? JS WILL TAKE CARE OF THIS NO BELLY RUBS FOR THE MORTEN-->
+		</div>
+		<button id="backToBrowse" class="secondary-btn">Browse All Suitcases</button>
+	</div>
+</div>
+
+<form action="{% url 'logout' %}" method="post">
+	{% csrf_token %}
+	<button type="submit">Log ud</button>
+</form>
+
+{% else %}
+<p>Du er ikke logget ind</p>
+<h1>NICE COCK!</h1>
+<a href="{% url 'login' %}">Log ind</a>
+{% endif %}

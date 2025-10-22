@@ -1,0 +1,150 @@
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal elements
+    const modal = document.getElementById('quizModal');
+    const startQuizBtn = document.getElementById('startQuiz');
+    const browseSuitcasesBtn = document.getElementById('browseSuitcases');
+    const closeBtn = document.querySelector('.close');
+    const suitcasesList = document.getElementById('suitcasesList');
+    const welcomeSection = document.querySelector('.welcome-section');
+    const recommendedSection = document.getElementById('recommendedSection');
+    const backToBrowseBtn = document.getElementById('backToBrowse');
+
+    // Quiz elements
+    const quizSteps = document.querySelectorAll('.quiz-step');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitQuiz');
+    const stepIndicator = document.getElementById('stepIndicator');
+    const optionBtns = document.querySelectorAll('.option-btn');
+
+    let currentStep = 0;
+    const userAnswers = {};
+
+    // Modal handlers
+    startQuizBtn.addEventListener('click', () => {
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Disable background scrolling
+        resetQuiz();
+    });
+
+    browseSuitcasesBtn.addEventListener('click', () => {
+        welcomeSection.style.display = 'none';
+        suitcasesList.style.display = 'block';
+    });
+
+    backToBrowseBtn.addEventListener('click', () => {
+        recommendedSection.style.display = 'none';
+        suitcasesList.style.display = 'block';
+    });
+
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+        document.body.style.overflow = ''; // Enable background scrolling
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = ''; // Enable background scrolling
+        }
+    });
+
+    // Quiz navigation
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 0) {
+            currentStep--;
+            updateStep();
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentStep < quizSteps.length - 1) {
+            currentStep++;
+            updateStep();
+        }
+    });
+
+    submitBtn.addEventListener('click', submitQuiz);
+
+    // Option selection
+    optionBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove selected class from siblings
+            const siblings = this.parentElement.querySelectorAll('.option-btn');
+            siblings.forEach(sibling => sibling.classList.remove('selected'));
+            
+            // Add selected class to clicked button
+            this.classList.add('selected');
+            
+            // Store the answer
+            const question = this.closest('.quiz-step').id;
+            userAnswers[question] = this.dataset.value;
+        });
+    });
+
+    function updateStep() {
+        // Hide all steps
+        quizSteps.forEach(step => step.classList.remove('active'));
+        
+        // Show current step
+        quizSteps[currentStep].classList.add('active');
+        
+        // Update step indicator
+        stepIndicator.textContent = `Spørgsmål ${currentStep + 1} af ${quizSteps.length}`;
+        
+        // Update button states
+        prevBtn.disabled = currentStep === 0;
+        
+        if (currentStep === quizSteps.length - 1) {
+            nextBtn.style.display = 'none';
+            submitBtn.style.display = 'inline-block';
+        } else {
+            nextBtn.style.display = 'inline-block';
+            submitBtn.style.display = 'none';
+        }
+    }
+
+    function resetQuiz() {
+        currentStep = 0;
+        Object.keys(userAnswers).forEach(key => delete userAnswers[key]);
+        
+        // Clear selections
+        optionBtns.forEach(btn => btn.classList.remove('selected'));
+        
+        updateStep();
+    }
+
+    function submitQuiz() {
+        // For now, just show the suitcases list
+        // In the future, this will process answers and show recommendations
+        
+        modal.style.display = 'none';
+        document.body.style.overflow = ''; // Enable background scrolling
+        welcomeSection.style.display = 'none';
+        suitcasesList.style.display = 'block';
+        
+        // TODO: Implement recommendation logic based on userAnswers
+        console.log('User answers:', userAnswers);
+        
+        // Example of future implementation:
+        // showRecommendedSuitcase(userAnswers);
+    }
+
+    function showRecommendedSuitcase(answers) {
+        // This will be implemented when you have the tagging system
+        welcomeSection.style.display = 'none';
+        suitcasesList.style.display = 'none';
+        recommendedSection.style.display = 'block';
+        
+        // Placeholder for recommendation logic
+        document.getElementById('recommendedContent').innerHTML = `
+            <div class="suitcase-item">
+                <h3>Recommended based on your team's needs</h3>
+                <p>Team size: ${answers.step1}</p>
+                <p>Department: ${answers.step2}</p>
+                <p>Purpose: ${answers.step3}</p>
+                <!-- Will display actual recommended suitcase here -->
+            </div>
+        `;
+    }
+});
