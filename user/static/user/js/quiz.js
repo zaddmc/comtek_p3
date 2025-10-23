@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     startQuizBtn.addEventListener('click', () => {
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden'; // Disable background scrolling
+        welcomeSection.classList.add('hidden'); // fade out welcome section
         resetQuiz();
     });
 
@@ -40,12 +41,14 @@ document.addEventListener('DOMContentLoaded', function() {
     closeBtn.addEventListener('click', () => {
         modal.style.display = 'none';
         document.body.style.overflow = ''; // Enable background scrolling
+        welcomeSection.classList.remove('hidden'); // fade in welcome section
     });
-
+    // close by clicking outside modal
     window.addEventListener('click', (event) => {
         if (event.target === modal) {
             modal.style.display = 'none';
             document.body.style.overflow = ''; // Enable background scrolling
+            welcomeSection.classList.remove('hidden'); // fade in welcome section
         }
     });
 
@@ -131,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showRecommendedSuitcase(answers) {
-        // This will be implemented when you have the tagging system
+        // This will be implemented when i add the tagging system
         welcomeSection.style.display = 'none';
         suitcasesList.style.display = 'none';
         recommendedSection.style.display = 'block';
