@@ -4,4 +4,10 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'home/css/index.css'%}">
 <h1>Hello World</h1>
+{% include "common/figures.html" with audio_src="block.mp3" img_src="batman.jpg" animation="basic-anim" pos_x=50 pos_y=50 angle=-23%}
+{% include "common/figures.html" with audio_src="block.mp3" img_src="mario.jpg" animation="basic-anim" pos_x=20 pos_y=20 angle=30%}
+{% include "common/figures.html" with audio_src="block.mp3" img_src="knight.jpg" animation="basic-anim" pos_x=70 pos_y=70 angle=-8%}
+{% include "common/figures.html" with audio_src="block.mp3" img_src="red_dragon.jpg" animation="basic-anim" pos_x=60 pos_y=30 angle=-15%}
+{% include "common/figures.html" with audio_src="block.mp3" img_src="drum.jpg" animation="basic-anim" pos_x=30 pos_y=80 angle=30%}
+
 {% endblock %}

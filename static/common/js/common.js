@@ -22,8 +22,9 @@ function setup() {
 	let figures = document.querySelectorAll(".figure");
 
 	console.log(figures.length);
-	let audio = document.getElementById("audio_tag");
 	for (let i = 0; i < figures.length; i++) {
+
+		let audio = figures[i].querySelector(".figure_audio");
 		figures[i].addEventListener("click", () => {
 			audio.pause();
 			audio.currentTime = 0;
