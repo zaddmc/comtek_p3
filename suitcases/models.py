@@ -10,6 +10,9 @@ from suitcases.forms import RentForm
 class Category(models.Model):
     name = models.CharField(max_length=256)
 
+    def __str__(self): #TODO: remove method since it might break BLE
+        return self.name
+
 class Suitcase(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4,editable=False,unique=True,primary_key=True)
 

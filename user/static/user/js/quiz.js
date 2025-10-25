@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const welcomeSection = document.querySelector('.welcome-section');
     const recommendedSection = document.getElementById('recommendedSection');
     const backToBrowseBtn = document.getElementById('backToBrowse');
+    const notuser = document.querySelector('.notuser'); // Add this
 
     // Quiz elements
     const quizSteps = document.querySelectorAll('.quiz-step');
@@ -23,8 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Modal handlers
     startQuizBtn.addEventListener('click', () => {
         modal.style.display = 'block';
-        document.body.style.overflow = 'hidden'; // Disable background scrolling
-        welcomeSection.classList.add('hidden'); // fade out welcome section
+        // Hide the main content when modal opens
+        notuser.style.display = 'none';
         resetQuiz();
     });
 
@@ -40,15 +41,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     closeBtn.addEventListener('click', () => {
         modal.style.display = 'none';
-        document.body.style.overflow = ''; // Enable background scrolling
-        welcomeSection.classList.remove('hidden'); // fade in welcome section
+        // Show the main content again when modal closes
+        notuser.style.display = 'flex';
     });
-    // close by clicking outside modal
+
     window.addEventListener('click', (event) => {
         if (event.target === modal) {
             modal.style.display = 'none';
-            document.body.style.overflow = ''; // Enable background scrolling
-            welcomeSection.classList.remove('hidden'); // fade in welcome section
+            // Show the main content again when clicking outside modal
+            notuser.style.display = 'flex';
         }
     });
 
@@ -61,13 +62,28 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     nextBtn.addEventListener('click', () => {
+        // Check if current question is answered before proceeding
+        const currentStepId = quizSteps[currentStep].id;
+        if (!userAnswers[currentStepId]) {
+            alert('Please select an answer before continuing.');
+            return;
+        }
+        
         if (currentStep < quizSteps.length - 1) {
             currentStep++;
             updateStep();
         }
     });
 
-    submitBtn.addEventListener('click', submitQuiz);
+    submitBtn.addEventListener('click', () => {
+        // Check if final question is answered before submitting
+        const currentStepId = quizSteps[currentStep].id;
+        if (!userAnswers[currentStepId]) {
+            alert('Please select an answer before submitting.');
+            return;
+        }
+        submitQuiz();
+    });
 
     // Option selection
     optionBtns.forEach(btn => {
@@ -82,6 +98,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Store the answer
             const question = this.closest('.quiz-step').id;
             userAnswers[question] = this.dataset.value;
+            
+            // Enable next button if it was disabled due to validation
+            updateButtonStates();
         });
     });
 
@@ -93,7 +112,14 @@ document.addEventListener('DOMContentLoaded', function() {
         quizSteps[currentStep].classList.add('active');
         
         // Update step indicator
-        stepIndicator.textContent = `Spørgsmål ${currentStep + 1} af ${quizSteps.length}`;
+        stepIndicator.textContent = `Question ${currentStep + 1} of ${quizSteps.length}`;
+        
+        updateButtonStates();
+    }
+
+    function updateButtonStates() {
+        const currentStepId = quizSteps[currentStep].id;
+        const isAnswered = !!userAnswers[currentStepId];
         
         // Update button states
         prevBtn.disabled = currentStep === 0;
@@ -101,9 +127,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentStep === quizSteps.length - 1) {
             nextBtn.style.display = 'none';
             submitBtn.style.display = 'inline-block';
+            // Enable submit button only if current question is answered
+            submitBtn.disabled = !isAnswered;
         } else {
             nextBtn.style.display = 'inline-block';
             submitBtn.style.display = 'none';
+            // Enable next button only if current question is answered
+            nextBtn.disabled = !isAnswered;
         }
     }
 
@@ -122,7 +152,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // In the future, this will process answers and show recommendations
         
         modal.style.display = 'none';
-        document.body.style.overflow = ''; // Enable background scrolling
+        // Show main content again after quiz completion
+        notuser.style.display = 'flex';
         welcomeSection.style.display = 'none';
         suitcasesList.style.display = 'block';
         
@@ -134,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showRecommendedSuitcase(answers) {
-        // This will be implemented when i add the tagging system
+        // This will be implemented when you have the tagging system
         welcomeSection.style.display = 'none';
         suitcasesList.style.display = 'none';
         recommendedSection.style.display = 'block';

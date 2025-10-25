@@ -1,28 +1,20 @@
-/* === Minimal Quiz + Modal styling (bruger eksisterende farvevariabler) === */
-
-/* Layout */
 .notuser {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: sans-serif;
     line-height: 1.5;
+    min-height: 100vh;
+    flex-direction: column;
+    flex: auto;
     margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .welcome-section {
     text-align: center;
     max-width: 600px;
     padding: 2rem;
-    opacity: 1;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
-}
-
-.welcome-section.hidden {
-    opacity: 0;
-    visibility: hidden;
 }
 
 .action-buttons {
@@ -32,21 +24,52 @@
     margin: 2rem 0;
 }
 
-/* === Modal === */
+.cta-button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.cta-button:hover {
+    background: var(--accent);
+}
+
+.secondary-button {
+    background: transparent;
+    color: var(--text);
+    border: 2px solid var(--primary);
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.secondary-button:hover {
+    background: var(--accent);
+    color: white;
+}
+
+/* Modal Styles */
 .modal {
-    display: none; /* JS toggler denne */
+    display: none;
     position: fixed;
-    inset: 0;
     z-index: 1000;
-    background-color: transparent;
-    align-items: center;
-    justify-content: center;
-    padding-top: 4em;
+    left: 0;
+    top: 50px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
 }
 
 .modal-content {
-    /*background-color: var(--background);*/
-	background-color: color-mix(in srgb, var(--background) 85%, black);
+    background-color: var(--background);
     margin: 5% auto;
     padding: 2rem;
     border-radius: 12px;
@@ -57,29 +80,29 @@
 }
 
 .close {
-    position: absolute;
-    top: 12px;
-    right: 16px;
+    color: var(--text);
+    float: right;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
-    color: var(--text);
 }
+
 .close:hover {
     color: var(--primary);
 }
 
-/* === Quiz === */
+/* Quiz Styles */
 .quiz-step {
     display: none;
     text-align: center;
 }
+
 .quiz-step.active {
     display: block;
 }
 
 .quiz-step h3 {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     color: var(--accent);
 }
 
@@ -87,7 +110,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-    margin: 1.5rem 0;
+    margin: 2rem 0;
 }
 
 .option-btn {
@@ -99,29 +122,23 @@
     cursor: pointer;
     transition: all 0.3s ease;
 }
+
 .option-btn:hover {
     background: var(--primary);
     color: white;
 }
+
 .option-btn.selected {
     background: var(--primary);
     color: white;
     border-color: var(--accent);
 }
 
-#quizContainer {
-	min-height: 300px;
-	overflow: hidden;
-}
-
-/* Navigation */
 .quiz-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
 }
 
 .nav-btn {
@@ -132,15 +149,17 @@
     border-radius: 6px;
     cursor: pointer;
 }
+
 .nav-btn:disabled {
     background: #ccc;
     cursor: not-allowed;
 }
+
 .submit-btn {
     background: var(--primary);
 }
 
-/* === Suitcases list === */
+/* Suitcases List */
 .suitcases-list {
     width: 100%;
     max-width: 800px;
@@ -160,13 +179,13 @@
     text-decoration: none;
     font-weight: bold;
 }
+
 .suitcase-item a:hover {
     color: var(--primary);
 }
 
-/* === Responsive === */
-@media (max-width: 460px) {
-    .options {
-        grid-template-columns: 1fr;
-    }
+/* Recommended Section */
+.recommended-section {
+    text-align: center;
+    max-width: 600px;
 }
