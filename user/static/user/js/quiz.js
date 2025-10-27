@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextBtn = document.getElementById('nextBtn');
     const submitBtn = document.getElementById('submitQuiz');
     const stepIndicator = document.getElementById('stepIndicator');
-    const optionBtns = document.querySelectorAll('.option-btn');
 
     let currentStep = 0;
     const userAnswers = {};
@@ -78,23 +77,25 @@ document.addEventListener('DOMContentLoaded', function() {
         submitQuiz();
     });
 
-    // Option selection
-    optionBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Remove selected class from siblings
-            const siblings = this.parentElement.querySelectorAll('.option-btn');
+    // Option selection - using event delegation for dynamic content
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('option-btn')) {
+            const btn = e.target;
+            // Remove selected class from siblings in the same question
+            const questionElement = btn.closest('.quiz-step');
+            const siblings = questionElement.querySelectorAll('.option-btn');
             siblings.forEach(sibling => sibling.classList.remove('selected'));
             
             // Add selected class to clicked button
-            this.classList.add('selected');
+            btn.classList.add('selected');
             
-            // Store the answer
-            const question = this.closest('.quiz-step').id;
-            userAnswers[question] = this.dataset.value;
+            // Store the answer using the question ID
+            const questionId = questionElement.id;
+            userAnswers[questionId] = btn.dataset.value;
             
             // Enable next button if it was disabled due to validation
             updateButtonStates();
-        });
+        }
     });
 
     function updateStep() {
@@ -102,7 +103,9 @@ document.addEventListener('DOMContentLoaded', function() {
         quizSteps.forEach(step => step.classList.remove('active'));
         
         // Show current step
-        quizSteps[currentStep].classList.add('active');
+        if (quizSteps[currentStep]) {
+            quizSteps[currentStep].classList.add('active');
+        }
         
         // Update step indicator
         stepIndicator.textContent = `Question ${currentStep + 1} of ${quizSteps.length}`;
@@ -111,8 +114,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateButtonStates() {
-        const currentStepId = quizSteps[currentStep].id;
-        const isAnswered = !!userAnswers[currentStepId];
+        const currentStepId = quizSteps[currentStep] ? quizSteps[currentStep].id : null;
+        const isAnswered = currentStepId ? !!userAnswers[currentStepId] : false;
         
         // Update button states
         prevBtn.disabled = currentStep === 0;
@@ -135,6 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
         Object.keys(userAnswers).forEach(key => delete userAnswers[key]);
         
         // Clear selections
+        const optionBtns = document.querySelectorAll('.option-btn');
         optionBtns.forEach(btn => btn.classList.remove('selected'));
         
         updateStep();
@@ -150,5 +154,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Log answers for potential future use
         console.log('User answers:', userAnswers);
+        
+        // You can send these answers to your backend here
+        // For example: sendQuizAnswers(userAnswers);
     }
 });

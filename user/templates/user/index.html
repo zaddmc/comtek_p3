@@ -11,43 +11,33 @@
     <span class="close">&times;</span>
     <h2>Find Your Perfect Suitcase</h2>
     
-    <!-- Quiz Questions Container -->
+    <!-- Dynamic Quiz Questions Container -->
     <div id="quizContainer">
+      {% for question in quiz_questions %}
+      <div class="quiz-step {% if forloop.first %}active{% endif %}" id="step{{ forloop.counter }}">
+        <h3>{{ question.question_text }}</h3>
+        <div class="options">
+          {% for option in question.options.all %}
+          <button class="option-btn" data-value="{{ option.value }}">
+            {{ option.option_text }}
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+      {% empty %}
       <div class="quiz-step active" id="step1">
-        <h3>How big is your team?</h3>
-        <div class="options">
-          <button class="option-btn" data-value="1-5">1-5 people</button>
-          <button class="option-btn" data-value="6-10">6-10 people</button>
-          <button class="option-btn" data-value="11-20">11-20 people</button>
-          <button class="option-btn" data-value="20+">20+ people</button>
-        </div>
+        <h3>No quiz questions available</h3>
+        <p>Please contact administrator to set up the quiz.</p>
       </div>
-      
-      <div class="quiz-step" id="step2">
-        <h3>Which department will use it?</h3>
-        <div class="options">
-          <button class="option-btn" data-value="engineering">Engineering</button>
-          <button class="option-btn" data-value="design">Design</button>
-          <button class="option-btn" data-value="marketing">Marketing</button>
-          <button class="option-btn" data-value="cross-functional">Cross-functional</button>
-        </div>
-      </div>
-      
-      <div class="quiz-step" id="step3">
-        <h3>What is the main purpose?</h3>
-        <div class="options">
-          <button class="option-btn" data-value="brainstorming">Brainstorming</button>
-          <button class="option-btn" data-value="teambuilding">Team Building</button>
-          <button class="option-btn" data-value="planning">Project Planning</button>
-          <button class="option-btn" data-value="problem-solving">Problem Solving</button>
-        </div>
-      </div>
+      {% endfor %}
     </div>
     
     <!-- Quiz Navigation -->
     <div class="quiz-nav">
       <button id="prevBtn" class="nav-btn" disabled>Previous</button>
-      <span id="stepIndicator">Question 1 of 3</span>
+      <span id="stepIndicator">
+        Question 1 of {% if quiz_questions %}{{ quiz_questions|length }}{% else %}1{% endif %}
+      </span>
       <button id="nextBtn" class="nav-btn">Next</button>
       <button id="submitQuiz" class="nav-btn submit-btn" style="display: none;">See Suitcases</button>
     </div>
