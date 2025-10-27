@@ -6,9 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeBtn = document.querySelector('.close');
     const suitcasesList = document.getElementById('suitcasesList');
     const welcomeSection = document.querySelector('.welcome-section');
-    const recommendedSection = document.getElementById('recommendedSection');
-    const backToBrowseBtn = document.getElementById('backToBrowse');
-    const notuser = document.querySelector('.notuser'); // Add this
+    const notuser = document.querySelector('.notuser');
 
     // Quiz elements
     const quizSteps = document.querySelectorAll('.quiz-step');
@@ -31,11 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     browseSuitcasesBtn.addEventListener('click', () => {
         welcomeSection.style.display = 'none';
-        suitcasesList.style.display = 'block';
-    });
-
-    backToBrowseBtn.addEventListener('click', () => {
-        recommendedSection.style.display = 'none';
         suitcasesList.style.display = 'block';
     });
 
@@ -148,37 +141,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function submitQuiz() {
-        // For now, just show the suitcases list
-        // In the future, this will process answers and show recommendations
-        
+        // Simply show the suitcases list after quiz completion
         modal.style.display = 'none';
         // Show main content again after quiz completion
         notuser.style.display = 'flex';
         welcomeSection.style.display = 'none';
         suitcasesList.style.display = 'block';
         
-        // TODO: Implement recommendation logic based on userAnswers
+        // Log answers for potential future use
         console.log('User answers:', userAnswers);
-        
-        // Example of future implementation:
-        // showRecommendedSuitcase(userAnswers);
-    }
-
-    function showRecommendedSuitcase(answers) {
-        // This will be implemented when you have the tagging system
-        welcomeSection.style.display = 'none';
-        suitcasesList.style.display = 'none';
-        recommendedSection.style.display = 'block';
-        
-        // Placeholder for recommendation logic
-        document.getElementById('recommendedContent').innerHTML = `
-            <div class="suitcase-item">
-                <h3>Recommended based on your team's needs</h3>
-                <p>Team size: ${answers.step1}</p>
-                <p>Department: ${answers.step2}</p>
-                <p>Purpose: ${answers.step3}</p>
-                <!-- Will display actual recommended suitcase here -->
-            </div>
-        `;
     }
 });
