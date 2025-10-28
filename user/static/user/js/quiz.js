@@ -151,11 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
         notuser.style.display = 'flex';
         welcomeSection.style.display = 'none';
         suitcasesList.style.display = 'block';
-        
-        // Log answers for potential future use
+
         console.log('User answers:', userAnswers);
-        
-        // You can send these answers to your backend here
-        // For example: sendQuizAnswers(userAnswers);
     }
 });
