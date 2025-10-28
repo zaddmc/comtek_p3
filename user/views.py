@@ -2,9 +2,11 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
+from django.http import JsonResponse
+import json
 from .models import QuizQuestion
-
 from suitcases.models import Suitcase
+from .utils import get_recommended_suitcases
 
 class NonRentedView(LoginRequiredMixin,ListView):
     model = Suitcase 
@@ -23,6 +25,34 @@ class NonRentedView(LoginRequiredMixin,ListView):
         context["username"] = self.request.user.username
         context["quiz_questions"] = quiz_questions
         return context
+    
+    def post(self, request, *args, **kwargs):
+        """ Handle quiz submission and return recommended suitcases """
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            try:
+                data = json.loads(request.body)
+                user_categories = data.get('categories', [])
+
+                recommendations = get_recommended_suitcases(user_categories)
+                recommended_data = []
+                for rec in recommendations:
+                    recommended_data.append({
+                        'uuid': str(rec['suitcase'].uuid),
+                        'name': rec['suitcase'].name,
+                        'score': round(rec['score'] * 100, 1),  # Convert to %
+                        'categories': rec['categories']
+                    })
+                request.session['recommended_suitcases'] = recommended_data
+                return JsonResponse({
+                    'success': True,
+                    'recommendations': recommended_data
+                })
+            except Exception as e:
+                return JsonResponse({
+                    'success': False,
+                    'error': str(e)
+                })
+        return super().get(request, *args, **kwargs)
 
 class RentedView(LoginRequiredMixin,ListView):
     model = Suitcase 

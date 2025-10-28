@@ -5,8 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const browseSuitcasesBtn = document.getElementById('browseSuitcases');
     const closeBtn = document.querySelector('.close');
     const suitcasesList = document.getElementById('suitcasesList');
-    const welcomeSection = document.querySelector('.welcome-section');
+    const welcomeSection = document.getElementById('welcomeSection');
+    const recommendationsSection = document.getElementById('recommendationsSection');
     const notuser = document.querySelector('.notuser');
+    const retakeQuizBtn = document.getElementById('retakeQuiz');
+    const showAllSuitcasesBtn = document.getElementById('showAllSuitcases');
 
     // Quiz elements
     const quizSteps = document.querySelectorAll('.quiz-step');
@@ -21,31 +24,50 @@ document.addEventListener('DOMContentLoaded', function() {
     // Modal handlers
     startQuizBtn.addEventListener('click', () => {
         modal.style.display = 'block';
-        // Hide the main content when modal opens
         notuser.style.display = 'none';
         resetQuiz();
     });
 
     browseSuitcasesBtn.addEventListener('click', () => {
         welcomeSection.style.display = 'none';
+        recommendationsSection.style.display = 'none';
         suitcasesList.style.display = 'block';
     });
 
     closeBtn.addEventListener('click', () => {
         modal.style.display = 'none';
-        // Show the main content again when modal closes
         notuser.style.display = 'flex';
     });
 
     window.addEventListener('click', (event) => {
         if (event.target === modal) {
             modal.style.display = 'none';
-            // Show the main content again when clicking outside modal
             notuser.style.display = 'flex';
         }
     });
 
-    // Quiz navigation
+    // New button handlers
+    retakeQuizBtn?.addEventListener('click', () => {
+        welcomeSection.style.display = 'block';
+        recommendationsSection.style.display = 'none';
+        suitcasesList.style.display = 'none';
+        
+        // Clear any stored recommendations
+        fetch('/users/clear-recommendations/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'Content-Type': 'application/json',
+            }
+        });
+    });
+
+    showAllSuitcasesBtn?.addEventListener('click', () => {
+        recommendationsSection.style.display = 'none';
+        suitcasesList.style.display = 'block';
+    });
+
+    // Quiz navigation (keep existing code)
     prevBtn.addEventListener('click', () => {
         if (currentStep > 0) {
             currentStep--;
@@ -54,7 +76,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     nextBtn.addEventListener('click', () => {
-        // Check if current question is answered before proceeding
         const currentStepId = quizSteps[currentStep].id;
         if (!userAnswers[currentStepId]) {
             alert('Please select an answer before continuing.');
@@ -68,7 +89,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     submitBtn.addEventListener('click', () => {
-        // Check if final question is answered before submitting
         const currentStepId = quizSteps[currentStep].id;
         if (!userAnswers[currentStepId]) {
             alert('Please select an answer before submitting.');
@@ -77,40 +97,32 @@ document.addEventListener('DOMContentLoaded', function() {
         submitQuiz();
     });
 
-    // Option selection - using event delegation for dynamic content
+    // Option selection (keep existing code)
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('option-btn')) {
             const btn = e.target;
-            // Remove selected class from siblings in the same question
             const questionElement = btn.closest('.quiz-step');
             const siblings = questionElement.querySelectorAll('.option-btn');
             siblings.forEach(sibling => sibling.classList.remove('selected'));
             
-            // Add selected class to clicked button
             btn.classList.add('selected');
             
-            // Store the answer using the question ID
             const questionId = questionElement.id;
             const categoriesString = btn.dataset.categories;
             userAnswers[questionId] = categoriesString ? categoriesString.split(',') : [];
             
-            // Enable next button if it was disabled due to validation
             updateButtonStates();
         }
     });
 
     function updateStep() {
-        // Hide all steps
         quizSteps.forEach(step => step.classList.remove('active'));
         
-        // Show current step
         if (quizSteps[currentStep]) {
             quizSteps[currentStep].classList.add('active');
         }
         
-        // Update step indicator
         stepIndicator.textContent = `Question ${currentStep + 1} of ${quizSteps.length}`;
-        
         updateButtonStates();
     }
 
@@ -118,18 +130,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentStepId = quizSteps[currentStep] ? quizSteps[currentStep].id : null;
         const isAnswered = currentStepId ? !!userAnswers[currentStepId] : false;
         
-        // Update button states
         prevBtn.disabled = currentStep === 0;
         
         if (currentStep === quizSteps.length - 1) {
             nextBtn.style.display = 'none';
             submitBtn.style.display = 'inline-block';
-            // Enable submit button only if current question is answered
             submitBtn.disabled = !isAnswered;
         } else {
             nextBtn.style.display = 'inline-block';
             submitBtn.style.display = 'none';
-            // Enable next button only if current question is answered
             nextBtn.disabled = !isAnswered;
         }
     }
@@ -138,7 +147,6 @@ document.addEventListener('DOMContentLoaded', function() {
         currentStep = 0;
         Object.keys(userAnswers).forEach(key => delete userAnswers[key]);
         
-        // Clear selections
         const optionBtns = document.querySelectorAll('.option-btn');
         optionBtns.forEach(btn => btn.classList.remove('selected'));
         
@@ -153,15 +161,96 @@ document.addEventListener('DOMContentLoaded', function() {
                 allSelectedCategories.push(...categories);
             }
         });
+        
         console.log('Selected Categories:', allSelectedCategories);
         
-        // Simply show the suitcases list after quiz completion
-        modal.style.display = 'none';
-        // Show main content again after quiz completion
-        notuser.style.display = 'flex';
-        welcomeSection.style.display = 'none';
-        suitcasesList.style.display = 'block';
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Finding your perfect match...';
+        
+        // Send to server for Jaccard calculation
+        fetch(window.location.href, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCSRFToken(),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                categories: allSelectedCategories
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show recommendations
+                modal.style.display = 'none';
+                welcomeSection.style.display = 'none';
+                recommendationsSection.style.display = 'block';
+                suitcasesList.style.display = 'none';
+                notuser.style.display = 'flex';
+                
+                // Update recommendations container with new data
+                updateRecommendationsDisplay(data.recommendations);
+            } else {
+                alert('Error calculating recommendations: ' + data.error);
+                resetSubmitButton();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error calculating recommendations');
+            resetSubmitButton();
+        });
+    }
 
-        console.log('User answers:', userAnswers);
+    function updateRecommendationsDisplay(recommendations) {
+        const container = document.getElementById('recommendationsContainer');
+        
+        if (recommendations.length === 0) {
+            container.innerHTML = `
+                <div class="no-recommendations">
+                    <h3>No perfect matches found</h3>
+                    <p>We couldn't find suitcases that match your criteria. Try browsing all suitcases instead.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = recommendations.map(rec => `
+            <div class="recommendation-item">
+                <div class="recommendation-header">
+                    <h3>${rec.name}</h3>
+                    <span class="match-score">${rec.score}% Match</span>
+                </div>
+                <div class="recommendation-categories">
+                    <strong>Features:</strong>
+                    ${rec.categories.map(cat => `<span class="category-tag">${cat}</span>`).join('')}
+                </div>
+                <a href="/suitcases/${rec.uuid}" class="recommendation-btn">View Suitcase</a>
+            </div>
+        `).join('');
+    }
+
+    function resetSubmitButton() {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'See Recommendations';
+    }
+
+    // Helper function to get CSRF token
+    function getCSRFToken() {
+        const name = 'csrftoken';
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
 });

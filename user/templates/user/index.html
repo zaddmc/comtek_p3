@@ -39,14 +39,15 @@
         Question 1 of {% if quiz_questions %}{{ quiz_questions|length }}{% else %}1{% endif %}
       </span>
       <button id="nextBtn" class="nav-btn">Next</button>
-      <button id="submitQuiz" class="nav-btn submit-btn" style="display: none;">See Suitcases</button>
+      <button id="submitQuiz" class="nav-btn submit-btn" style="display: none;">See Recommendations</button>
     </div>
   </div>
 </div>
 
 <!-- Main Content -->
 <div class="notuser">
-  <div class="welcome-section">
+  <!-- Welcome Section (shown when no recommendations) -->
+  <div class="welcome-section" id="welcomeSection" {% if show_recommendations %}style="display: none;"{% endif %}>
     <h1>Welcome to Figure-it-out!</h1>
     <p>Find the perfect suitcase for your team's needs</p>
     
@@ -56,9 +57,40 @@
     </div>
   </div>
 
-  <!-- Suitcases List (Hidden by default) -->
+  <!-- Recommendations Section -->
+  <div id="recommendationsSection" class="recommendations-section" {% if not show_recommendations %}style="display: none;"{% endif %}>
+    <h1>Your Perfect Suitcase Matches</h1>
+    <p>Based on your quiz answers, we found these suitcases that match your needs:</p>
+    
+    <div id="recommendationsContainer">
+      {% if show_recommendations %}
+        {% for rec in recommended_suitcases %}
+        <div class="recommendation-item">
+          <div class="recommendation-header">
+            <h3>{{ rec.name }}</h3>
+            <span class="match-score">{{ rec.score }}% Match</span>
+          </div>
+          <div class="recommendation-categories">
+            <strong>Features:</strong>
+            {% for category in rec.categories %}
+            <span class="category-tag">{{ category }}</span>
+            {% endfor %}
+          </div>
+          <a href="/suitcases/{{ rec.uuid }}" class="recommendation-btn">View Suitcase</a>
+        </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    
+    <div class="recommendation-actions">
+      <button id="retakeQuiz" class="secondary-button">Retake Quiz</button>
+      <button id="showAllSuitcases" class="cta-button">Browse All Suitcases</button>
+    </div>
+  </div>
+
+  <!-- All Suitcases List (Hidden by default) -->
   <div id="suitcasesList" class="suitcases-list" style="display: none;">
-    <h1>Available Suitcases</h1>
+    <h1>All Available Suitcases</h1>
     <ul style="list-style-type: none; margin: 0; padding: 0;">
       {% for suitcase in object_list %}
         {% if not suitcase.rented %}
