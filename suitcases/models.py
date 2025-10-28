@@ -10,7 +10,7 @@ from suitcases.forms import RentForm
 class Category(models.Model):
     name = models.CharField(max_length=256)
 
-    def __str__(self): #TODO: remove method since it might break BLE
+    def __str__(self): #NOTE: This just displays name instead of UUID
         return self.name
 
 class Suitcase(models.Model):
@@ -25,6 +25,9 @@ class Suitcase(models.Model):
     name = models.CharField(max_length=20, unique=True)
     objects = models.Manager()
     categories = models.ManyToManyField(Category)
+
+    def __str__(self): #NOTE: This just displays name instead of UUID
+        return self.name
 
     def getCategories(self):
         return [category.name for category in self.categories.all()]
