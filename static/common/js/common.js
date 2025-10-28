@@ -46,18 +46,18 @@ function setup() {
 
   console.log(figures.length);
   for (let i = 0; i < figures.length; i++) {
-
+      audioBuffer.push(null)
     let url = figures[i].getAttribute("data-audio-src")
     console.log(url)
     figures[i].addEventListener("click",async () => {
       if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)()
       }
-      if (audioBuffer.length <= i) {
-        audioBuffer.push(null)
+      if (!audioBuffer[i]) {
+  
         audioBuffer[i] = await loadAudio(url);
       }
-
+      console.log(audioBuffer[i])
 
       playBuffer(audioBuffer[i]);
       figures[i].classList.remove("figure-go");
