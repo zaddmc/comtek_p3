@@ -1,256 +1,243 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Modal elements
-    const modal = document.getElementById('quizModal');
-    const startQuizBtn = document.getElementById('startQuiz');
-    const browseSuitcasesBtn = document.getElementById('browseSuitcases');
-    const closeBtn = document.querySelector('.close');
-    const suitcasesList = document.getElementById('suitcasesList');
-    const welcomeSection = document.getElementById('welcomeSection');
-    const recommendationsSection = document.getElementById('recommendationsSection');
-    const notuser = document.querySelector('.notuser');
-    const retakeQuizBtn = document.getElementById('retakeQuiz');
-    const showAllSuitcasesBtn = document.getElementById('showAllSuitcases');
+document.addEventListener('DOMContentLoaded', () => {
+  // Modal + layout elements
+  const quizModal = document.getElementById('quizModal');
+  const startQuizBtn = document.getElementById('startQuiz');
+  const browseSuitcasesBtn = document.getElementById('browseSuitcases');
+  const closeQuizBtn = document.querySelector('.close');
+  const suitcasesList = document.getElementById('suitcasesList');
+  const welcomeSection = document.getElementById('welcomeSection');
+  const recommendationsSection = document.getElementById('recommendationsSection');
+  const appShell = document.querySelector('.notuser');
+  const retakeQuizBtn = document.getElementById('retakeQuiz');
+  const showAllSuitcasesBtn = document.getElementById('showAllSuitcases');
 
-    // Quiz elements
-    const quizSteps = document.querySelectorAll('.quiz-step');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const submitBtn = document.getElementById('submitQuiz');
-    const stepIndicator = document.getElementById('stepIndicator');
+  // Quiz elements
+  const quizSteps = document.querySelectorAll('.quiz-step');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitQuiz');
+  const stepIndicator = document.getElementById('stepIndicator');
 
-    let currentStep = 0;
-    const userAnswers = {};
+  let currentStep = 0;
+  const selectedCategoriesByStep = {}; // { stepId: [categories...] }
 
-    // Modal handlers
-    startQuizBtn.addEventListener('click', () => {
-        modal.style.display = 'block';
-        notuser.style.display = 'none';
-        resetQuiz();
+  // ----- Event wiring -----
+  startQuizBtn?.addEventListener('click', () => {
+    showModal(true);
+    resetQuiz();
+  });
+
+  browseSuitcasesBtn?.addEventListener('click', () => {
+    showSection('suitcases');
+  });
+
+  closeQuizBtn?.addEventListener('click', () => {
+    showModal(false);
+  });
+
+  window.addEventListener('click', (evt) => {
+    if (evt.target === quizModal) {
+      showModal(false);
+    }
+  });
+
+  retakeQuizBtn?.addEventListener('click', () => {
+    showSection('welcome');
+
+    // Best-effort clear of any stored recommendations server-side
+    fetch('/users/clear-recommendations/', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': getCSRFToken(),
+        'Content-Type': 'application/json',
+      },
+    }).catch(() => { /* ignore */ });
+  });
+
+  showAllSuitcasesBtn?.addEventListener('click', () => {
+    showSection('suitcases');
+  });
+
+  prevBtn?.addEventListener('click', () => {
+    if (currentStep > 0) {
+      currentStep--;
+      updateStep();
+    }
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    const stepId = quizSteps[currentStep]?.id;
+    if (!stepId || !selectedCategoriesByStep[stepId]) {
+      alert('Please select an answer before continuing.');
+      return;
+    }
+    if (currentStep < quizSteps.length - 1) {
+      currentStep++;
+      updateStep();
+    }
+  });
+
+  submitBtn?.addEventListener('click', () => {
+    const stepId = quizSteps[currentStep]?.id;
+    if (!stepId || !selectedCategoriesByStep[stepId]) {
+      alert('Please select an answer before submitting.');
+      return;
+    }
+    submitQuiz();
+  });
+
+  // Option selection (event delegation)
+  document.addEventListener('click', (evt) => {
+    const btn = evt.target.closest('.option-btn');
+    if (!btn) return;
+
+    const questionEl = btn.closest('.quiz-step');
+    if (!questionEl) return;
+
+    // Visual selection
+    questionEl.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+
+    // Store categories
+    const stepId = questionEl.id;
+    const csv = btn.dataset.categories || '';
+    selectedCategoriesByStep[stepId] = csv ? csv.split(',') : [];
+
+    updateButtonStates();
+  });
+
+  // ----- UI helpers -----
+  function showModal(visible) {
+    if (!quizModal || !appShell) return;
+    quizModal.style.display = visible ? 'block' : 'none';
+    appShell.style.display = visible ? 'none' : 'flex';
+  }
+
+  function showSection(kind) {
+    // kind: 'welcome' | 'recommendations' | 'suitcases'
+    if (welcomeSection) welcomeSection.style.display = kind === 'welcome' ? 'block' : 'none';
+    if (recommendationsSection) recommendationsSection.style.display = kind === 'recommendations' ? 'block' : 'none';
+    if (suitcasesList) suitcasesList.style.display = kind === 'suitcases' ? 'block' : 'none';
+  }
+
+  function updateStep() {
+    quizSteps.forEach(step => step.classList.remove('active'));
+    quizSteps[currentStep]?.classList.add('active');
+    if (stepIndicator) stepIndicator.textContent = `Question ${currentStep + 1} of ${quizSteps.length}`;
+    updateButtonStates();
+  }
+
+  function updateButtonStates() {
+    const stepId = quizSteps[currentStep]?.id || null;
+    const answered = stepId ? Boolean(selectedCategoriesByStep[stepId]) : false;
+
+    if (prevBtn) prevBtn.disabled = currentStep === 0;
+
+    const onLast = currentStep === quizSteps.length - 1;
+
+    if (onLast) {
+      if (nextBtn) nextBtn.style.display = 'none';
+      if (submitBtn) {
+        submitBtn.style.display = 'inline-block';
+        submitBtn.disabled = !answered;
+      }
+    } else {
+      if (nextBtn) {
+        nextBtn.style.display = 'inline-block';
+        nextBtn.disabled = !answered;
+      }
+      if (submitBtn) submitBtn.style.display = 'none';
+    }
+  }
+
+  function resetQuiz() {
+    currentStep = 0;
+    for (const key in selectedCategoriesByStep) delete selectedCategoriesByStep[key];
+    document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+    updateStep();
+  }
+
+  function submitQuiz() {
+    const chosen = [];
+    Object.values(selectedCategoriesByStep).forEach(categories => {
+      if (Array.isArray(categories)) chosen.push(...categories);
     });
 
-    browseSuitcasesBtn.addEventListener('click', () => {
-        welcomeSection.style.display = 'none';
-        recommendationsSection.style.display = 'none';
-        suitcasesList.style.display = 'block';
-    });
-
-    closeBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-        notuser.style.display = 'flex';
-    });
-
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-            notuser.style.display = 'flex';
-        }
-    });
-
-    // New button handlers
-    retakeQuizBtn?.addEventListener('click', () => {
-        welcomeSection.style.display = 'block';
-        recommendationsSection.style.display = 'none';
-        suitcasesList.style.display = 'none';
-        
-        // Clear any stored recommendations
-        fetch('/users/clear-recommendations/', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCSRFToken(),
-                'Content-Type': 'application/json',
-            }
-        });
-    });
-
-    showAllSuitcasesBtn?.addEventListener('click', () => {
-        recommendationsSection.style.display = 'none';
-        suitcasesList.style.display = 'block';
-    });
-
-    // Quiz navigation (keep existing code)
-    prevBtn.addEventListener('click', () => {
-        if (currentStep > 0) {
-            currentStep--;
-            updateStep();
-        }
-    });
-
-    nextBtn.addEventListener('click', () => {
-        const currentStepId = quizSteps[currentStep].id;
-        if (!userAnswers[currentStepId]) {
-            alert('Please select an answer before continuing.');
-            return;
-        }
-        
-        if (currentStep < quizSteps.length - 1) {
-            currentStep++;
-            updateStep();
-        }
-    });
-
-    submitBtn.addEventListener('click', () => {
-        const currentStepId = quizSteps[currentStep].id;
-        if (!userAnswers[currentStepId]) {
-            alert('Please select an answer before submitting.');
-            return;
-        }
-        submitQuiz();
-    });
-
-    // Option selection (keep existing code)
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('option-btn')) {
-            const btn = e.target;
-            const questionElement = btn.closest('.quiz-step');
-            const siblings = questionElement.querySelectorAll('.option-btn');
-            siblings.forEach(sibling => sibling.classList.remove('selected'));
-            
-            btn.classList.add('selected');
-            
-            const questionId = questionElement.id;
-            const categoriesString = btn.dataset.categories;
-            userAnswers[questionId] = categoriesString ? categoriesString.split(',') : [];
-            
-            updateButtonStates();
-        }
-    });
-
-    function updateStep() {
-        quizSteps.forEach(step => step.classList.remove('active'));
-        
-        if (quizSteps[currentStep]) {
-            quizSteps[currentStep].classList.add('active');
-        }
-        
-        stepIndicator.textContent = `Question ${currentStep + 1} of ${quizSteps.length}`;
-        updateButtonStates();
+    // Loading state
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Finding your perfect match...';
     }
 
-    function updateButtonStates() {
-        const currentStepId = quizSteps[currentStep] ? quizSteps[currentStep].id : null;
-        const isAnswered = currentStepId ? !!userAnswers[currentStepId] : false;
-        
-        prevBtn.disabled = currentStep === 0;
-        
-        if (currentStep === quizSteps.length - 1) {
-            nextBtn.style.display = 'none';
-            submitBtn.style.display = 'inline-block';
-            submitBtn.disabled = !isAnswered;
+    fetch(window.location.href, {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRFToken': getCSRFToken(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ categories: chosen }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          showModal(false);
+          showSection('recommendations');
+          updateRecommendationsDisplay(data.recommendations);
         } else {
-            nextBtn.style.display = 'inline-block';
-            submitBtn.style.display = 'none';
-            nextBtn.disabled = !isAnswered;
+          alert('Error calculating recommendations: ' + (data.error || 'Unknown error'));
+          resetSubmitButton();
         }
+      })
+      .catch(() => {
+        alert('Error calculating recommendations');
+        resetSubmitButton();
+      });
+  }
+
+  function updateRecommendationsDisplay(recommendations) {
+    const container = document.getElementById('recommendationsContainer');
+    if (!container) return;
+
+    if (!Array.isArray(recommendations) || recommendations.length === 0) {
+      container.innerHTML = `
+        <div class="no-recommendations">
+          <h3>No perfect matches found</h3>
+          <p>We couldn't find suitcases that match your criteria. Try browsing all suitcases instead.</p>
+        </div>
+      `;
+      return;
     }
 
-    function resetQuiz() {
-        currentStep = 0;
-        Object.keys(userAnswers).forEach(key => delete userAnswers[key]);
-        
-        const optionBtns = document.querySelectorAll('.option-btn');
-        optionBtns.forEach(btn => btn.classList.remove('selected'));
-        
-        updateStep();
-    }
+    container.innerHTML = recommendations.map(rec => `
+      <div class="recommendation-item">
+        <div class="recommendation-header">
+          <h3>${rec.name}</h3>
+          <span class="match-score">${rec.score}% Match</span>
+        </div>
+        <div class="recommendation-categories">
+          <strong>Features:</strong>
+          ${(rec.categories || []).map(cat => `<span class="category-tag">${cat}</span>`).join('')}
+        </div>
+        <a href="/suitcases/${rec.uuid}" class="recommendation-btn">View Suitcase</a>
+      </div>
+    `).join('');
+  }
 
-    function submitQuiz() {
-        const allSelectedCategories = [];
+  function resetSubmitButton() {
+    if (!submitBtn) return;
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'See Recommendations';
+  }
 
-        Object.values(userAnswers).forEach(categories => {
-            if (Array.isArray(categories)) {
-                allSelectedCategories.push(...categories);
-            }
-        });
-        
-        console.log('Selected Categories:', allSelectedCategories);
-        
-        // Show loading state
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Finding your perfect match...';
-        
-        // Send to server for Jaccard calculation
-        fetch(window.location.href, {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRFToken': getCSRFToken(),
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                categories: allSelectedCategories
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Show recommendations
-                modal.style.display = 'none';
-                welcomeSection.style.display = 'none';
-                recommendationsSection.style.display = 'block';
-                suitcasesList.style.display = 'none';
-                notuser.style.display = 'flex';
-                
-                // Update recommendations container with new data
-                updateRecommendationsDisplay(data.recommendations);
-            } else {
-                alert('Error calculating recommendations: ' + data.error);
-                resetSubmitButton();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error calculating recommendations');
-            resetSubmitButton();
-        });
+  // CSRF
+  function getCSRFToken() {
+    const name = 'csrftoken=';
+    const cookies = document.cookie ? document.cookie.split(';') : [];
+    for (let c of cookies) {
+      c = c.trim();
+      if (c.startsWith(name)) return decodeURIComponent(c.slice(name.length));
     }
-
-    function updateRecommendationsDisplay(recommendations) {
-        const container = document.getElementById('recommendationsContainer');
-        
-        if (recommendations.length === 0) {
-            container.innerHTML = `
-                <div class="no-recommendations">
-                    <h3>No perfect matches found</h3>
-                    <p>We couldn't find suitcases that match your criteria. Try browsing all suitcases instead.</p>
-                </div>
-            `;
-            return;
-        }
-        
-        container.innerHTML = recommendations.map(rec => `
-            <div class="recommendation-item">
-                <div class="recommendation-header">
-                    <h3>${rec.name}</h3>
-                    <span class="match-score">${rec.score}% Match</span>
-                </div>
-                <div class="recommendation-categories">
-                    <strong>Features:</strong>
-                    ${rec.categories.map(cat => `<span class="category-tag">${cat}</span>`).join('')}
-                </div>
-                <a href="/suitcases/${rec.uuid}" class="recommendation-btn">View Suitcase</a>
-            </div>
-        `).join('');
-    }
-
-    function resetSubmitButton() {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'See Recommendations';
-    }
-
-    // Helper function to get CSRF token
-    function getCSRFToken() {
-        const name = 'csrftoken';
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
+    return null;
+  }
 });

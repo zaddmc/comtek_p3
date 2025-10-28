@@ -4,12 +4,13 @@
 {% include "common/taskbar.html"%}
 <link rel="stylesheet" href="{% static 'common/css/common.css' %}">
 <link rel="stylesheet" href="{% static 'user/css/index.css'%}">
+<script src="{% static 'user/js/quiz.js' %}" defer></script>
 
 <!-- Quiz Modal -->
 <div id="quizModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
-    <h2>Find Your Perfect Suitcase</h2>
+    <h2>Find den perfekte kuffert!</h2>
     
     <!-- Dynamic Quiz Questions Container -->
     <div id="quizContainer">
@@ -48,19 +49,19 @@
 <div class="notuser">
   <!-- Welcome Section (shown when no recommendations) -->
   <div class="welcome-section" id="welcomeSection" {% if show_recommendations %}style="display: none;"{% endif %}>
-    <h1>Welcome to Figure-it-out!</h1>
-    <p>Find the perfect suitcase for your team's needs</p>
+    <h1>Velkommen til Figure-it-out!</h1>
+    <p>Find den perfekte kuffert til dig og dit team!</p>
     
     <div class="action-buttons">
-      <button id="startQuiz" class="cta-button">Take this quiz to find your perfect suitcase</button>
-      <button id="browseSuitcases" class="secondary-button">Browse all suitcases</button>
+      <button id="startQuiz" class="cta-button">tag denne quiz for at finde den perfekte kuffert</button>
+      <button id="browseSuitcases" class="secondary-button">Gennemse alle kufferter</button>
     </div>
   </div>
 
   <!-- Recommendations Section -->
   <div id="recommendationsSection" class="recommendations-section" {% if not show_recommendations %}style="display: none;"{% endif %}>
-    <h1>Your Perfect Suitcase Matches</h1>
-    <p>Based on your quiz answers, we found these suitcases that match your needs:</p>
+    <h1>Dine perfekte kuffertmatches</h1>
+    <p>Baseret på dine quiz-svar, har vi fundet disse kufferter, der matcher dine behov.</p>
     
     <div id="recommendationsContainer">
       {% if show_recommendations %}
@@ -83,14 +84,14 @@
     </div>
     
     <div class="recommendation-actions">
-      <button id="retakeQuiz" class="secondary-button">Retake Quiz</button>
-      <button id="showAllSuitcases" class="cta-button">Browse All Suitcases</button>
+      <button id="retakeQuiz" class="secondary-button">Tag quizzen igen.</button>
+      <button id="showAllSuitcases" class="cta-button">Gennemse alle kufferter</button>
     </div>
   </div>
 
   <!-- All Suitcases List (Hidden by default) -->
   <div id="suitcasesList" class="suitcases-list" style="display: none;">
-    <h1>All Available Suitcases</h1>
+    <h1>Alle tilgængelige kufferter</h1>
     <ul style="list-style-type: none; margin: 0; padding: 0;">
       {% for suitcase in object_list %}
         {% if not suitcase.rented %}
@@ -99,23 +100,21 @@
           </li>
         {% endif %}
         {% empty %}
-        <li>No available suitcases</li>
+        <li>Ingen tilgængelige kufferter</li>
       {% endfor %}
     </ul>
     <br/>
-    <a href="rented">Your rents</a>
+    <a href="rented">Dine kufferter.</a>
   </div>
 </div>
 
 <form action="{% url 'logout' %}" method="post">
   {% csrf_token %}
-  <button type="submit">Log Out</button>
+  <button type="submit">Log ud</button>
 </form>
 
-<script src="{% static 'user/js/quiz.js' %}"></script>
-
 {% else %}
-<p>You are not logged in</p>
+<p>Du er ikke logget ind</p>
 <h1>NICE</h1>
-<a href="{% url 'login' %}">Log In</a>
+<a href="{% url 'login' %}">Log ind</a>
 {% endif %} 

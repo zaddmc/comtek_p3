@@ -9,10 +9,10 @@ class QuestionOptionForm(forms.ModelForm):
         model = QuestionOption
         fields = '__all__'
 
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.fields['categories'].widget = forms.SelectMultiple(attrs={'size': '6'})
-            self.fields['categories'].queryset = Category.objects.all().order_by('name')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['categories'].widget = forms.SelectMultiple(attrs={'size': '6'})
+        self.fields['categories'].queryset = Category.objects.all().order_by('name')
 
 class QuestionOptionInline(admin.TabularInline):
     model = QuestionOption

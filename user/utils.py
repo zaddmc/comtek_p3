@@ -1,6 +1,4 @@
 # users/utils.py
-from sklearn.metrics import jaccard_score
-import numpy as np
 from suitcases.models import Suitcase
 
 def calculate_jaccard_similarity(user_categories, suitcase_categories):
