@@ -1,6 +1,6 @@
 
 {% load static %}
-<div class="figure {{animation}}" style="top:{{pos_y}}vh;left:{{pos_x}}vw;transform:rotate({{angle}}deg);">
+<div class="figure {{animation}}" style="top:{{pos_y}}vh;left:{{pos_x}}vw;transform:rotate({{angle}}deg);" data-audio-src="{% static 'audio/'|add:audio_src%}">
 	<img src="{% static 'pictures/figures/'|add:img_src %}">
-	<audio src="{% static 'audio/'|add:audio_src%}" class="figure_audio"></audio>
+
 </div>
