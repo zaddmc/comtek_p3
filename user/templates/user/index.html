@@ -18,7 +18,7 @@
         <h3>{{ question.question_text }}</h3>
         <div class="options">
           {% for option in question.options.all %}
-          <button class="option-btn" data-value="{{ option.value }}">
+          <button class="option-btn" data-categories='{% for category in option.categories.all %}{{ category.name }}{% if not forloop.last %},{% endif %}{% endfor %}'>
             {{ option.option_text }}
           </button>
           {% endfor %}

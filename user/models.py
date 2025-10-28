@@ -1,5 +1,6 @@
 # user/models.py
 from django.db import models
+from suitcases.models import Category
 
 class QuizQuestion(models.Model):
     question_text = models.CharField(max_length=255)
@@ -15,7 +16,7 @@ class QuizQuestion(models.Model):
 class QuestionOption(models.Model):
     question = models.ForeignKey(QuizQuestion, on_delete=models.CASCADE, related_name='options')
     option_text = models.CharField(max_length=255)
-    value = models.CharField(max_length=100)  # The value stored when selected
+    categories = models.ManyToManyField(Category, blank=True, related_name='question_options')
     order = models.IntegerField(default=0)
     
     class Meta:
@@ -23,3 +24,7 @@ class QuestionOption(models.Model):
     
     def __str__(self):
         return f"{self.question.question_text} - {self.option_text}"
+    
+    def get_category_names(self):
+        """ Helper to get all category names """
+        return [category.name for category in self.categories.all()]

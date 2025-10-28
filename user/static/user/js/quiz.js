@@ -91,7 +91,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Store the answer using the question ID
             const questionId = questionElement.id;
-            userAnswers[questionId] = btn.dataset.value;
+            const categoriesString = btn.dataset.categories;
+            userAnswers[questionId] = categoriesString ? categoriesString.split(',') : [];
             
             // Enable next button if it was disabled due to validation
             updateButtonStates();
@@ -145,6 +146,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function submitQuiz() {
+        const allSelectedCategories = [];
+
+        Object.values(userAnswers).forEach(categories => {
+            if (Array.isArray(categories)) {
+                allSelectedCategories.push(...categories);
+            }
+        });
+        console.log('Selected Categories:', allSelectedCategories);
+        
         // Simply show the suitcases list after quiz completion
         modal.style.display = 'none';
         // Show main content again after quiz completion
