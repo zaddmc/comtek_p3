@@ -1,0 +1,21 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="{% static 'custom_admin/css/common.css'%}">
+		<script src="{% static 'common/js/common.js'%}" defer></script>
+		<link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+	</head>
+	<main>
+		<body>
+			<div class="color_toggle">
+				<button id="theme_toggle">O</button>
+			</div>
+			{% include 'custom_admin/taskbar.html'%}
+			{% block main %}
+			{% endblock %}
+		</body>
+	</main>
+
+</html>

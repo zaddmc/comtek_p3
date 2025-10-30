@@ -24,5 +24,6 @@ urlpatterns = [
         path("external/", include("external.urls"),name="external-home"),   
         path("accounts/", include("accounts.urls"),name="cust-accounts-home"),   
         path("accounts/", include("django.contrib.auth.urls"),name="accounts-home"),
-        path('admin/', admin.site.urls,name="admin"),
+        path("admin/", include("custom_admin.urls"), name="cust-admin"),   
+        path('sudo_admin/', admin.site.urls,name="admin"),
 ]

@@ -32,6 +32,11 @@ class Suitcase(models.Model):
         if not hasattr(self,"suitcasebleinfo"):
             suitcase_info = SuitcaseBleInfo(suitcase=self)
             suitcase_info.save()
+
+        if not hasattr(self,"suitcasedata"):
+            suitcase_data = SuitcaseData(suitcase=self)
+            suitcase_data.save()
+
         return
 
     def unrent(self):
@@ -52,6 +57,12 @@ class Suitcase(models.Model):
         self.save()
 
         return None
+
+class SuitcaseData(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4,editable=False,unique=True,primary_key=True)
+    suitcase = models.OneToOneField(Suitcase,null=False,blank=False,on_delete=models.CASCADE,related_name="suitcasedata")
+    rented_amount= models.IntegerField(default=0)
+    objects = models.Manager()
 
 class SuitcaseBleInfo(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4,editable=False,unique=True,primary_key=True)

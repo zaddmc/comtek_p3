@@ -6,5 +6,5 @@ from .views import SuitcaseDisplayView
 
 
 urlpatterns = [
-        path("<slug:uuid>",SuitcaseDisplayView.as_view(),name="display_suitcase"),
+        path("<slug:uuid>",SuitcaseDisplayView.as_view(),name="display-suitcase"),
 ]

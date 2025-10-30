@@ -1,0 +1,79 @@
+.content {
+	width: 100%;
+	height: calc(100% - 5rem);
+	display: flex;
+	flex-direction: column;
+
+	align-items: center;
+}
+
+.general_data {
+	width: 98%;
+	height: calc(100% - 6rem);
+	display: grid;
+	grid-template-columns: auto auto auto;
+	gap: 3rem;
+}
+
+.data_section {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+
+}
+
+.data_wrapper {
+	width: 100%;
+	padding: 1rem;
+	background-color: var(--text);
+	color: var(--background);
+	border-radius: 1rem;
+
+}
+
+.data_wrapper>.customer_rank {
+	height: 30%;
+}
+
+#pie_chart {
+	width: 100%;
+	height: 50%;
+}
+
+.plot-container {
+	height: 100% !important;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.item1 {
+	grid-row-start: 1;
+	grid-row-end: 2;
+	grid-column-start: 1;
+	grid-column-end: 2;
+}
+
+.item2 {
+	grid-row-start: 1;
+	grid-row-end: 2;
+	grid-column-start: 2;
+	grid-column-end: 3;
+}
+
+
+.item3 {
+	grid-row-start: 1;
+	grid-row-end: 4;
+
+	grid-column-start: 3;
+	grid-column-end: 8;
+}
+
+.item4 {
+	grid-column-start: 1;
+	grid-column-end: 3;
+
+	grid-row-start: 2;
+	grid-row-end: 4;
+}
