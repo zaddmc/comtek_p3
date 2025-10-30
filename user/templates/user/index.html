@@ -12,36 +12,43 @@
     <span class="close">&times;</span>
     <h2>Find den perfekte kuffert!</h2>
     
-    <!-- Dynamic Quiz Questions Container -->
-    <div id="quizContainer">
-      {% for question in quiz_questions %}
-      <div class="quiz-step {% if forloop.first %}active{% endif %}" id="step{{ forloop.counter }}">
-        <h3>{{ question.question_text }}</h3>
-        <div class="options">
-          {% for option in question.options.all %}
-          <button class="option-btn" data-categories='{% for category in option.categories.all %}{{ category.name }}{% if not forloop.last %},{% endif %}{% endfor %}'>
-            {{ option.option_text }}
-          </button>
-          {% endfor %}
+    <!-- Quiz Form - SUBMIT TO SERVER -->
+    <form method="post" id="quizForm">
+      {% csrf_token %}
+      <!-- Dynamic Quiz Questions Container -->
+      <div id="quizContainer">
+        {% for question in quiz_questions %}
+        <div class="quiz-step {% if forloop.first %}active{% endif %}" id="step{{ forloop.counter }}">
+          <h3>{{ question.question_text }}</h3>
+          <div class="options">
+            {% for option in question.options.all %}
+            <button type="button" class="option-btn" data-categories='{% for category in option.categories.all %}{{ category.name }}{% if not forloop.last %},{% endif %}{% endfor %}'>
+              {{ option.option_text }}
+            </button>
+            {% endfor %}
+          </div>
         </div>
+        {% empty %}
+        <div class="quiz-step active" id="step1">
+          <h3>No quiz questions available</h3>
+          <p>Please contact administrator to set up the quiz.</p>
+        </div>
+        {% endfor %}
       </div>
-      {% empty %}
-      <div class="quiz-step active" id="step1">
-        <h3>No quiz questions available</h3>
-        <p>Please contact administrator to set up the quiz.</p>
+      
+      <!-- Hidden input to store selected categories -->
+      <input type="hidden" name="categories[]" id="selectedCategories" value="">
+      
+      <!-- Quiz Navigation -->
+      <div class="quiz-nav">
+        <button type="button" id="prevBtn" class="nav-btn" disabled>Previous</button>
+        <span id="stepIndicator">
+          Question 1 of {% if quiz_questions %}{{ quiz_questions|length }}{% else %}1{% endif %}
+        </span>
+        <button type="button" id="nextBtn" class="nav-btn">Next</button>
+        <button type="submit" id="submitQuiz" class="nav-btn submit-btn" style="display: none;">See Recommendations</button>
       </div>
-      {% endfor %}
-    </div>
-    
-    <!-- Quiz Navigation -->
-    <div class="quiz-nav">
-      <button id="prevBtn" class="nav-btn" disabled>Previous</button>
-      <span id="stepIndicator">
-        Question 1 of {% if quiz_questions %}{{ quiz_questions|length }}{% else %}1{% endif %}
-      </span>
-      <button id="nextBtn" class="nav-btn">Next</button>
-      <button id="submitQuiz" class="nav-btn submit-btn" style="display: none;">See Recommendations</button>
-    </div>
+    </form>
   </div>
 </div>
 
@@ -79,12 +86,17 @@
           </div>
           <a href="/suitcases/{{ rec.uuid }}" class="recommendation-btn">View Suitcase</a>
         </div>
+        {% empty %}
+        <div class="no-recommendations">
+          <h3>No perfect matches found</h3>
+          <p>We couldn't find suitcases that match your criteria. Try browsing all suitcases instead.</p>
+        </div>
         {% endfor %}
       {% endif %}
     </div>
     
     <div class="recommendation-actions">
-      <button id="retakeQuiz" class="secondary-button">Tag quizzen igen.</button>
+      <a href="{% url 'clear-recommendations' %}" class="secondary-button">Tag quizzen igen.</a>
       <button id="showAllSuitcases" class="cta-button">Gennemse alle kufferter</button>
     </div>
   </div>
@@ -117,4 +129,4 @@
 <p>Du er ikke logget ind</p>
 <h1>NICE</h1>
 <a href="{% url 'login' %}">Log ind</a>
-{% endif %} 
+{% endif %}

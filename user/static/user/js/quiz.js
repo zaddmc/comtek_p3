@@ -8,18 +8,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const welcomeSection = document.getElementById('welcomeSection');
   const recommendationsSection = document.getElementById('recommendationsSection');
   const appShell = document.querySelector('.notuser');
-  const retakeQuizBtn = document.getElementById('retakeQuiz');
   const showAllSuitcasesBtn = document.getElementById('showAllSuitcases');
 
   // Quiz elements
+  const quizForm = document.getElementById('quizForm');
   const quizSteps = document.querySelectorAll('.quiz-step');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
   const submitBtn = document.getElementById('submitQuiz');
   const stepIndicator = document.getElementById('stepIndicator');
+  const selectedCategoriesInput = document.getElementById('selectedCategories');
 
   let currentStep = 0;
   const selectedCategoriesByStep = {}; // { stepId: [categories...] }
+  let allSelectedCategories = []; // All selected categories across all steps
 
   // ----- Event wiring -----
   startQuizBtn?.addEventListener('click', () => {
@@ -39,19 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (evt.target === quizModal) {
       showModal(false);
     }
-  });
-
-  retakeQuizBtn?.addEventListener('click', () => {
-    showSection('welcome');
-
-    // Best-effort clear of any stored recommendations server-side
-    fetch('/users/clear-recommendations/', {
-      method: 'POST',
-      headers: {
-        'X-CSRFToken': getCSRFToken(),
-        'Content-Type': 'application/json',
-      },
-    }).catch(() => { /* ignore */ });
   });
 
   showAllSuitcasesBtn?.addEventListener('click', () => {
@@ -77,13 +66,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  submitBtn?.addEventListener('click', () => {
+  // Form submission - let Django handle the rendering
+  quizForm?.addEventListener('submit', (evt) => {
     const stepId = quizSteps[currentStep]?.id;
     if (!stepId || !selectedCategoriesByStep[stepId]) {
       alert('Please select an answer before submitting.');
+      evt.preventDefault();
       return;
     }
-    submitQuiz();
+    
+    // Update the hidden input with all selected categories
+    updateSelectedCategoriesInput();
+    
+    // Show loading state
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Finding your perfect match...';
+    }
+    
+    // Form will submit normally to Django
   });
 
   // Option selection (event delegation)
@@ -150,94 +151,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function updateSelectedCategoriesInput() {
+    // Collect all selected categories from all steps
+    allSelectedCategories = [];
+    Object.values(selectedCategoriesByStep).forEach(categories => {
+      if (Array.isArray(categories)) {
+        allSelectedCategories.push(...categories);
+      }
+    });
+    
+    // Update the hidden input value
+    if (selectedCategoriesInput) {
+      selectedCategoriesInput.value = allSelectedCategories.join(',');
+    }
+  }
+
   function resetQuiz() {
     currentStep = 0;
     for (const key in selectedCategoriesByStep) delete selectedCategoriesByStep[key];
     document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+    if (selectedCategoriesInput) selectedCategoriesInput.value = '';
     updateStep();
-  }
-
-  function submitQuiz() {
-    const chosen = [];
-    Object.values(selectedCategoriesByStep).forEach(categories => {
-      if (Array.isArray(categories)) chosen.push(...categories);
-    });
-
-    // Loading state
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Finding your perfect match...';
-    }
-
-    fetch(window.location.href, {
-      method: 'POST',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRFToken': getCSRFToken(),
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ categories: chosen }),
-    })
-      .then(r => r.json())
-      .then(data => {
-        if (data.success) {
-          showModal(false);
-          showSection('recommendations');
-          updateRecommendationsDisplay(data.recommendations);
-        } else {
-          alert('Error calculating recommendations: ' + (data.error || 'Unknown error'));
-          resetSubmitButton();
-        }
-      })
-      .catch(() => {
-        alert('Error calculating recommendations');
-        resetSubmitButton();
-      });
-  }
-
-  function updateRecommendationsDisplay(recommendations) {
-    const container = document.getElementById('recommendationsContainer');
-    if (!container) return;
-
-    if (!Array.isArray(recommendations) || recommendations.length === 0) {
-      container.innerHTML = `
-        <div class="no-recommendations">
-          <h3>No perfect matches found</h3>
-          <p>We couldn't find suitcases that match your criteria. Try browsing all suitcases instead.</p>
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = recommendations.map(rec => `
-      <div class="recommendation-item">
-        <div class="recommendation-header">
-          <h3>${rec.name}</h3>
-          <span class="match-score">${rec.score}% Match</span>
-        </div>
-        <div class="recommendation-categories">
-          <strong>Features:</strong>
-          ${(rec.categories || []).map(cat => `<span class="category-tag">${cat}</span>`).join('')}
-        </div>
-        <a href="/suitcases/${rec.uuid}" class="recommendation-btn">View Suitcase</a>
-      </div>
-    `).join('');
-  }
-
-  function resetSubmitButton() {
-    if (!submitBtn) return;
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'See Recommendations';
-  }
-
-  // CSRF
-  function getCSRFToken() {
-    const name = 'csrftoken=';
-    const cookies = document.cookie ? document.cookie.split(';') : [];
-    for (let c of cookies) {
-      c = c.trim();
-      if (c.startsWith(name)) return decodeURIComponent(c.slice(name.length));
-    }
-    return null;
   }
 });
