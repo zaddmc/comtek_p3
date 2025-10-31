@@ -1,4 +1,5 @@
-
+{% extends "common/common.html" %}
+{% block main %}
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'accounts/css/login.css'%}">
@@ -34,3 +35,4 @@
 <h3>Don't have an account?</h3>
 <a href="/accounts/signup">Sign up</a>
 
+{% endblock %}
