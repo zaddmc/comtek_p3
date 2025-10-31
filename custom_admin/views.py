@@ -15,7 +15,7 @@ from suitcases.models import Suitcase
 class UserAdminRequiredMixin(UserPassesTestMixin):
 
     def test_func(self):
-        return self.request.user.is_superuser 
+        return self.request.user.is_staff
 
     def handle_no_permission(self):
         return HttpResponseRedirect(redirect_to=reverse("front-page")) 

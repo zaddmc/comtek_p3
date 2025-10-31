@@ -42,7 +42,23 @@
 
 	</div>
 	<div class="taskbar_login taskbar_a">
-		<a href="{% url 'custom-admin-home'%}">{{ user.username}}</a>
+		{% if user.is_authenticated %}
+
+		<div class="taskbar_dropdown">
+			<div class="dropdown_title taskbar_a"><a href="{% url 'rented-view'%}">{{ user.username}}</a></div>
+			<ul>
+				<li class="taskbar_a">
+					<form action="{% url 'logout' %}" method="post">
+						{% csrf_token %}
+						<button type="submit">Log Out</button>
+					</form>
+				</li>
+			</ul>
+		</div>
+		
+		{% else %} 
+		<a href="{%url 'login'%}">Login</a>
+		{% endif%}
 	</div>
 </div>
 <div style="height: 5rem;"></div>
