@@ -2,12 +2,12 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: sans-serif;
 	line-height: 1.5;
 	min-height: 100vh;
 	
 	flex-direction: column;
-	margin: 0;
+	text-align: center;
 }
 
 /* From Uiverse.io by Praashoo7 */
@@ -37,8 +37,8 @@ button {
 	border: none;
 	display: flex;
 	padding: 0.75rem 1.5rem;
-	background-color: #488aec;
-	color: #ffffff;
+	background-color: var(--text);
+	color: var(--background);
 	font-size: 0.75rem;
 	line-height: 1rem;
 	font-weight: 700;
@@ -47,7 +47,7 @@ button {
 	text-transform: uppercase;
 	vertical-align: middle;
 	align-items: center;
-	border-radius: 0.5rem;
+	border-radius: 0.2rem;
 	user-select: none;
 	gap: 0.75rem;
 	box-shadow:
