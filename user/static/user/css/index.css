@@ -357,3 +357,34 @@
 .suitcase-item a:hover {
     text-decoration: underline;
 }
+
+/* Quiz container basics (if you don't already have them in the page) */
+.quiz-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Namespaced progress bar */
+.quiz-progress { margin-bottom: 20px; }
+
+.quiz-progress-track {
+  width: 100%;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  display: block;     /* prevent flex overrides */
+  position: relative;
+}
+
+.quiz-progress-fill {
+  display: block;     /* ensure percentage width applies */
+  height: 100%;
+  background: #007bff;
+  transition: width 0.3s ease;
+  width: 0%;          /* JS-only will update this */
+  flex: 0 0 auto;     /* ignore flex-basis overrides */
+  transform: none;    /* avoid scaleX tricks */
+}

@@ -2,269 +2,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Quiz - Find din perfekte kuffert</title>
-    <link rel="stylesheet" href="{% static 'common/css/common.css' %}">
-    <link rel="stylesheet" href="{% static 'user/css/index.css'%}">
-    <style>
-        .quiz-container {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Progress Bar */
-        .quiz-progress {
-            margin-bottom: 30px;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #007bff;
-            transition: width 0.3s ease;
-            width: 0%; /* Default, will be set by JavaScript */
-        }
-
-        .progress-text {
-            text-align: center;
-            color: #666;
-            font-weight: 500;
-        }
-
-        /* Quiz Header */
-        .quiz-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #eee;
-        }
-
-        .quiz-header h1 {
-            color: #333;
-            margin: 0;
-        }
-
-        /* Quiz Question */
-        .quiz-question {
-            background: #f9f9f9;
-            padding: 30px;
-            border-radius: 10px;
-            border: 1px solid #ddd;
-        }
-
-        .quiz-question h2 {
-            color: #333;
-            margin-bottom: 25px;
-            font-size: 24px;
-            text-align: center;
-        }
-
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .option-btn {
-            display: flex;
-            align-items: center;
-            padding: 18px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .option-btn:hover {
-            border-color: #007bff;
-            background-color: #f0f8ff;
-            transform: translateY(-2px);
-        }
-
-        .option-btn input[type="radio"] {
-            margin-right: 15px;
-            transform: scale(1.3);
-        }
-
-        .option-text {
-            font-size: 17px;
-            font-weight: 500;
-            color: #333;
-        }
-
-        /* Quiz Actions */
-        .quiz-actions {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .cta-button {
-            background: #007bff;
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: background 0.3s ease;
-        }
-
-        .cta-button:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-        }
-
-        .secondary-button {
-            background: #6c757d;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            text-decoration: none;
-            display: inline-block;
-            transition: background 0.3s ease;
-        }
-
-        .secondary-button:hover {
-            background: #545b62;
-        }
-
-        /* Error Message */
-        .error-message {
-            color: #dc3545;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            border-radius: 6px;
-            text-align: center;
-        }
-
-        .error-message p {
-            margin: 0;
-            font-weight: 500;
-        }
-
-        /* Quiz Error */
-        .quiz-error {
-            text-align: center;
-            padding: 40px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border: 1px solid #dee2e6;
-        }
-
-        .quiz-error h2 {
-            color: #dc3545;
-            margin-bottom: 15px;
-        }
-
-        .quiz-error p {
-            color: #666;
-            margin-bottom: 25px;
-        }
-    </style>
+  <title>Quiz - Find din perfekte kuffert</title>
+  <link rel="stylesheet" href="{% static 'common/css/common.css' %}">
+  <link rel="stylesheet" href="{% static 'user/css/index.css' %}">
+  <script src="{% static 'user/js/quiz.js' %}" defer></script>
 </head>
 <body>
-    {% if user.is_authenticated %}
-        {% include "common/taskbar.html" %}
-        
-        <div class="notuser">
-            <div class="quiz-container">
-                <!-- Progress Bar -->
-                <div class="quiz-progress">
-                    <div class="progress-bar">
-                        <div class="progress-fill" data-width="{{ progress_percent }}"></div>
-                    </div>
-                    <div class="progress-text">
-                        Spørgsmål {{ current_step|add:1 }} af {{ total_questions }}
-                    </div>
-                </div>
+{% if user.is_authenticated %}
+  {% include "common/taskbar.html" %}
 
-                <!-- Quiz Header -->
-                <div class="quiz-header">
-                    <h1>Find den perfekte kuffert!</h1>
-                    <a href="{% url 'clear-recommendations' %}" class="secondary-button">Afslut quiz</a>
-                </div>
+  <div class="notuser">
+    <div class="quiz-container">
 
-                <!-- Current Question -->
-                {% if current_question %}
-                <form method="post" class="quiz-form">
-                    {% csrf_token %}
-                    
-                    <div class="quiz-question active">
-                        <h2>{{ current_question.question_text }}</h2>
-                        
-                        {% if form.errors %}
-                        <div class="error-message">
-                            {% for error in form.selected_option.errors %}
-                            <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                        
-                        <div class="options">
-                            {% for option in current_question.options.all %}
-                            <label class="option-btn">
-                                <input type="radio" name="selected_option" value="{{ option.id }}" 
-                                       {% if forloop.first and not form.is_bound %}checked{% endif %}>
-                                <span class="option-text">{{ option.option_text }}</span>
-                            </label>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    
-                    <div class="quiz-actions">
-                        <button type="submit" class="cta-button">
-                            {% if current_step|add:1 == total_questions %}
-                                Se resultater
-                            {% else %}
-                                Næste spørgsmål →
-                            {% endif %}
-                        </button>
-                    </div>
-                </form>
-                {% else %}
-                <div class="quiz-error">
-                    <h2>Ingen spørgsmål tilgængelige</h2>
-                    <p>Kontakt administratoren for at konfigurere quizzen.</p>
-                    <a href="{% url 'non-rented-view' %}" class="cta-button">Tilbage til forsiden</a>
-                </div>
-                {% endif %}
+      <div class="quiz-header">
+        <h1>Find den perfekte kuffert!</h1>
+        <a href="{% url 'clear-recommendations' %}" class="secondary-button">Afslut quiz</a>
+      </div>
+
+      {% if current_question %}
+      <form method="post" class="quiz-form">
+        {% csrf_token %}
+
+        <div class="quiz-question active">
+
+          <!-- Progress (namespaced classes; NO inline style) -->
+          <div class="quiz-progress">
+            <div class="quiz-progress-track">
+              <div
+                class="quiz-progress-fill"
+                data-width="{{ progress_percent }}"
+                role="progressbar"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="{{ progress_percent }}"
+              ></div>
             </div>
+            <div class="progress-text">
+              Spørgsmål {{ current_step|add:1 }} af {{ total_questions }}
+            </div>
+          </div>
+
+          <h2>{{ current_question.question_text }}</h2>
+
+          {% if form.errors %}
+          <div class="error-message">
+            {% for error in form.selected_option.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="options">
+            {% for option in current_question.options.all %}
+            <label class="option-btn">
+              <input type="radio" name="selected_option" value="{{ option.id }}"
+                     {% if forloop.first and not form.is_bound %}checked{% endif %}>
+              <span class="option-text">{{ option.option_text }}</span>
+            </label>
+            {% endfor %}
+          </div>
         </div>
 
-        <!-- Minimal JavaScript to set progress width -->
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const progressFill = document.querySelector('.progress-fill');
-            if (progressFill) {
-                const width = progressFill.getAttribute('data-width');
-                if (width !== null && width !== '') {
-                    progressFill.style.width = width + '%';
-                }
-            }
-        });
-        </script>
-
-    {% else %}
-        <div style="text-align: center; margin: 50px;">
-            <p>Du er ikke logget ind</p>
-            <a href="{% url 'login' %}">Log ind</a>
+        <div class="quiz-actions">
+          <button type="submit" class="cta-button">
+            {% if current_step|add:1 == total_questions %}Se resultater{% else %}Næste spørgsmål →{% endif %}
+          </button>
         </div>
-    {% endif %}
+      </form>
+      {% else %}
+      <div class="quiz-error">
+        <h2>Ingen spørgsmål tilgængelige</h2>
+        <p>Kontakt administratoren for at konfigurere quizzen.</p>
+        <a href="{% url 'non-rented-view' %}" class="cta-button">Tilbage til forsiden</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+{% else %}
+  <div style="text-align:center; margin:50px;">
+    <p>Du er ikke logget ind</p>
+    <a href="{% url 'login' %}">Log ind</a>
+  </div>
+{% endif %}
 </body>
 </html>
