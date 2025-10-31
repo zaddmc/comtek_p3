@@ -5,11 +5,13 @@
 	color: var(--text);
 	width: 100%;
 	height: 5rem;
-	display: flex;
-	flex-direction: row;
+	display: grid;
+	grid-template-columns: repeat(20, [col-start] 1fr);
+	grid-template-rows: 100%;
+
 	justify-content: space-between;
 	align-items: center;
-	font-size: 1.5em;
+	font-size: 1.5rem;
 	z-index: 99999;
 	border-bottom: solid;
 	border-color: var(--primary);
@@ -26,6 +28,8 @@
 }
 
 .taskbar_title {
+	grid-column-start: 1;
+	grid-column-end: 6;
 	display: flex;
 	text-align: center;
 	align-items: center;
@@ -51,15 +55,29 @@
 }
 
 .taskbar_login {
+
+	grid-column-start: 18;
+	grid-column-end: 21;
 	display: flex;
 	flex-direction: row;
 	justify-content: end;
+
 }
 
 .taskbar_tabs,
 .taskbar_login,
 .taskbar_title {
+	grid-row-start: 1;
+	grid-row-end: 1;
 	height: 100%;
+}
+
+.taskbar_tabs {
+	grid-column-start: 6;
+	grid-column-end: 18;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
 }
 
 
@@ -97,6 +115,10 @@
 .taskbar_dropdown>ul>li>a {
 	padding-left: 1rem;
 	padding-right: 1rem;
+
+	padding-top: 1.25rem;
+	padding-bottom: 1.25rem;
+	white-space: nowrap;
 }
 
 .taskbar_dropdown>ul>li:hover>a {
@@ -105,6 +127,7 @@
 }
 
 .taskbar_dropdown>.dropdown_title {
+	text-wrap: nowrap;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -116,11 +139,12 @@
 }
 
 .taskbar_link {
+	text-wrap: nowrap;
+	width: max-content;
 	display: flex;
 	flex-direction: column;
 	height: 100%;
 	justify-content: center;
-	margin-left: 1rem;
 	color: var(--text);
 	cursor: pointer;
 }

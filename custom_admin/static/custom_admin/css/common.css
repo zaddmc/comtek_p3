@@ -6,6 +6,7 @@
 	--accent: #007AFF;
 	background: var(--background);
 	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1.0vw;
 	color: var(--text);
 }
 

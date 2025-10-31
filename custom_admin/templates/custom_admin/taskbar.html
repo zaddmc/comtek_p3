@@ -8,6 +8,13 @@
 			<a href="{% url 'custom-admin-home'%}">Admin</a></h1>
 	</div>
 	<div class="taskbar_tabs">
+		
+		<div class="taskbar_dropdown">
+				<div class="dropdown_title taskbar_a"><a href="{% url 'custom-admin-home'%}" >Admin &#9660</a></div>
+			<ul>
+				<li class="taskbar_a"><a  href="{% url 'front-page'%}">Home</a></li>
+			</ul>
+		</div>
 		<div class="taskbar_dropdown">
 			<div class="dropdown_title taskbar_a"><a href="{% url 'custom-admin-suitcase-view'%}" >Briefcases &#9660</a></div>
 			<ul>
@@ -28,11 +35,11 @@
 		<div class="taskbar_dropdown">
 			<div class="dropdown_title taskbar_a"><a  href="{% url 'custom-admin-users-view'%}">Users &#9660</a></div>
 			<ul>
-
-				<li class="taskbar_a"><a  href="{% url 'custom-admin-users-create'%}" style="white-space:nowrap;">Create User</a></li>
-				<li class="taskbar_a"><a  href="{% url 'custom-admin-users-invite'%}" style="white-space:nowrap;">Invite User</a></li>
+				<li class="taskbar_a"><a  href="{% url 'custom-admin-users-create'%}">Create User</a></li>
+				<li class="taskbar_a"><a  href="{% url 'custom-admin-users-invite'%}">Invite User</a></li>
 			</ul>
 		</div>
+
 	</div>
 	<div class="taskbar_login taskbar_a">
 		<a href="{% url 'custom-admin-home'%}">{{ user.username}}</a>

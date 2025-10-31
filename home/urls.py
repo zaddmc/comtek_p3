@@ -16,7 +16,7 @@ urlpatterns = [
         path("contact/company",WIPView.as_view(),name="front-page-contact-company"),
         path("contact/hours",WIPView.as_view(),name="front-page-contact-hours"),
 
-        path("products/",ProductView.as_view(),name="front-page-product"),
+        path("products/",ProductView.as_view(),name="front-page-products"),
         path("products/personality/",WIPView.as_view(),name="front-page-product-personality"),
         path("products/variations/",WIPView.as_view(),name="front-page-product-variation"),
         path("products/pricing/",PricingView.as_view(),name="front-page-product-pricing"),

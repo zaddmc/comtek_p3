@@ -1,8 +1,10 @@
-{% load static %}
 
+{% extends 'common/common.html'%}
+
+{% block main %}
 {% if user.is_authenticated %}
-{% include "common/taskbar.html"%}
-<link rel="stylesheet" href="{% static 'common/css/common.css' %}">
+
+{% load static %}
 <link rel="stylesheet" href="{% static 'user/css/index.css'%}">
 <div class="notuser">
 <h1 >Available suitcases</h1>
@@ -30,3 +32,5 @@
 <a href="{% url 'login' %}">Log In</a>
 {% endif %}
 </div>
+
+{% endblock %}

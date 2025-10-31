@@ -39,10 +39,14 @@ function setup_pie(rented, not_rented) {
 	let [data, layout, config] = load_pie(rented, not_rented)
 	Plotly.newPlot('pie_chart', data, layout, config);
 	document.addEventListener("theme-changed", () => {
+		let [data, layout, config] = load_pie(rented, not_rented)
+		Plotly.react('pie_chart', data, layout, config)
 	});
 }
 
-function setup_time(data) {
+function make_time(data) {
+
+	let style = window.getComputedStyle(document.body)
 	var trace1 = {
 		x: [1, 2, 3, 4],
 		y: [10, 15, 13, 17],
@@ -60,8 +64,8 @@ function setup_time(data) {
 			title: {
 				text: 'Month'
 			},
-			showgrid: false,
-
+			showgrid: true,
+			gridcolor: style.getPropertyValue("--background"),
 			zeroline: false
 		},
 		yaxis: {
@@ -70,13 +74,30 @@ function setup_time(data) {
 				text: 'Rents'
 
 			},
+			gridcolor: style.getPropertyValue("--background"),
 			showline: false
 
+		},
+		font: {
+			color: style.getPropertyValue("--background"),
 		}
 	}
 
-	Plotly.newPlot('timeline_plot', data, layout);
+	return [data, layout];
+
 }
+
+
+function setup_time(data) {
+	let [data2, layout] = make_time(data)
+	Plotly.newPlot('timeline_plot', data2, layout);
+
+	document.addEventListener("theme-changed", () => {
+		let [data2, layout] = make_time(data)
+		Plotly.react('timeline_plot', data2, layout)
+	});
+}
+
 
 function setup_map(data) {
 	var map = L.map('map').setView([57.048820, 9.921747], 12);

@@ -17,9 +17,9 @@ class PricingView(TemplateView):
 class ContactView(TemplateView):
     template_name = "home/contact.html"
 
-class WIPView(View):
-    def get(self,request:request.HttpRequest):
-        return HttpResponse("W.I.P".encode())
+class WIPView(TemplateView):
+    template_name = "home/wip.html"
+
 
 
 

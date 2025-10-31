@@ -1,0 +1,15 @@
+.content {
+	width: 100%;
+	height: calc(100% - 5rem);
+	margin: 0;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.content>h1 {
+	color: var(--text);
+	font-size: 20rem;
+}

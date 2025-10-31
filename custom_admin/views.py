@@ -52,5 +52,9 @@ class CustAdminIndex(UserAdminRequiredMixin,View):
 
         return render(request,template_name="custom_admin/index.html",context=ctxt) 
 
+class WIPView(TemplateView):
+    template_name = "custom_admin/wip.html"
+
+
 
         

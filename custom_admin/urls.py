@@ -1,7 +1,6 @@
 from django.urls import path
 
-from .views import CustAdminIndex
-from home.views import WIPView 
+from .views import CustAdminIndex,WIPView
 
 urlpatterns = [
         path("",CustAdminIndex.as_view(),name="custom-admin-home"),
