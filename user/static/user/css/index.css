@@ -257,3 +257,103 @@
   justify-content: center;
   margin-top: 2rem;
 }
+
+
+  /* NEW STYLE MOVING JS */
+  .quiz-notice {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    padding: 15px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.quiz-notice a {
+    color: #856404;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* Recommendation Styles */
+.recommendations-section {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.recommendation-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: #f9f9f9;
+}
+
+.recommendation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.match-score {
+    background: #28a745;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.recommendation-categories {
+    margin-bottom: 15px;
+}
+
+.category-tag {
+    background: #007bff;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+.recommendation-btn {
+    background: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.recommendation-btn:hover {
+    background: #0056b3;
+}
+
+.recommendation-actions {
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Suitcases List */
+.suitcases-list {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.suitcase-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.suitcase-item a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.suitcase-item a:hover {
+    text-decoration: underline;
+}

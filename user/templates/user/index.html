@@ -1,132 +1,127 @@
 {% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Figure-it-out</title>
+    <link rel="stylesheet" href="{% static 'common/css/common.css' %}">
+    <link rel="stylesheet" href="{% static 'user/css/index.css'%}">
+</head>
+<body>
+    {% if user.is_authenticated %}
+        {% include "common/taskbar.html" %}
+        
+        <!-- Main Content -->
+        <div class="notuser">
+            {% if request.path == '/user/quiz/' %}
+                <!-- Show quiz content when on quiz page -->
+                {% include "user/quiz_content.html" %}
+            {% else %}
+                <!-- Original content for main page -->
+                
+                <!-- Welcome Section -->
+                <div class="welcome-section" id="welcomeSection" 
+                     {% if show_recommendations or show_quiz %}style="display: none;"{% endif %}>
+                    <h1>Velkommen til Figure-it-out!</h1>
+                    <p>Find den perfekte kuffert til dig og dit team!</p>
+                    <div class="action-buttons">
+                        <a href="{% url 'quiz' %}" class="cta-button">Tag denne quiz for at finde den perfekte kuffert</a>
+                        <button onclick="showSection('suitcases')" class="secondary-button">Gennemse alle kufferter</button>
+                    </div>
+                </div>
 
-{% if user.is_authenticated %}
-{% include "common/taskbar.html"%}
-<link rel="stylesheet" href="{% static 'common/css/common.css' %}">
-<link rel="stylesheet" href="{% static 'user/css/index.css'%}">
-<script src="{% static 'user/js/quiz.js' %}" defer></script>
+                <!-- Quiz In Progress Notice -->
+                {% if show_quiz %}
+                <div class="quiz-notice">
+                    <p>Du har en quiz i gang! <a href="{% url 'quiz' %}">Fortsæt quiz</a> eller 
+                       <a href="{% url 'clear-recommendations' %}">annuller</a>.</p>
+                </div>
+                {% endif %}
 
-<!-- Quiz Modal -->
-<div id="quizModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Find den perfekte kuffert!</h2>
-    
-    <!-- Quiz Form - SUBMIT TO SERVER -->
-    <form method="post" id="quizForm">
-      {% csrf_token %}
-      <!-- Dynamic Quiz Questions Container -->
-      <div id="quizContainer">
-        {% for question in quiz_questions %}
-        <div class="quiz-step {% if forloop.first %}active{% endif %}" id="step{{ forloop.counter }}">
-          <h3>{{ question.question_text }}</h3>
-          <div class="options">
-            {% for option in question.options.all %}
-            <button type="button" class="option-btn" data-categories='{% for category in option.categories.all %}{{ category.name }}{% if not forloop.last %},{% endif %}{% endfor %}'>
-              {{ option.option_text }}
-            </button>
-            {% endfor %}
-          </div>
+                <!-- Recommendations Section -->
+                <div id="recommendationsSection" class="recommendations-section" 
+                     {% if not show_recommendations %}style="display: none;"{% endif %}>
+                    <h1>Dine perfekte kuffertmatches</h1>
+                    <p>Baseret på dine quiz-svar, har vi fundet disse kufferter, der matcher dine behov.</p>
+                    
+                    <div id="recommendationsContainer">
+                        {% for rec in recommended_suitcases %}
+                        <div class="recommendation-item">
+                            <div class="recommendation-header">
+                                <h3>{{ rec.name }}</h3>
+                                <span class="match-score">{{ rec.score }}% Match</span>
+                            </div>
+                            <div class="recommendation-categories">
+                                <strong>Features:</strong>
+                                {% for category in rec.categories %}
+                                <span class="category-tag">{{ category }}</span>
+                                {% endfor %}
+                            </div>
+                            <a href="/suitcases/{{ rec.uuid }}" class="recommendation-btn">Se kuffert</a>
+                        </div>
+                        {% empty %}
+                        <div class="no-recommendations">
+                            <h3>Ingen perfekte matches fundet</h3>
+                            <p>Vi kunne ikke finde kufferter der matcher dine kriterier. Prøv at gennemse alle kufferter i stedet.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="recommendation-actions">
+                        <a href="{% url 'clear-recommendations' %}" class="secondary-button">Tag quizzen igen</a>
+                        <button onclick="showSection('suitcases')" class="cta-button">Gennemse alle kufferter</button>
+                    </div>
+                </div>
+
+                <!-- All Suitcases List -->
+                <div id="suitcasesList" class="suitcases-list" style="display: none;">
+                    <h1>Alle tilgængelige kufferter</h1>
+                    <ul style="list-style-type: none; margin: 0; padding: 0;">
+                        {% for suitcase in object_list %}
+                        <li class="suitcase-item">
+                            <a href="/suitcases/{{suitcase.uuid}}">{{suitcase.name}}</a>
+                        </li>
+                        {% empty %}
+                        <li>Ingen tilgængelige kufferter</li>
+                        {% endfor %}
+                    </ul>
+                    <br/>
+                    <a href="{% url 'rented-view' %}">Dine kufferter</a>
+                </div>
+            {% endif %}
         </div>
-        {% empty %}
-        <div class="quiz-step active" id="step1">
-          <h3>No quiz questions available</h3>
-          <p>Please contact administrator to set up the quiz.</p>
+
+        <!-- Logout form -->
+        <form action="{% url 'logout' %}" method="post" style="margin: 20px; text-align: center;">
+            {% csrf_token %}
+            <button type="submit">Log ud</button>
+        </form>
+
+        <!-- Minimal JavaScript for UI interactions -->
+        <script>
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.welcome-section, .recommendations-section, .suitcases-list').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            if (sectionName === 'welcome') {
+                document.querySelector('.welcome-section').style.display = 'block';
+            } else if (sectionName === 'recommendations') {
+                document.getElementById('recommendationsSection').style.display = 'block';
+            } else if (sectionName === 'suitcases') {
+                document.getElementById('suitcasesList').style.display = 'block';
+            }
+        }
+        </script>
+
+    {% else %}
+        <!-- Not authenticated -->
+        <div style="text-align: center; margin: 50px;">
+            <p>Du er ikke logget ind</p>
+            <a href="{% url 'login' %}">Log ind</a>
         </div>
-        {% endfor %}
-      </div>
-      
-      <!-- Hidden input to store selected categories -->
-      <input type="hidden" name="categories[]" id="selectedCategories" value="">
-      
-      <!-- Quiz Navigation -->
-      <div class="quiz-nav">
-        <button type="button" id="prevBtn" class="nav-btn" disabled>Previous</button>
-        <span id="stepIndicator">
-          Question 1 of {% if quiz_questions %}{{ quiz_questions|length }}{% else %}1{% endif %}
-        </span>
-        <button type="button" id="nextBtn" class="nav-btn">Next</button>
-        <button type="submit" id="submitQuiz" class="nav-btn submit-btn" style="display: none;">See Recommendations</button>
-      </div>
-    </form>
-  </div>
-</div>
+    {% endif %}
+</body>
+</html>
 
-<!-- Main Content -->
-<div class="notuser">
-  <!-- Welcome Section (shown when no recommendations) -->
-  <div class="welcome-section" id="welcomeSection" {% if show_recommendations %}style="display: none;"{% endif %}>
-    <h1>Velkommen til Figure-it-out!</h1>
-    <p>Find den perfekte kuffert til dig og dit team!</p>
-    
-    <div class="action-buttons">
-      <button id="startQuiz" class="cta-button">tag denne quiz for at finde den perfekte kuffert</button>
-      <button id="browseSuitcases" class="secondary-button">Gennemse alle kufferter</button>
-    </div>
-  </div>
-
-  <!-- Recommendations Section -->
-  <div id="recommendationsSection" class="recommendations-section" {% if not show_recommendations %}style="display: none;"{% endif %}>
-    <h1>Dine perfekte kuffertmatches</h1>
-    <p>Baseret på dine quiz-svar, har vi fundet disse kufferter, der matcher dine behov.</p>
-    
-    <div id="recommendationsContainer">
-      {% if show_recommendations %}
-        {% for rec in recommended_suitcases %}
-        <div class="recommendation-item">
-          <div class="recommendation-header">
-            <h3>{{ rec.name }}</h3>
-            <span class="match-score">{{ rec.score }}% Match</span>
-          </div>
-          <div class="recommendation-categories">
-            <strong>Features:</strong>
-            {% for category in rec.categories %}
-            <span class="category-tag">{{ category }}</span>
-            {% endfor %}
-          </div>
-          <a href="/suitcases/{{ rec.uuid }}" class="recommendation-btn">View Suitcase</a>
-        </div>
-        {% empty %}
-        <div class="no-recommendations">
-          <h3>No perfect matches found</h3>
-          <p>We couldn't find suitcases that match your criteria. Try browsing all suitcases instead.</p>
-        </div>
-        {% endfor %}
-      {% endif %}
-    </div>
-    
-    <div class="recommendation-actions">
-      <a href="{% url 'clear-recommendations' %}" class="secondary-button">Tag quizzen igen.</a>
-      <button id="showAllSuitcases" class="cta-button">Gennemse alle kufferter</button>
-    </div>
-  </div>
-
-  <!-- All Suitcases List (Hidden by default) -->
-  <div id="suitcasesList" class="suitcases-list" style="display: none;">
-    <h1>Alle tilgængelige kufferter</h1>
-    <ul style="list-style-type: none; margin: 0; padding: 0;">
-      {% for suitcase in object_list %}
-        {% if not suitcase.rented %}
-          <li class="suitcase-item">
-            <a href="/suitcases/{{suitcase.uuid}}">{{suitcase.name}}</a>
-          </li>
-        {% endif %}
-        {% empty %}
-        <li>Ingen tilgængelige kufferter</li>
-      {% endfor %}
-    </ul>
-    <br/>
-    <a href="rented">Dine kufferter.</a>
-  </div>
-</div>
-
-<form action="{% url 'logout' %}" method="post">
-  {% csrf_token %}
-  <button type="submit">Log ud</button>
-</form>
-
-{% else %}
-<p>Du er ikke logget ind</p>
-<h1>NICE</h1>
-<a href="{% url 'login' %}">Log ind</a>
-{% endif %}
