@@ -36,7 +36,7 @@ class User(AbstractUser):
 
     def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None):
         print(f"Name: {self.get_full_name()}")
-        #self.username = self.get_full_name()
+        self.username = self.email
 
         super().save(*args, force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
 

@@ -1,7 +1,9 @@
 from http import HTTPStatus
 from django.contrib.auth.views import LoginView
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.views.generic import CreateView
+from django.contrib.auth import login
 
 from accounts.models import User, UserInfo
 from .forms import CustomUserCreate
@@ -31,13 +33,15 @@ class SignUpView(CreateView):
         user:User = custom_user_create_form.save(commit=False)
         user.save()
 
-        user_info.company_cvr = company_cvr_int 
-        user_info.company_industri_code = company_industri_code_int 
-        user_info.company_name= custom_user_create_form.cleaned_data["company_name"]
-        user_info.user = user
-        user_info.save()
+        user.userinfo.company_cvr = company_cvr_int 
+        user.userinfo.company_industri_code = company_industri_code_int 
+        user.userinfo.company_name= custom_user_create_form.cleaned_data["company_name"]
+        user.userinfo.save()
 
-        return HttpResponseRedirect("/") 
+        login(request,user)
+
+
+        return HttpResponseRedirect(reverse("front-page")) 
 
 class CustLoginView(LoginView):
     def get(self, request, *args, **kwargs):

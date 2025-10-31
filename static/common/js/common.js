@@ -1,6 +1,6 @@
 let audioContext = null;
 let audioBuffer = [];
-function setup() {
+async function setup() {
 	const event = new Event("theme-changed");
 	var toggle = document.getElementById("theme_toggle");
 
@@ -46,19 +46,19 @@ function setup() {
 	}
 
 
-	console.log(figures.length);
+
+	if (!audioContext) {
+		audioContext = new (window.AudioContext || window.webkitAudioContext)()
+	}
 	for (let i = 0; i < figures.length; i++) {
 		audioBuffer.push(null)
+
+
 		let url = figures[i].getAttribute("data-audio-src")
-		console.log(url)
+		if (!audioBuffer[i]) {
+			audioBuffer[i] = await loadAudio(url);
+		}
 		figures[i].addEventListener("click", async () => {
-			if (!audioContext) {
-				audioContext = new (window.AudioContext || window.webkitAudioContext)()
-			}
-			if (!audioBuffer[i]) {
-				audioBuffer[i] = await loadAudio(url);
-			}
-			console.log(audioBuffer[i])
 
 			playBuffer(audioBuffer[i]);
 			figures[i].classList.remove("figure-go");
