@@ -19,10 +19,12 @@ class SignUpView(CreateView):
         return super().get(request, *args, **kwargs)
     def post(self,request:HttpRequest):
         post_form = request.POST
+        items = post_form.items()
+        for i in items:
+            print(f"\nkey: {i[0]}\nvalue: {i[1]}\n")
         custom_user_create_form = CustomUserCreate(post_form)
         if not custom_user_create_form.is_valid():
             return HttpResponse("Not valid form".encode(),HTTPStatus.BAD_REQUEST)
-        user_info = UserInfo()
         company_cvr_int = 0
         company_industri_code_int = 0
         try:
