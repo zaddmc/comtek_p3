@@ -107,16 +107,16 @@
         function showSection(sectionName) {
             // Hide all sections
             document.querySelectorAll('.welcome-section, .recommendations-section, .suitcases-list').forEach(section => {
-                section.style.display = 'none';
+                section.classList.add('hidden');
             });
             
             // Show selected section
             if (sectionName === 'welcome') {
-                document.querySelector('.welcome-section').style.display = 'block';
+                document.querySelector('.welcome-section').classList.remove('hidden');
             } else if (sectionName === 'recommendations') {
-                document.getElementById('recommendationsSection').style.display = 'block';
+                document.getElementById('recommendationsSection').classList.remove('hidden');
             } else if (sectionName === 'suitcases') {
-                document.getElementById('suitcasesList').style.display = 'block';
+                document.getElementById('suitcasesList').classList.remove('hidden');
             }
         }
         </script>
