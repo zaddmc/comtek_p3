@@ -16,7 +16,7 @@
 
       <div class="quiz-header">
         <h1>Find den perfekte kuffert!</h1>
-      <a href="{% url 'clear-recommendations' %}" class="secondary-button">Afslut quiz</a>
+        <a href="{% url 'clear-recommendations' %}" class="secondary-button">Afslut quiz</a>
       </div>
 
       {% if current_question %}
@@ -71,7 +71,7 @@
     </div>
   </div>
 {% else %}
-  <div style="text-align:center; margin:50px;">
+  <div class="quiz-auth-gate">
     <p>Du er ikke logget ind</p>
     <a href="{% url 'login' %}">Log ind</a>
   </div>

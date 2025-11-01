@@ -79,9 +79,9 @@
                 </div>
 
                 <!-- All Suitcases List -->
-                <div id="suitcasesList" class="suitcases-list" style="display: none;">
+                <div id="suitcasesList" class="suitcases-list hidden">
                     <h1>Alle tilgængelige kufferter</h1>
-                    <ul style="list-style-type: none; margin: 0; padding: 0;">
+                    <ul class="unstyled-list">
                         {% for suitcase in object_list %}
                         <li class="suitcase-item">
                             <a href="/suitcases/{{suitcase.uuid}}">{{suitcase.name}}</a>
@@ -97,7 +97,7 @@
         </div>
 
         <!-- Logout form -->
-        <form action="{% url 'logout' %}" method="post" style="margin: 20px; text-align: center;">
+        <form action="{% url 'logout' %}" method="post" class="logout-form-center">
             {% csrf_token %}
             <button type="submit">Log ud</button>
         </form>
@@ -123,7 +123,7 @@
 
     {% else %}
         <!-- Not authenticated -->
-        <div style="text-align: center; margin: 50px;">
+        <div class="auth-gate-center">
             <p>Du er ikke logget ind</p>
             <a href="{% url 'login' %}">Log ind</a>
         </div>

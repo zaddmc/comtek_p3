@@ -85,6 +85,11 @@
   margin: 0 auto;
   padding: 20px;
 }
+
+.suitcases-list.hidden {
+  display: none;
+}
+
 .suitcase-item {
   margin: 1rem 0;
   padding: 15px;
@@ -102,4 +107,20 @@
 .suitcase-item a:hover {
   color: var(--primary);
   text-decoration: underline;
+}
+
+.unstyled-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.logout-form-center {
+  margin: 20px;
+  text-align: center;
+}
+
+.auth-gate-center {
+  text-align: center;
+  margin: 50px;
 }

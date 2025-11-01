@@ -9,7 +9,7 @@
 
 <div class="notuser">
 <h1>Your suitcases</h1>
-<ul style="list-style-type: none; margin: 0; padding: 0;">
+<ul class="rented-unstyled-list">
 	{% for suitcase in object_list %}
 	{% if suitcase.rented_by.uuid == user_uuid%}
 	<a href="/suitcases/{{suitcase.uuid}}">{{suitcase.name}}</a>

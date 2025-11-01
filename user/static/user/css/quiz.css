@@ -95,3 +95,8 @@
   margin-bottom: 2rem;
   color: var(--accent);
 }
+
+.quiz-auth-gate {
+  text-align: center;
+  margin: 50px;
+}
