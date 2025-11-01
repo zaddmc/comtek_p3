@@ -1,8 +1,26 @@
 /* Container */
+/* prettier-ignore */
 .quiz-container {
   max-width: 700px;
   margin: 0 auto;
   padding: 20px;
+  background: #ffffff;
+  border-radius: 2rem;
+  box-shadow: 
+    2px 2px 4px #0000001a,
+    4px 4px 8px #0000001a,
+    8px 8px 16px #0000001a;
+  transition: all 0.3s ease;
+}
+
+/* prettier-ignore */
+.quiz-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    4px 4px 8px #00000026,
+    8px 8px 16px #00000026,
+    12px 12px 24px #2a0a4d33,
+    16px 16px 32px #2a0a4d26;
 }
 
 /* Progress */
@@ -29,9 +47,13 @@
 }
 
 /* Questions + options */
-.quiz-form .quiz-question {
-  text-align: left;
+.quiz-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
 }
+
 .options {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -61,42 +83,53 @@
 .quiz-actions {
   margin-top: 1rem;
 }
-.quiz-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 2rem;
+
+/* The question text in header */
+.quiz-question-title {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text, #333);
 }
-.nav-btn {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.nav-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-.submit-btn {
-  background: var(--primary);
+.quiz-close-btn {
+  flex: 0 0 auto;
+  font-size: 2rem;
+  line-height: 1;
+  text-decoration: none;
+  color: var(--text, #333);
+  transition: color 0.3s ease;
 }
 
-/* Optional legacy step styles if referenced somewhere else */
-.quiz-step {
-  display: none;
-  text-align: center;
-}
-.quiz-step.active {
-  display: block;
-}
-.quiz-step h3 {
-  margin-bottom: 2rem;
-  color: var(--accent);
+.quiz-close-btn:hover {
+  color: var(--accent, #007bff);
 }
 
+/* Auth gate */
 .quiz-auth-gate {
   text-align: center;
   margin: 50px;
+}
+
+/* progress spacing */
+.quiz-progress--footer {
+  margin-top: 0.5rem; /* space from options */
+  margin-bottom: 1rem; /* space before buttons */
+}
+
+/* Keep heading for screen readers only */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: -1px;
+}
+
+body.no-scroll {
+  overflow: hidden;
 }

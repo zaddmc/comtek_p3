@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="{% static 'user/css/app-common.css'%}">
   <link rel="stylesheet" href="{% static 'user/css/quiz.css' %}">
 </head>
-<body>
+<body{% if current_question %} class="no-scroll"{% endif %}>
 {% if user.is_authenticated %}
   {% include "common/taskbar.html" %}
 
@@ -15,8 +15,8 @@
     <div class="quiz-container">
 
       <div class="quiz-header">
-        <h1>Find den perfekte kuffert!</h1>
-        <a href="{% url 'clear-recommendations' %}" class="secondary-button">Afslut quiz</a>
+        <h2 class="quiz-question-title">{{ current_question.question_text }}</h2>
+        <a href="{% url 'clear-recommendations' %}" class="quiz-close-btn" aria-label="Afslut quiz">×</a>
       </div>
 
       {% if current_question %}
@@ -24,17 +24,6 @@
         {% csrf_token %}
 
         <div class="quiz-question active">
-          <!-- Progress (namespaced classes; JS sets width) -->
-          <div class="quiz-progress">
-            <div class="quiz-progress-track">
-              <div class="quiz-progress-fill" style="--pct: {{ progress_percent }}%;" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress_percent }}"></div>
-            </div>
-            <div class="progress-text">
-              Spørgsmål {{ current_step|add:1 }} af {{ total_questions }}
-            </div>
-          </div>
-
-          <h2>{{ current_question.question_text }}</h2>
 
           {% if form.errors %}
           <div class="error-message">
@@ -47,16 +36,31 @@
           <div class="options">
             {% for option in current_question.options.all %}
             <label class="option-btn">
-              <input type="radio" name="selected_option" value="{{ option.id }}"
-                     {% if forloop.first and not form.is_bound %}checked{% endif %}>
+              <input type="radio" name="selected_option" value="{{ option.id }}" {% if form.selected_option.value == option.id %}checked{% elif not form.selected_option.value and forloop.first %}checked{% endif %}>
               <span class="option-text">{{ option.option_text }}</span>
             </label>
             {% endfor %}
           </div>
         </div>
+        <!-- Progress Bar -->
+        <div class="quiz-progress quiz-progress--footer">
+          <div class="quiz-progress-track">
+            <div class="quiz-progress-fill"
+                 style="--pct: {{ progress_percent }}%;"
+                 role="progressbar"
+                 aria-valuemin="0"
+                 aria-valuemax="100"
+                 aria-valuenow="{{ progress_percent }}">
+            </div>
+          </div>
+        </div>
 
         <div class="quiz-actions">
-          <button type="submit" class="cta-button">
+          <!-- Previous: disabled on the first step, label never changes -->
+          <button type="submit" name="action" value="prev" class="cta-button" {% if current_step == 0 %}disabled aria-disabled="true"{% endif %}>← Forrige spørgsmål</button>
+
+          <!-- Next: shows "Se resultater" on last step -->
+          <button type="submit" name="action" value="next" class="cta-button">
             {% if current_step|add:1 == total_questions %}Se resultater{% else %}Næste spørgsmål →{% endif %}
           </button>
         </div>
