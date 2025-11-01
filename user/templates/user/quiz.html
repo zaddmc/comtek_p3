@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="da">
 <head>
   <title>Quiz - Find din perfekte kuffert</title>
   <link rel="stylesheet" href="{% static 'common/css/common.css' %}">
@@ -16,7 +16,7 @@
 
       <div class="quiz-header">
         <h1>Find den perfekte kuffert!</h1>
-        <a href="{% url 'clear-recommendations' %}" class="secondary-button">Afslut quiz</a>
+      <a href="{% url 'clear-recommendations' %}" class="secondary-button">Afslut quiz</a>
       </div>
 
       {% if current_question %}
