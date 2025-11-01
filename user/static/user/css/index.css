@@ -12,18 +12,30 @@
 }
 
 /* Recommendations */
-.recommendations-section { text-align: center; max-width: 800px; padding: 2rem; }
+.recommendations-section {
+  text-align: center;
+  max-width: 800px;
+  padding: 2rem;
+}
 .recommendation-item {
   background: #fff;
   border-radius: 12px;
   padding: 1.5rem;
   margin: 1.5rem 0;
   border-left: 6px solid var(--primary);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: left;
 }
-.recommendation-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-.recommendation-header h3 { margin: 0; color: var(--accent); }
+.recommendation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.recommendation-header h3 {
+  margin: 0;
+  color: var(--accent);
+}
 .match-score {
   background: var(--primary);
   color: #fff;
@@ -32,7 +44,9 @@
   font-weight: bold;
   font-size: 0.9rem;
 }
-.recommendation-categories { margin-bottom: 1rem; }
+.recommendation-categories {
+  margin-bottom: 1rem;
+}
 .category-tag {
   display: inline-block;
   background: var(--accent);
@@ -52,12 +66,40 @@
   font-weight: bold;
   transition: background-color 0.3s ease;
 }
-.recommendation-btn:hover { background: var(--accent); color: #fff; }
-.recommendation-actions { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; }
+.recommendation-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+.recommendation-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
 
 /* Suitcases list (deduped) */
-.suitcases-list { width: 100%; max-width: 800px; text-align: center; margin: 0 auto; padding: 20px; }
-.suitcase-item { margin: 1rem 0; padding: 15px; background: #fff; border-radius: 8px; border-left: 4px solid var(--primary); border-bottom: 1px solid #eee; }
-    .suitcase-item a { color: var(--text); text-decoration: none; font-weight: bold; font-size: 18px; }
-.suitcase-item a:hover { color: var(--primary); text-decoration: underline; }
-
+.suitcases-list {
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+  margin: 0 auto;
+  padding: 20px;
+}
+.suitcase-item {
+  margin: 1rem 0;
+  padding: 15px;
+  background: #fff;
+  border-radius: 8px;
+  border-left: 4px solid var(--primary);
+  border-bottom: 1px solid #eee;
+}
+.suitcase-item a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 18px;
+}
+.suitcase-item a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
