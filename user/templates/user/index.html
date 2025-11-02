@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{% static 'common/css/common.css' %}">
     <link rel="stylesheet" href="{% static 'user/css/app-common.css'%}">
     <link rel="stylesheet" href="{% static 'user/css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'user/css/recommendations.css' %}"> {# NEW #}
 </head>
 <body>
     {% if user.is_authenticated %}
@@ -37,46 +38,14 @@
 
                 <!-- Quiz In Progress Notice -->
                 {% if show_quiz %}
-                <div class="quiz-notice">
+                <div class="notice quiz-notice">
                     <p>Du har en quiz i gang! <a href="{% url 'quiz' %}">Fortsæt quiz</a> eller 
                        <a href="{% url 'clear-recommendations' %}">annuller</a>.</p>
                 </div>
                 {% endif %}
 
-                <!-- Recommendations Section -->
-                <div id="recommendationsSection" class="recommendations-section" 
-                     {% if not show_recommendations %}style="display: none;"{% endif %}>
-                    <h1>Dine perfekte kuffertmatches</h1>
-                    <p>Baseret på dine quiz-svar, har vi fundet disse kufferter, der matcher dine behov.</p>
-                    
-                    <div id="recommendationsContainer">
-                        {% for rec in recommended_suitcases %}
-                        <div class="recommendation-item">
-                            <div class="recommendation-header">
-                                <h3>{{ rec.name }}</h3>
-                                <span class="match-score">{{ rec.score }}% Match</span>
-                            </div>
-                            <div class="recommendation-categories">
-                                <strong>Features:</strong>
-                                {% for category in rec.categories %}
-                                <span class="category-tag">{{ category }}</span>
-                                {% endfor %}
-                            </div>
-                            <a href="/suitcases/{{ rec.uuid }}" class="recommendation-btn">Se kuffert</a>
-                        </div>
-                        {% empty %}
-                        <div class="no-recommendations">
-                            <h3>Ingen perfekte matches fundet</h3>
-                            <p>Vi kunne ikke finde kufferter der matcher dine kriterier. Prøv at gennemse alle kufferter i stedet.</p>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    
-                    <div class="recommendation-actions">
-                        <a href="{% url 'clear-recommendations' %}" class="secondary-button">Tag quizzen igen</a>
-                        <button onclick="showSection('suitcases')" class="cta-button">Gennemse alle kufferter</button>
-                    </div>
-                </div>
+                <!-- Recommendations Section (moved to its own partial) -->
+                {% include "user/recommendations.html" %}
 
                 <!-- All Suitcases List -->
                 <div id="suitcasesList" class="suitcases-list hidden">
@@ -106,17 +75,17 @@
         <script>
         function showSection(sectionName) {
             // Hide all sections
-            document.querySelectorAll('.welcome-section, .recommendations-section, .suitcases-list').forEach(section => {
+            document.querySelectorAll('.welcome-section, #recommendationsSection, .suitcases-list').forEach(section => {
                 section.classList.add('hidden');
             });
             
             // Show selected section
             if (sectionName === 'welcome') {
-                document.querySelector('.welcome-section').classList.remove('hidden');
+                document.querySelector('.welcome-section')?.classList.remove('hidden');
             } else if (sectionName === 'recommendations') {
-                document.getElementById('recommendationsSection').classList.remove('hidden');
+                document.getElementById('recommendationsSection')?.classList.remove('hidden');
             } else if (sectionName === 'suitcases') {
-                document.getElementById('suitcasesList').classList.remove('hidden');
+                document.getElementById('suitcasesList')?.classList.remove('hidden');
             }
         }
         </script>
@@ -130,4 +99,3 @@
     {% endif %}
 </body>
 </html>
-

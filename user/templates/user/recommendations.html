@@ -1,0 +1,34 @@
+{# templates/user/recommendations.html #}
+<div id="recommendationsSection" class="recommendations-section"
+     {% if not show_recommendations %}style="display:none;"{% endif %}>
+  <h1>Dine perfekte kuffertmatches</h1>
+  <p>Baseret på dine quiz-svar, har vi fundet disse kufferter, der matcher dine behov.</p>
+
+  <div id="recommendationsContainer">
+    {% for rec in recommended_suitcases %}
+      <div class="recommendation-item">
+        <div class="recommendation-header">
+          <h3>{{ rec.name }}</h3>
+          <span class="match-score">{{ rec.score }}% Match</span>
+        </div>
+        <div class="recommendation-categories">
+          <strong>Features:</strong>
+          {% for category in rec.categories %}
+            <span class="category-tag">{{ category }}</span>
+          {% endfor %}
+        </div>
+        <a href="/suitcases/{{ rec.uuid }}" class="recommendation-btn">Se kuffert</a>
+      </div>
+    {% empty %}
+      <div class="no-recommendations">
+        <h3>Ingen perfekte matches fundet</h3>
+        <p>Vi kunne ikke finde kufferter der matcher dine kriterier. Prøv at gennemse alle kufferter i stedet.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="recommendation-actions">
+    <a href="{% url 'clear-recommendations' %}" class="secondary-button">Tag quizzen igen</a>
+    <button onclick="showSection('suitcases')" class="cta-button">Gennemse alle kufferter</button>
+  </div>
+</div>
