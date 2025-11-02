@@ -1,23 +1,44 @@
 {# templates/user/recommendations.html #}
-<div id="recommendationsSection" class="recommendations-section"
-     {% if not show_recommendations %}style="display:none;"{% endif %}>
+<div id="recommendationsSection" class="recommendations-section" {% if not show_recommendations %} hidden {% endif %}>
   <h1>Dine perfekte kuffertmatches</h1>
   <p>Baseret på dine quiz-svar, har vi fundet disse kufferter, der matcher dine behov.</p>
 
   <div id="recommendationsContainer">
     {% for rec in recommended_suitcases %}
       <div class="recommendation-item">
-        <div class="recommendation-header">
-          <h3>{{ rec.name }}</h3>
-          <span class="match-score">{{ rec.score }}% Match</span>
+        <div class="recommendation-grid">
+          {# LEFT column: title, features, CTA #}
+          <div class="recommendation-main">
+            <div class="recommendation-header-left">
+              <h3>{{ rec.name }}</h3>
+            </div>
+
+            <div class="recommendation-categories">
+              <strong class="features-label">Features:</strong>
+              <div class="feature-tags">
+                {% for category in rec.categories %}
+                  <span class="category-tag">{{ category }}</span>
+                {% endfor %}
+              </div>
+            </div>
+
+            <a href="/suitcases/{{ rec.uuid }}" class="recommendation-btn">Se kuffert</a>
+          </div>
+
+          {# RIGHT column: fixed rail with score + circular image #}
+          <div class="recommendation-rail">
+            <div class="match-score-block">
+              <span class="match-score">{{ rec.score }}% Match</span>
+              {% if rec.image_url %}
+                <div class="match-avatar">
+                  <img src="{{ rec.image_url }}" alt="{{ rec.name }} avatar">
+                </div>
+              {% else %}
+                <div class="match-avatar placeholder"></div>
+              {% endif %}
+            </div>
+          </div>
         </div>
-        <div class="recommendation-categories">
-          <strong>Features:</strong>
-          {% for category in rec.categories %}
-            <span class="category-tag">{{ category }}</span>
-          {% endfor %}
-        </div>
-        <a href="/suitcases/{{ rec.uuid }}" class="recommendation-btn">Se kuffert</a>
       </div>
     {% empty %}
       <div class="no-recommendations">

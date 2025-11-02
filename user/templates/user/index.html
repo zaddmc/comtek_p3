@@ -65,12 +65,6 @@
             {% endif %}
         </div>
 
-        <!-- Logout form -->
-        <form action="{% url 'logout' %}" method="post" class="logout-form-center">
-            {% csrf_token %}
-            <button type="submit">Log ud</button>
-        </form>
-
         <!-- Minimal JavaScript for UI interactions -->
         <script>
         function showSection(sectionName) {

@@ -113,3 +113,7 @@
 .close:hover {
   color: var(--primary);
 }
+
+.hidden {
+  display: none !important;
+}
