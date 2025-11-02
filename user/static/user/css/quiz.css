@@ -1,16 +1,20 @@
 /* Container */
 /* prettier-ignore */
 .quiz-container {
-  max-width: 700px;
+  inline-size: clamp(320px, 92vw, 700px); /* min, fluid, max */
+  min-block-size: 420px;                  /* optional: reduce vertical jumping */
   margin: 0 auto;
   padding: 20px;
   background: #ffffff;
   border-radius: 2rem;
-  box-shadow: 
+  box-shadow:
     2px 2px 4px #0000001a,
     4px 4px 8px #0000001a,
     8px 8px 16px #0000001a;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  /* Enable container queries so text can scale to *this* width, not viewport */
+  container-type: inline-size;
 }
 
 /* prettier-ignore */
@@ -50,6 +54,7 @@
 .quiz-header {
   display: flex;
   align-items: flex-start;
+  justify-content: space-between;
   gap: 0.75rem;
   margin-bottom: 2rem;
 }
@@ -82,15 +87,20 @@
 /* Nav/actions */
 .quiz-actions {
   margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 /* The question text in header */
 .quiz-question-title {
-  flex: 1 1 auto;
   margin: 0;
-  font-size: 1.5rem;
   font-weight: 600;
+  font-size: clamp(1.05rem, 3.2cqi, 1.75rem); /* min, fluid, max */
   color: var(--text, #333);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
 .quiz-close-btn {
   flex: 0 0 auto;
