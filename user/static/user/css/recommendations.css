@@ -136,3 +136,7 @@
 .recommendations-section.hidden {
   display: none !important;
 }
+
+.recommendations-section h1 {
+  margin-top: 4rem;
+}

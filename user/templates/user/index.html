@@ -50,7 +50,7 @@
                 <!-- All Suitcases List -->
                 <div id="suitcasesList" class="suitcases-list hidden">
                     <h1>Alle tilgængelige kufferter</h1>
-                    <ul class="unstyled-list">
+                    <ul class="available-suitcase-list">
                         {% for suitcase in object_list %}
                         <li class="suitcase-item">
                             <a href="/suitcases/{{suitcase.uuid}}">{{suitcase.name}}</a>

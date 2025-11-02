@@ -17,11 +17,6 @@
 }
 
 /* Utility */
-.unstyled-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
 .logout-form {
   margin: 20px;
   text-align: center;
