@@ -23,48 +23,54 @@
       <form method="post" class="quiz-form">
         {% csrf_token %}
 
-        <div class="quiz-question active">
+        <!-- Middle area (centers the content vertically) -->
+        <div class="quiz-middle">
+          <div class="quiz-question active">
 
-          {% if form.errors %}
-          <div class="error-message">
-            {% for error in form.selected_option.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-          {% endif %}
+            {% if form.errors %}
+            <div class="error-message">
+              {% for error in form.selected_option.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+            {% endif %}
 
-          <div class="options">
-            {% for option in current_question.options.all %}
-            <label class="option-btn">
-              <input type="radio" name="selected_option" value="{{ option.id }}" {% if form.selected_option.value == option.id %}checked{% elif not form.selected_option.value and forloop.first %}checked{% endif %}>
-              <span class="option-text">{{ option.option_text }}</span>
-            </label>
-            {% endfor %}
-          </div>
-        </div>
-        <!-- Progress Bar -->
-        <div class="quiz-progress quiz-progress--footer">
-          <div class="quiz-progress-track">
-            <div class="quiz-progress-fill"
-                 style="--pct: {{ progress_percent }}%;"
-                 role="progressbar"
-                 aria-valuemin="0"
-                 aria-valuemax="100"
-                 aria-valuenow="{{ progress_percent }}">
+            <div class="options">
+              {% for option in current_question.options.all %}
+              <label class="option-btn">
+                <input type="radio"
+                       name="selected_option"
+                       value="{{ option.id }}"
+                       {% if form.selected_option.value == option.id %}checked{% elif not form.selected_option.value and forloop.first %}checked{% endif %}>
+                <span class="option-text">{{ option.option_text }}</span>
+              </label>
+              {% endfor %}
+            </div>
+
+            <!-- Progress Bar (kept with the content so it centers with it) -->
+            <div class="quiz-progress quiz-progress--footer">
+              <div class="quiz-progress-track">
+                <span class="quiz-progress-fill"
+                      style="--pct: {{ progress_percent }}%;"
+                      role="progressbar"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      aria-valuenow="{{ progress_percent }}">
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
+        <!-- Actions pinned to the bottom of the card -->
         <div class="quiz-actions">
-          <!-- Previous: disabled on the first step, label never changes -->
           <button type="submit" name="action" value="prev" class="cta-button" {% if current_step == 0 %}disabled aria-disabled="true"{% endif %}>← Forrige spørgsmål</button>
-
-          <!-- Next: shows "Se resultater" on last step -->
           <button type="submit" name="action" value="next" class="cta-button">
             {% if current_step|add:1 == total_questions %}Se resultater{% else %}Næste spørgsmål →{% endif %}
           </button>
         </div>
       </form>
+
       {% else %}
       <div class="quiz-error">
         <h2>Ingen spørgsmål tilgængelige</h2>
