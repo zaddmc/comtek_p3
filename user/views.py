@@ -12,10 +12,17 @@ from .utils import get_recommended_suitcases
 
 
 class NonRentedView(LoginRequiredMixin, TemplateView):
+    """
+    Displays all unrented suitcases and optionally shows quiz recommendations / progress status.
+    """
+
     template_name = "user/index.html"
     login_url = reverse_lazy("login")
 
     def get_context_data(self, **kwargs):
+        """
+        Add user info, available suitcases, quiz questions, and recommendation/quiz status to context.
+        """
         context = super().get_context_data(**kwargs)
         context["username"] = self.request.user.username
         context["object_list"] = Suitcase.objects.filter(rented=False)
@@ -25,31 +32,37 @@ class NonRentedView(LoginRequiredMixin, TemplateView):
         context["show_recommendations"] = (
             "recommended_suitcases" in self.request.session
         )
-
+        # Determine if recommendations should be displayed
         if context["show_recommendations"]:
             context["recommended_suitcases"] = self.request.session.get(
                 "recommended_suitcases", []
             )
-
+        # show quiz notice if a quiz session is in progress/active
         context["show_quiz"] = "quiz_in_progress" in self.request.session
         return context
 
 
 class QuizView(LoginRequiredMixin, TemplateView):
+    """
+    Manages the step-by-step quiz process for users to get suitcase recommendations.
+    Handles quiz navigation, answer validation, and recommendation generation.
+    """
+
     template_name = "user/quiz.html"
     login_url = reverse_lazy("login")
 
     def get_context_data(self, **kwargs):
+        """Prepare quiz state, current question, and progress tracking."""
         context = super().get_context_data(**kwargs)
         questions = QuizQuestion.objects.filter(is_active=True).prefetch_related(
             "options__categories"
         )
         total_questions = questions.count()
         current_step = int(self.request.session.get("quiz_step", 0))
-
+        # Reset step if out of bounds
         if current_step >= total_questions:
             current_step = 0
-
+        # Basic quiz state info
         context["total_questions"] = total_questions
         context["current_step"] = current_step
         context["current_question"] = (
@@ -59,7 +72,7 @@ class QuizView(LoginRequiredMixin, TemplateView):
             int((current_step / total_questions) * 100) if total_questions > 0 else 0
         )
 
-        # Prefill form with previously selected option (if any)
+        # Prefill form if user answered this step previously
         if context["current_question"]:
             form = QuizStepForm()
             form.fields["selected_option"].queryset = context[
@@ -73,19 +86,22 @@ class QuizView(LoginRequiredMixin, TemplateView):
         return context
 
     def get(self, request, *args, **kwargs):
+        """Initialize quiz session data and handle reset requests."""
         if "quiz_answers" not in request.session:
             request.session["quiz_answers"] = {}
         request.session["quiz_in_progress"] = True
 
+        # Reset quiz manually if requested
         if "reset_quiz" in request.GET:
             request.session["quiz_step"] = 0
             return redirect("quiz")
 
-        # Ensure quiz_step exists
+        # Ensure quiz_step is set
         request.session.setdefault("quiz_step", 0)
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        """handle answer submission, validation, and step navigation."""
         action = request.POST.get("action", "next")  # default to next
         current_step = int(request.session.get("quiz_step", 0))
         questions = QuizQuestion.objects.filter(is_active=True).prefetch_related(
@@ -98,11 +114,11 @@ class QuizView(LoginRequiredMixin, TemplateView):
             return self.process_complete_quiz(request)
 
         if action == "prev":
-            # Move back one step (no validation, don’t change stored answers)
+            # Move back one question (skip validation)
             request.session["quiz_step"] = max(current_step - 1, 0)
             return redirect("quiz")
 
-        # action == "next": validate & store
+        # Otherwise, process current answer
         current_question = questions[current_step]
         form = QuizStepForm(request.POST)
         form.fields["selected_option"].queryset = current_question.options.all()
@@ -119,7 +135,7 @@ class QuizView(LoginRequiredMixin, TemplateView):
             }
             request.session["quiz_answers"] = answers
 
-            # advance
+            # advance to next question
             next_step = current_step + 1
             request.session["quiz_step"] = next_step
 
@@ -127,7 +143,7 @@ class QuizView(LoginRequiredMixin, TemplateView):
                 return self.process_complete_quiz(request)
             return redirect("quiz")
 
-        # invalid -> re-render with errors
+        # invalid submission - re-render with errors
         context = self.get_context_data()
         context["form"] = form
         return self.render_to_response(context)
@@ -138,7 +154,7 @@ class QuizView(LoginRequiredMixin, TemplateView):
         for answer in request.session.get("quiz_answers", {}).values():
             all_categories.extend(answer["categories"])
 
-        # Get recommendations
+        # generate recommendations
         recommendations = get_recommended_suitcases(all_categories)
         recommendations_data = [
             {
@@ -150,7 +166,7 @@ class QuizView(LoginRequiredMixin, TemplateView):
             for rec in recommendations
         ]
 
-        # Store results and clean up session
+        # Store results and clean up session data
         request.session["recommended_suitcases"] = recommendations_data
         request.session.pop("quiz_answers", None)
         request.session.pop("quiz_step", None)
@@ -160,7 +176,7 @@ class QuizView(LoginRequiredMixin, TemplateView):
 
 
 def clear_recommendations(request):
-    """Clear stored recommendations and quiz progress from session"""
+    """Clear any stored quiz recommendations and related session data."""
     keys_to_remove = [
         "recommended_suitcases",
         "quiz_in_progress",
@@ -174,10 +190,13 @@ def clear_recommendations(request):
 
 
 class RentedView(LoginRequiredMixin, TemplateView):
+    """Displays all suitcases currently rented by the user logged in."""
+
     template_name = "user/rented.html"
     login_url = reverse_lazy("login")
 
     def get_context_data(self, **kwargs):
+        """Add user and their rented suitcase to suitcase list context."""
         context = super().get_context_data(**kwargs)
         context["username"] = self.request.user.username
         context["user_uuid"] = self.request.user.uuid

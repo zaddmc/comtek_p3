@@ -1,4 +1,5 @@
-/* Container */
+/* user/static/user/css/quiz.css */
+
 /* prettier-ignore */
 .quiz-container {
   inline-size: clamp(320px, 92vw, 700px); /* min, fluid, max */
@@ -29,10 +30,11 @@
     16px 16px 32px #2a0a4d26;
 }
 
-/* Progress */
 .quiz-progress {
   margin-bottom: 20px;
 }
+
+/* track bar background and rounding */
 .quiz-progress-track {
   width: 100%;
   height: 8px;
@@ -43,6 +45,8 @@
   display: block;
   position: relative;
 }
+
+/* fill bar */
 .quiz-progress-fill {
   display: block;
   height: 100%;
@@ -52,7 +56,7 @@
   flex: 0 0 auto;
 }
 
-/* Questions + options */
+/* Layout: Header, middle, options */
 .quiz-header {
   display: flex;
   align-items: flex-start;
@@ -61,6 +65,7 @@
   margin-bottom: 1.25rem;
 }
 
+/* Center active question vertically */
 .quiz-middle {
   flex: 1 1 auto;
   display: flex;
@@ -141,7 +146,7 @@
   margin: 50px;
 }
 
-/* progress spacing */
+/* progress spacing to nav */
 .quiz-progress--footer {
   margin-top: 0.5rem;
   margin-bottom: 1rem;

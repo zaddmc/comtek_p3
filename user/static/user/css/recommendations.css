@@ -1,4 +1,4 @@
-/* recommendations.css — styles specific to recommendations UI */
+/* user/static/user/css/recommendations.css */
 
 .recommendations-section {
   text-align: center;
@@ -18,7 +18,7 @@
 
 .recommendation-grid {
   display: grid;
-  grid-template-columns: 1fr 120px; /* left grows, right rail fixed */
+  grid-template-columns: 1fr 120px;
   gap: 1rem 1.5rem;
   align-items: start;
 }
@@ -54,7 +54,7 @@
 
 .recommendation-categories {
   display: grid;
-  grid-template-columns: max-content 1fr; /* col1 fits label; col2 is the wrap area */
+  grid-template-columns: max-content 1fr;
   column-gap: 0.5rem;
   row-gap: 0.4rem;
   align-items: start;
@@ -71,7 +71,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem 0.4rem;
-  min-width: 0; /* allows proper flex wrapping within grid cell */
+  min-width: 0;
 }
 
 .category-tag {
@@ -104,7 +104,6 @@
   margin-top: 2rem;
 }
 
-/* Match score with avatar */
 .match-score-block {
   position: relative;
   display: inline-block;

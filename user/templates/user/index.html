@@ -1,3 +1,5 @@
+{# user/templates/user/index.html #}
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="da">
@@ -11,7 +13,7 @@
     <link rel="stylesheet" href="{% static 'common/css/common.css' %}">
     <link rel="stylesheet" href="{% static 'user/css/app-common.css'%}">
     <link rel="stylesheet" href="{% static 'user/css/index.css' %}">
-    <link rel="stylesheet" href="{% static 'user/css/recommendations.css' %}"> {# NEW #}
+    <link rel="stylesheet" href="{% static 'user/css/recommendations.css' %}"> 
 </head>
 <body>
     {% if user.is_authenticated %}
@@ -20,12 +22,12 @@
         <!-- Main Content -->
         <div class="notuser">
             {% if request.path == '/user/quiz/' %}
-                <!-- Show quiz content when on quiz page -->
+                <!-- If we are on the quiz route, embed the quiz content directly -->
                 {% include "user/quiz_content.html" %}
             {% else %}
-                <!-- Original content for main page -->
+                <!-- Default landing content (welcome, notices, recommendations) -->
                 
-                <!-- Welcome Section -->
+                <!-- Welcome Section hidden when quiz or recommendations are shown -->
                 <div class="welcome-section" id="welcomeSection" 
                      {% if show_recommendations or show_quiz %}style="display: none;"{% endif %}>
                     <h1>Velkommen til Figure-it-out!</h1>
@@ -36,7 +38,7 @@
                     </div>
                 </div>
 
-                <!-- Quiz In Progress Notice -->
+                <!-- Notice to indicate quiz in progress -->
                 {% if show_quiz %}
                 <div class="notice quiz-notice">
                     <p>Du har en quiz i gang! <a href="{% url 'quiz' %}">Fortsæt quiz</a> eller 
@@ -44,10 +46,10 @@
                 </div>
                 {% endif %}
 
-                <!-- Recommendations Section (moved to its own partial) -->
+                <!-- Recommendations Section visibility controlled by JS and own template -->
                 {% include "user/recommendations.html" %}
 
-                <!-- All Suitcases List -->
+                <!-- Complete suitcase list of available suitcases again toggled via JS showSection -->
                 <div id="suitcasesList" class="suitcases-list hidden">
                     <h1>Alle tilgængelige kufferter</h1>
                     <ul class="available-suitcase-list">
@@ -65,7 +67,7 @@
             {% endif %}
         </div>
 
-        <!-- Minimal JavaScript for UI interactions -->
+        <!-- Minimal JavaScript for UI interactions / toggling -->
         <script>
         function showSection(sectionName) {
             // Hide all sections

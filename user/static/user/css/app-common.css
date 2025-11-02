@@ -1,8 +1,6 @@
 /* app-common.css 
     Shared styles for user app pages
 */
-
-/* Layout container used across user pages */
 .notuser {
   display: flex;
   align-items: center;
@@ -16,7 +14,6 @@
   padding: 2rem;
 }
 
-/* Utility */
 .logout-form {
   margin: 20px;
   text-align: center;
@@ -26,7 +23,6 @@
   margin: 50px;
 }
 
-/* Buttons (local shared) */
 .cta-button {
   background: var(--primary);
   color: #fff;
@@ -62,9 +58,8 @@
   color: #fff;
 }
 
-/* Generic notice (quiz-in-progress uses this) */
 .notice {
-  background: #fff3cd;
+  background: #fff;
   border: 1px solid #ffeaa7;
   border-radius: 6px;
   padding: 15px;
@@ -77,27 +72,6 @@
   text-decoration: underline;
 }
 
-/* Optional modal (local shared) */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 50px;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-.modal-content {
-  background-color: var(--background);
-  margin: 5% auto;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 600px;
-  position: relative;
-  color: var(--text);
-}
 .close {
   color: var(--text);
   float: right;

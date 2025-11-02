@@ -1,3 +1,5 @@
+{# user/templates/user/quiz.html #}
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="da">
@@ -23,7 +25,7 @@
       <form method="post" class="quiz-form">
         {% csrf_token %}
 
-        <!-- Middle area (centers the content vertically) -->
+        <!-- centered vertically also main quiz form. buttons send action to view -->
         <div class="quiz-middle">
           <div class="quiz-question active">
 
@@ -47,7 +49,7 @@
               {% endfor %}
             </div>
 
-            <!-- Progress Bar (kept with the content so it centers with it) -->
+            <!-- Progress Bar in footer (CSS Controls width via var) -->
             <div class="quiz-progress quiz-progress--footer">
               <div class="quiz-progress-track">
                 <span class="quiz-progress-fill"
@@ -62,7 +64,7 @@
           </div>
         </div>
 
-        <!-- Actions pinned to the bottom of the card -->
+        <!-- Actions pinned to the bottom of the quiz prev disabled if current_step == 0 -->
         <div class="quiz-actions">
           <button type="submit" name="action" value="prev" class="cta-button" {% if current_step == 0 %}disabled aria-disabled="true"{% endif %}>← Forrige spørgsmål</button>
           <button type="submit" name="action" value="next" class="cta-button">

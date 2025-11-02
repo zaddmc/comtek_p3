@@ -1,4 +1,6 @@
 {# templates/user/recommendations.html #}
+<!-- Black magic please don't touch anymore it keeps on breaking and making my life misery -->
+
 <div id="recommendationsSection" class="recommendations-section" {% if not show_recommendations %} hidden {% endif %}>
   <h1>Dine perfekte kuffertmatches</h1>
   <p>Baseret på dine quiz-svar, har vi fundet disse kufferter, der matcher dine behov.</p>
@@ -7,7 +9,7 @@
     {% for rec in recommended_suitcases %}
       <div class="recommendation-item">
         <div class="recommendation-grid">
-          {# LEFT column: title, features, CTA #}
+          <!--LEFT column: title, features, CTA -->
           <div class="recommendation-main">
             <div class="recommendation-header-left">
               <h3>{{ rec.name }}</h3>
@@ -25,7 +27,7 @@
             <a href="/suitcases/{{ rec.uuid }}" class="recommendation-btn">Se kuffert</a>
           </div>
 
-          {# RIGHT column: fixed rail with score + circular image #}
+          <!--RIGHT column: matchscore box with avatar placefolder if no image have not figured that part out but did setup-->
           <div class="recommendation-rail">
             <div class="match-score-block">
               <span class="match-score">{{ rec.score }}% Match</span>

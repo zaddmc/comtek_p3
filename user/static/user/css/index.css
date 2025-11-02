@@ -11,7 +11,7 @@
   margin: 2rem 0;
 }
 
-/* Suitcases list (deduped) */
+/* Suitcases list */
 .suitcases-list {
   width: 100%;
   max-width: 800px;
@@ -30,7 +30,7 @@
   background: #fff;
   border-radius: 8px;
   border-left: 4px solid var(--primary);
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #fff;
 }
 .suitcase-item a {
   color: var(--text);
