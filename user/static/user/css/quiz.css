@@ -2,7 +2,7 @@
 /* prettier-ignore */
 .quiz-container {
   inline-size: clamp(320px, 92vw, 700px); /* min, fluid, max */
-  min-block-size: 420px;                  /* optional: reduce vertical jumping */
+  min-block-size: 40dvh;                  
   margin: 0 auto;
   padding: 20px;
   background: #ffffff;
