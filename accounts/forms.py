@@ -6,6 +6,7 @@ from django.contrib.admin import AdminSite
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserModel
 from django.db.utils import import_string
+from django.forms import widgets
 from .models import User
 
 class CustomForm(AuthenticationForm):
@@ -14,10 +15,8 @@ class CustomLogin(AdminSite):
     login_form = CustomForm
     pass
 
-
-
 class CustomUserCreate(UserCreationForm):
-    company_name= forms.CharField()
+    company_name= forms.CharField(widget=forms.TextInput(attrs={"placeholder":"Company Name"}))
     company_cvr = forms.CharField(widget= forms.HiddenInput())
     company_industri_code = forms.CharField(widget=forms.HiddenInput())
     
@@ -26,7 +25,15 @@ class CustomUserCreate(UserCreationForm):
         model = User 
         fields = ["first_name","last_name","email","password1","password2"]
 
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["password1"].help_text = ""
         self.fields["password2"].help_text = ""
+
+        self.fields["first_name"].widget.attrs["placeholder"] = "First Name"
+        self.fields["last_name"].widget.attrs["placeholder"] = "Last Name"
+        self.fields["email"].widget.attrs["placeholder"] = "Email"
+        self.fields["password1"].widget.attrs["placeholder"] = "Password"
+        self.fields["password2"].widget.attrs["placeholder"] = "Confirm password"
+

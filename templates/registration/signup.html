@@ -7,9 +7,15 @@
 <h1>Create an account</h1>
 
 <form method="POST" novalidate>
-	{% csrf_token %}
+
+	<div class="form-wrapper">
+	<div >
+  {% csrf_token %}
+
 	<h2>Sign Up</h2>
-	{{ form.as_p }}
+	{% for field in form%}
+	{{ field }}
+	{% endfor %}
 	<button id="drop_down_button" type="button">Show</button>
 	<div id="drop_down">
 	<ul id="drop_down_values">
@@ -18,6 +24,9 @@
 	<br>
 	<button type="submit" href="/accounts/login">Submit</button>
   <a href="/accounts/login">Back</a>
+	</div>
+	
+	<div class="form-wrapper">
 </form>
 
 <script type="module">

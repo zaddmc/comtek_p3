@@ -1,30 +1,12 @@
-{# user/templates/user/index.html #}
-
+{% extends "common/templates/common.html"%}
+{% block main%}
+{% if user.is_authenticated %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="da">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="keywords" content="Figure-it-out, Quiz, Suitcase Recommendations">
-    <meta name="description" content="Figure-it-out Quiz and Suitcase Recommendations">
-    
-    <title>Figure-it-out</title>
-    <link rel="stylesheet" href="{% static 'common/css/common.css' %}">
     <link rel="stylesheet" href="{% static 'user/css/app-common.css'%}">
     <link rel="stylesheet" href="{% static 'user/css/index.css' %}">
-    <link rel="stylesheet" href="{% static 'user/css/recommendations.css' %}"> 
-</head>
-<body>
-    {% if user.is_authenticated %}
-        {% include "common/taskbar.html" %}
-        
+    <link rel="stylesheet" href="{% static 'user/css/recommendations.css' %}">
         <!-- Main Content -->
         <div class="notuser">
-            {% if request.path == '/user/quiz/' %}
-                <!-- If we are on the quiz route, embed the quiz content directly -->
-                {% include "user/quiz_content.html" %}
-            {% else %}
                 <!-- Default landing content (welcome, notices, recommendations) -->
                 
                 <!-- Welcome Section hidden when quiz or recommendations are shown -->
@@ -47,6 +29,7 @@
                 {% endif %}
 
                 <!-- Recommendations Section visibility controlled by JS and own template -->
+
                 {% include "user/recommendations.html" %}
 
                 <!-- Complete suitcase list of available suitcases again toggled via JS showSection -->
@@ -64,7 +47,6 @@
                     <br/>
                     <a href="{% url 'rented-view' %}">Dine kufferter</a>
                 </div>
-            {% endif %}
         </div>
 
         <!-- Minimal JavaScript for UI interactions / toggling -->
@@ -93,5 +75,4 @@
             <a href="{% url 'login' %}">Log ind</a>
         </div>
     {% endif %}
-</body>
-</html>
+{% endblock %}
