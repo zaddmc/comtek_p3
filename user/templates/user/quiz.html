@@ -1,0 +1,92 @@
+{# user/templates/user/quiz.html #}
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <title>Quiz - Find din perfekte kuffert</title>
+  <link rel="stylesheet" href="{% static 'common/css/common.css' %}">
+  <link rel="stylesheet" href="{% static 'user/css/app-common.css'%}">
+  <link rel="stylesheet" href="{% static 'user/css/quiz.css' %}">
+</head>
+<body{% if current_question %} class="no-scroll"{% endif %}>
+{% if user.is_authenticated %}
+  {% include "common/taskbar.html" %}
+
+  <div class="notuser">
+    <div class="quiz-container">
+
+      <div class="quiz-header">
+        <h2 class="quiz-question-title">{{ current_question.question_text }}</h2>
+        <a href="{% url 'clear-recommendations' %}" class="quiz-close-btn" aria-label="Afslut quiz">×</a>
+      </div>
+
+      {% if current_question %}
+      <form method="post" class="quiz-form">
+        {% csrf_token %}
+
+        <!-- centered vertically also main quiz form. buttons send action to view -->
+        <div class="quiz-middle">
+          <div class="quiz-question active">
+
+            {% if form.errors %}
+            <div class="error-message">
+              {% for error in form.selected_option.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="options">
+              {% for option in current_question.options.all %}
+              <label class="option-btn">
+                <input type="radio"
+                       name="selected_option"
+                       value="{{ option.id }}"
+                       {% if form.selected_option.value == option.id %}checked{% elif not form.selected_option.value and forloop.first %}checked{% endif %}>
+                <span class="option-text">{{ option.option_text }}</span>
+              </label>
+              {% endfor %}
+            </div>
+
+            <!-- Progress Bar in footer (CSS Controls width via var) -->
+            <div class="quiz-progress quiz-progress--footer">
+              <div class="quiz-progress-track">
+                <span class="quiz-progress-fill"
+                      style="--pct: {{ progress_percent }}%;"
+                      role="progressbar"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      aria-valuenow="{{ progress_percent }}">
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions pinned to the bottom of the quiz prev disabled if current_step == 0 -->
+        <div class="quiz-actions">
+          <button type="submit" name="action" value="prev" class="cta-button" {% if current_step == 0 %}disabled aria-disabled="true"{% endif %}>← Forrige spørgsmål</button>
+          <button type="submit" name="action" value="next" class="cta-button">
+            {% if current_step|add:1 == total_questions %}Se resultater{% else %}Næste spørgsmål →{% endif %}
+          </button>
+        </div>
+      </form>
+
+      {% else %}
+      <div class="quiz-error">
+        <h2>Ingen spørgsmål tilgængelige</h2>
+        <p>Kontakt administratoren for at konfigurere quizzen.</p>
+        <a href="{% url 'non-rented-view' %}" class="cta-button">Tilbage til forsiden</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+{% else %}
+  <div class="quiz-auth-gate">
+    <p>Du er ikke logget ind</p>
+    <a href="{% url 'login' %}">Log ind</a>
+  </div>
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,88 @@
+/* app-common.css 
+    Shared styles for user app pages
+*/
+.notuser {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.5;
+  min-height: 100vh;
+  flex-direction: column;
+  flex: auto;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 2rem;
+}
+
+.logout-form {
+  margin: 20px;
+  text-align: center;
+}
+.auth-gate {
+  text-align: center;
+  margin: 50px;
+}
+
+.cta-button {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.cta-button:hover {
+  background: var(--accent);
+}
+
+.cta-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  background: transparent;
+  color: var(--text);
+  border: 2px solid var(--primary);
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.secondary-button:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.notice {
+  background: #fff;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
+  padding: 15px;
+  margin: 20px 0;
+  text-align: center;
+}
+.notice a {
+  color: #856404;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.close {
+  color: var(--text);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.close:hover {
+  color: var(--primary);
+}
+
+.hidden {
+  display: none !important;
+}
