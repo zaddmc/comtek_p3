@@ -70,6 +70,11 @@ button:hover {
 		0 4px 6px -2px #488aec17;
 }
 
+.showbutton{
+	background-color: color-mix(in hsl, var(--text), #66ff66 60%);
+	color: color-mix(in hsl, var(--background), #66ff66 40%);
+}
+
 button:focus,
 button:active {
 	opacity: 0.85;
