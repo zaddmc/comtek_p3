@@ -7,6 +7,23 @@
 	background: var(--background);
 	font-family: Arial, Helvetica, sans-serif;
 	color: var(--text);
+	font-size: 1.0vw;
+}
+
+html[data-theme='light'] {
+	--primary: #FF7A00;
+	--secondary: #FF7A00;
+	--background: #FFD6A5;
+	--text: #1F3B73;
+	--accent: #1F3B73;
+}
+
+html[data-theme='dark'] {
+	--primary: #FF7A00;
+	--secondary: #ff7a00;
+	--background: #0F1C3A;
+	--text: #F4CDA0;
+	--accent: #FF7A00;
 }
 
 html,
@@ -32,28 +49,17 @@ main {
 	transform: scale(1.1);
 }
 
-.figure_go {
-	animation: tilt-shaking 0.25s;
+
+
+.color_toggle {
+	position: absolute;
+	right: 3vw;
+	top: 7rem;
 }
 
-@keyframes tilt-shaking {
-	0% {
-		transform: rotate(0deg) scale(1.1);
-	}
-
-	25% {
-		transform: rotate(5deg) scale(1.1);
-	}
-
-	50% {
-		transform: rotate(0eg) scale(1.1);
-	}
-
-	75% {
-		transform: rotate(-5deg) scale(1.1);
-	}
-
-	100% {
-		transform: rotate(0deg) scale(1.1);
-	}
+#theme_toggle {
+	width: 2rem;
+	height: 2rem;
+	background-color: var(--accent);
+	color: var(--background);
 }

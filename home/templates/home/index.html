@@ -1,6 +1,13 @@
-{% load static %}
 
-{% include "common/taskbar.html" %}
-<link rel="stylesheet" href="{% static 'common/css/common.css'%}">
+{% extends "common/common.html"%}
+{% block main %}
+{% load static %}
 <link rel="stylesheet" href="{% static 'home/css/index.css'%}">
 <h1>Hello World</h1>
+{% include "common/figures.html" with audio_src="batman.mp3" img_src="batman.jpg" animation="basic-anim" pos_x=50 pos_y=50 angle=-23%}
+{% include "common/figures.html" with audio_src="trumpet.mp3" img_src="trumpet.jpg" animation="basic-anim" pos_x=20 pos_y=20 angle=30%}
+{% include "common/figures.html" with audio_src="pain.mp3" img_src="knight.jpg" animation="basic-anim" pos_x=70 pos_y=70 angle=-8%}
+{% include "common/figures.html" with audio_src="uranhjorten.mp3" img_src="uranhjort.webp" animation="basic-anim" pos_x=60 pos_y=30 angle=-15%}
+{% include "common/figures.html" with audio_src="drum.mp3" img_src="drum.jpg" animation="basic-anim" pos_x=30 pos_y=80 angle=30%}
+
+{% endblock %}

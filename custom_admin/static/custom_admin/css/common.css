@@ -1,0 +1,48 @@
+:root {
+	--primary: #007AFF;
+	--secondary: #1E293B;
+	--background: #F5F7FA;
+	--text: #1E293B;
+	--accent: #007AFF;
+	background: var(--background);
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1.0vw;
+	color: var(--text);
+}
+
+html[data-theme='light'] {
+	--primary: #007AFF;
+	--secondary: #1E293B;
+	--background: #F5F7FA;
+	--text: #1E293B;
+	--accent: #007AFF;
+}
+
+html[data-theme='dark'] {
+	--primary: #3B82F6;
+	--secondary: #E2E8F0;
+	--background: #0F172A;
+	--text: #E2E8F0;
+	--accent: #3B82F6;
+}
+
+html,
+body,
+main {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+}
+
+.color_toggle {
+	position: absolute;
+	right: 3vw;
+	top: 7rem;
+}
+
+#theme_toggle {
+	width: 2rem;
+	height: 2rem;
+	background-color: var(--accent);
+	color: var(--background);
+}

@@ -36,21 +36,3 @@
 .elem_text>p {
 	font-size: 1.5em;
 }
-
-.ninja-figure {
-	top: 23vh;
-	left: 3vw;
-	transform: rotate(-10deg);
-}
-
-.mario-figure {
-	top: 67vh;
-	left: 90vw;
-	transform: rotate(27deg);
-}
-
-.dragon-figure {
-	top: 101vh;
-	left: 67vw;
-	transform: rotate(-27deg);
-}
