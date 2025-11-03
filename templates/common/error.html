@@ -1,0 +1,15 @@
+{% extends "common/common.html"%}
+{%block main%}
+{%load static%}
+
+<link rel="stylesheet" href="{% static 'common/css/error.css'%}">
+
+<div class="error-wrapper">
+	<div>
+<h1 class="error-text">{{error_text}}</h1>
+<h2 class="error-code">{{error_code}}</h2>
+	</div>
+</div>
+
+{%endblock%}
+

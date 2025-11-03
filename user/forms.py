@@ -1,6 +1,7 @@
 # user/forms.py
 from django import forms
-from .models import QuestionOption
+from django.forms.forms import ErrorList
+from .models import QuestionOption, QuizQuestion
 
 
 class QuizStepForm(forms.Form):
@@ -15,3 +16,12 @@ class QuizStepForm(forms.Form):
         required=True,
         error_messages={"required": "Vælg venligst et svar før du fortsætter."},
     )
+    def __init__(self, *args, **kwargs):
+        question = kwargs.pop("question", None)
+        print(f"Args: {args}")
+        print(f"KWArgs: {kwargs}")
+        super().__init__(*args, **kwargs)
+        if question:
+            self.fields["selected_option"].queryset = QuestionOption.objects.filter(question=question)
+
+

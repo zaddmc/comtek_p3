@@ -1,31 +1,31 @@
 # users/utils.py
-from suitcases.models import Suitcase
+from suitcases.models import Category, Suitcase
 
-def calculate_jaccard_similarity(user_categories, suitcase_categories):
+def calculate_jaccard_similarity(user_categories:list[Category], suitcase_categories:list[Category]):
     """
     Calculate Jaccard similarity between user selected categories and suitcase categories. (0-1 float)
     """
-    # make sets
-    user_set = set(user_categories)
-    suitcase_set = set(suitcase_categories)
+    if len(user_categories) == 0:
+        return 0.0
+    if len(suitcase_categories) == 0:
+        return 0.0
 
-    # calculate
-    if not user_set and not suitcase_set:
-        return 0.0
-    elif not user_set or not suitcase_set:
-        return 0.0
+    same = 0
+    for suit_cat in suitcase_categories:
+        for user_cat in user_categories:
+            if user_cat == suit_cat:
+                same += 1
+    different = len(suitcase_categories) 
     
-    intersection = len(user_set.intersection(suitcase_set))
-    union = len(user_set.union(suitcase_set))
-    return intersection / union
+    return same / different 
 
-def get_recommended_suitcases(user_categories, max_recommendations=3):
+def get_recommended_suitcases(user_categories:list[Category], max_recommendations:int=3):
     """ Get the recommended suitcases based on jaccard similarity """
     available_suitcases = Suitcase.objects.filter(rented=False).prefetch_related('categories')
     scored_suitcases = []
     for suitcase in available_suitcases:
-        suitcase_categories = suitcase.getCategories()
-        score = calculate_jaccard_similarity(user_categories, suitcase_categories)
+        suitcase_categories = suitcase.categories.all()
+        score = calculate_jaccard_similarity(user_categories, suitcase_categories) * 100.0
 
         scored_suitcases.append({'suitcase': suitcase, 'score': score, 'categories': suitcase_categories})
     # Sort by score descending

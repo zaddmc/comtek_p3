@@ -9,7 +9,8 @@ from suitcases.forms import RentForm
 
 class Category(models.Model):
     name = models.CharField(max_length=256)
-
+    hex_color = models.CharField(max_length=7,unique=True)
+    objects = models.Manager
     def __str__(self): #NOTE: This just displays name instead of UUID
         return self.name
 

@@ -11,11 +11,7 @@ class QuizQuestion(models.Model):
     """
 
     question_text = models.CharField(max_length=360)
-    order = models.IntegerField(default=0)  # To control question order
-    is_active = models.BooleanField(default=True)
-
-    class Meta:
-        ordering = ["order"]
+    objects = models.Manager()
 
     def __str__(self):
         return self.question_text
@@ -34,10 +30,7 @@ class QuestionOption(models.Model):
     categories = models.ManyToManyField(
         Category, blank=True, related_name="question_options"
     )
-    order = models.IntegerField(default=0)
-
-    class Meta:
-        ordering = ["order"]
+    objects = models.Manager()
 
     def __str__(self):
         return f"{self.question.question_text} - {self.option_text}"

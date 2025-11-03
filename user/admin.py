@@ -37,8 +37,4 @@ class QuizQuestionAdmin(admin.ModelAdmin):
     """
     Displays question text, order, and active status in the admin list view
     """
-
-    list_display = ["question_text", "order", "is_active"]
-    list_editable = ["order", "is_active"]
     inlines = [QuestionOptionInline]
-    list_filter = ["is_active"]
