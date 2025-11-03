@@ -4,7 +4,10 @@
 #include "freertos/projdefs.h"
 #include "freertos/task.h"
 #include "hal/gpio_types.h"
+#include "nvs.h"
+#include "nvs_flash.h"
 #include "soc/gpio_num.h"
+#include <stdio.h>
 #include <string.h>
 
 #define green_led GPIO_NUM_9
@@ -23,15 +26,51 @@ int is_unlocked = 0;
 
 #define TAG "KEYPAD"
 
-void password_check(char password[]) {
-    if (strcmp(password, PASSWORD)) {
-        gpio_set_level(green_led, 0);
-        gpio_set_level(red_led, 1);
-        is_unlocked = 0;
-    } else {
+void save_int(nvs_handle_t handle, const char *key, int32_t value) {
+    ESP_LOGI("NVS", "Writing %i to key %s", value, key);
+    esp_err_t err = nvs_set_i32(handle, key, value);
+    if (err != ESP_OK) {
+        ESP_LOGE("NVS", "Failed to write counter!");
+    }
+}
+int fetch_int(nvs_handle_t handle, const char *key) {
+    int32_t value = 0;
+    esp_err_t err = nvs_get_i32(handle, "counter", &value);
+    switch (err) {
+    case ESP_OK:
+        ESP_LOGI("NVS", "Read key %s = %i", key, value);
+        break;
+    case ESP_ERR_NVS_NOT_FOUND:
+        ESP_LOGW("NVS", "The value is not initialized yet!");
+        break;
+    default:
+        ESP_LOGE("NVS", "Error (%s) reading!", esp_err_to_name(err));
+    }
+    return value;
+}
+
+void password_check(char password[], nvs_handle_t handle) {
+    if (strcmp(password, "123456") == 0) {
+        int32_t unlocks = fetch_int(handle, "counter");
+        ESP_LOGI(TAG, "Adding 5 ticks to counter");
+        unlocks += 5;
+        save_int(handle, "counter", unlocks);
+
+    } else if (strcmp(password, PASSWORD) == 0) {
+        int32_t unlocks = fetch_int(handle, "counter");
+        if (unlocks <= 0) {
+            ESP_LOGI(TAG, "Not enough ticks to unlock");
+            return;
+        }
+        unlocks--;
         gpio_set_level(red_led, 0);
         gpio_set_level(green_led, 1);
         is_unlocked = 1;
+        save_int(handle, "counter", unlocks);
+    } else {
+        gpio_set_level(green_led, 0);
+        gpio_set_level(red_led, 1);
+        is_unlocked = 0;
     }
 }
 
@@ -47,6 +86,31 @@ void app_main(void) {
     }
     gpio_set_level(red_led, 1);
 
+    // Initialize NVS
+    esp_err_t err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES ||
+        err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        err = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(err);
+
+    // Open NVS handle
+    nvs_handle_t my_handle;
+    err = nvs_open("storage", NVS_READWRITE, &my_handle);
+    if (err != ESP_OK) {
+        ESP_LOGE("NVS", "Error (%s) opening NVS handle!", esp_err_to_name(err));
+        return;
+    }
+
+    // Store and read an integer value
+    /* int32_t counter = 42; */
+    /* save_int(my_handle, "counter", counter); */
+
+    // Read back the value
+    int32_t read_counter = fetch_int(my_handle, "counter");
+    ESP_LOGI("NVS", "It worked with val=%i", read_counter);
+
     char keypad_input[100] = {'\0'};
     int input_idx = 0;
     while (true) {
@@ -57,7 +121,7 @@ void app_main(void) {
                     char ch = KEYPAD_VALS[i * INPUT_PINS_SIZE + j];
                     if (ch == '#' || ch == '*') {
                         if (ch == '#') {
-                            password_check(keypad_input);
+                            password_check(keypad_input, my_handle);
                         }
                         while (input_idx) {
                             keypad_input[--input_idx] = '\0';
