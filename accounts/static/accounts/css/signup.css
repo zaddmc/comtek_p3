@@ -94,6 +94,6 @@ button svg {
 	align-items: flex-start;
 }
 
-a{
+.form-wrapper>div>a{
 	margin-top: 1rem;
 }
