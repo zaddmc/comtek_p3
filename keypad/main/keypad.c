@@ -7,7 +7,9 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "soc/gpio_num.h"
+#include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define green_led GPIO_NUM_9
@@ -33,9 +35,16 @@ void save_int(nvs_handle_t handle, const char *key, int32_t value) {
         ESP_LOGE("NVS", "Failed to write counter!");
     }
 }
+void save_string(nvs_handle_t handle, const char *key, const char *value) {
+    ESP_LOGI("NVS", "Writing %s to key %s", value, key);
+    esp_err_t err = nvs_set_str(handle, key, value);
+    if (err != ESP_OK) {
+        ESP_LOGE("NVS", "Failed to write counter!");
+    }
+}
 int fetch_int(nvs_handle_t handle, const char *key) {
     int32_t value = 0;
-    esp_err_t err = nvs_get_i32(handle, "counter", &value);
+    esp_err_t err = nvs_get_i32(handle, key, &value);
     switch (err) {
     case ESP_OK:
         ESP_LOGI("NVS", "Read key %s = %i", key, value);
@@ -48,6 +57,19 @@ int fetch_int(nvs_handle_t handle, const char *key) {
     }
     return value;
 }
+char *fetch_string(nvs_handle_t handle, const char *key) {
+    char *value;
+    size_t rsize = 0;
+    esp_err_t err = nvs_get_str(handle, key, NULL, &rsize);
+    if (err == ESP_OK) {
+        value = malloc(rsize);
+        nvs_get_str(handle, key, value, &rsize);
+        ESP_LOGI("NVS", "Read key %s = %s", key, value);
+    } else {
+        value = "FAIL";
+    }
+    return value;
+}
 
 void password_check(char password[], nvs_handle_t handle) {
     if (strcmp(password, "123456") == 0) {
@@ -56,7 +78,7 @@ void password_check(char password[], nvs_handle_t handle) {
         unlocks += 5;
         save_int(handle, "counter", unlocks);
 
-    } else if (strcmp(password, PASSWORD) == 0) {
+    } else if (strcmp(password, fetch_string(handle, "password")) == 0) {
         int32_t unlocks = fetch_int(handle, "counter");
         if (unlocks <= 0) {
             ESP_LOGI(TAG, "Not enough ticks to unlock");
@@ -102,6 +124,7 @@ void app_main(void) {
         ESP_LOGE("NVS", "Error (%s) opening NVS handle!", esp_err_to_name(err));
         return;
     }
+    save_string(my_handle, "password", "1234");
 
     // Store and read an integer value
     /* int32_t counter = 42; */
