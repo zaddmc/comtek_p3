@@ -1,10 +1,10 @@
 from django.urls import path
 
-from .views import CustAdminIndex,WIPView
+from .views import CustAdminIndex,WIPView,AdminSuitcaseView
 
 urlpatterns = [
         path("",CustAdminIndex.as_view(),name="custom-admin-home"),
-        path("suitcases/view/",WIPView.as_view(),name="custom-admin-suitcase-view"),
+        path("suitcases/view/",AdminSuitcaseView.as_view(),name="custom-admin-suitcase-view"),
         path("suitcases/view/<slug:uuid>/",WIPView.as_view(),name="custom-admin-suitcase-view"),
 
         path("suitcases/data/",WIPView.as_view(),name="custom-admin-suitcase-data"),
