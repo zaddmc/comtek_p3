@@ -1,9 +1,11 @@
-
+{% extends "common/common.html" %}
+{% block main %}
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'accounts/css/login.css'%}">
 <h1 style="margin-bottom: 1px" >Sign in</h1>
 <h3 style="margin-top: 1px" >To continue to front page</h3>
+
 <form method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}
@@ -34,3 +36,4 @@
 <h3>Don't have an account?</h3>
 <a href="/accounts/signup">Sign up</a>
 
+{% endblock %}
