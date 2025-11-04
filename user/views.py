@@ -1,18 +1,21 @@
 # user/views.py
+from enum import Enum
 from functools import reduce
+from typing import Any
 from django.contrib.auth import views
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView, View
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import redirect, render
+
+from auth_test.utils import show_error_page
 
 from .forms import QuizStepForm
 from .models import QuestionOption, QuizQuestion
 from suitcases.models import Category, Suitcase
 from .utils import get_recommended_suitcases
-
 
 class NonRentedView(LoginRequiredMixin, View):
     """
@@ -42,100 +45,107 @@ class NonRentedView(LoginRequiredMixin, View):
 
 
 class QuizView(LoginRequiredMixin, View):
-    """
-    Manages the step-by-step quiz process for users to get suitcase recommendations.
-    Handles quiz navigation, answer validation, and recommendation generation.
-    """
     login_url = reverse_lazy("login")
 
-    def get(self, request:HttpRequest, *args, **kwargs):
-        question_id_str = request.GET.get("quiz_id","") 
-        if not question_id_str:
-            return HttpResponseRedirect(redirect_to=reverse("quiz") + f"?quiz_id={1}")
-        """Initialize quiz session data and handle reset requests."""
-        question_id = 0
-        try:
-           question_id = int(question_id_str) 
-        except:
-            ctx = {}
-            ctx["error_text"] = "Invalid question index."
-            ctx["error_code"] = 400 
-            return render(request,template_name="common/error.html",context=ctx)
+    def get_context_data(self,request:HttpRequest) -> dict[str,Any] | None:
+        question_count = self.get_question_count()
+        question_id = self.get_question_id(request)
+        if not question_id:
+            return None
+        question = QuizQuestion.objects.get(pk=question_id)
+        form = QuizStepForm(questions=question)
 
-
-        questions = QuizQuestion.objects.all()
-        question = questions.get(pk=question_id)
         if not question: 
-            ctx = {}
-            ctx["error_text"] = f"No question with ID: {question_id}."
-            ctx["error_code"] = 404 
-            return render(request,template_name="common/error.html",context=ctx)
+            return None 
         ctx = {}
-        form = QuizStepForm(question=question)
+        session_data = self.get_quiz_session_data(request)
+        assert(session_data)
 
-        session_data =  request.session.get("quiz_data",[None for _ in range(questions.count())])
-        print(len(session_data))
         current_answer = session_data[question_id - 1]
-        ctx["current_session_data"] = current_answer
         if current_answer:
             form.initial["selected_option"] = current_answer
         ctx["question"] = question
         ctx["form"] = form 
-        ctx["total_questions"] =questions.count() 
-        ctx["progress_percent"] =  (question_id ) * 100 / questions.count()
+        ctx["total_questions"] =question_count 
+        ctx["progress_percent"] =  (question_id ) * 100 / question_count 
 
+        return ctx 
+
+    def get(self, request:HttpRequest):
+        session_data =  self.get_quiz_session_data(request) 
+        question_count = self.get_question_count()
+        if not session_data:
+            session_data = [None for _ in range(question_count)]
         request.session["quiz_data"] = session_data
+
+        ctx = self.get_context_data(request)
+        if not ctx:
+            return show_error_page(request,"Could not fetch question",400)
 
         return render(request,template_name="user/quiz.html",context=ctx) 
 
-    def post(self, request, *args, **kwargs):
-        session_data =  request.session.get("quiz_data",None)
+    def post(self, request):
 
+        question_id = self.get_question_id(request)
+        if not question_id:
+            return show_error_page(request,"Invalid questoin ID",400)
+
+        session_data =  self.get_quiz_session_data(request) 
         if not session_data:
-            ctx = {}
-            ctx["error_text"] = "No session data."
-            ctx["error_code"] = 400 
-            return render(request,template_name="common/error.html",context=ctx)
-        """handle answer submission, validation, and step navigation."""
-
-        question_id_str = request.GET.get("quiz_id","") 
-
-        if not question_id_str:
-            return HttpResponseRedirect(redirect_to=reverse("quiz") + f"?quiz_id={1}")
-        question_id = 0
-        try:
-           question_id = int(question_id_str) 
-        except :
-            ctx = {}
-            ctx["error_text"] = "Invalid question index."
-            ctx["error_code"] = 400 
-            return render(request,template_name="common/error.html",context=ctx)
+            return show_error_page(request,"No session data",400) 
 
         question = QuizQuestion.objects.get(pk=question_id)
         form = QuizStepForm(data=request.POST,question=question)
 
-        #data = request.POST.get("selected_option")
         if not form.is_valid():
-            return HttpResponse("fuc".encode())
+            return HttpResponseBadRequest("Invalid form".encode()) 
+
         action = request.POST.get("action", "next")  # default to next
         if action == "results":
-            session_data[question_id-1] = form.cleaned_data["selected_option"].pk
-            request.session["quiz_data"] = session_data
-            request.session["last_quiz_data"] = request.session.pop("quiz_data") 
-            return HttpResponseRedirect(reverse("quiz-recommendations"))
+            return self.go_to_results(request,session_data,question_id,form)
         if action != "next" and action != "prev":
-            ctx = {}
-            ctx["error_text"] = "Bad action."
-            ctx["error_code"] = 400 
-            return render(request,template_name="common/error.html",context=ctx)
-        addition = 0
-        if action == "next":
-            addition = 1
-        elif action == "prev":
-            addition = -1
+            return show_error_page(request,"Invalid action",400)
         session_data[question_id-1] = form.cleaned_data["selected_option"].pk
         request.session["quiz_data"] = session_data
-        return HttpResponseRedirect(redirect_to=reverse("quiz") + f"?quiz_id={question_id+addition}")
+
+        if action == "next":
+            return self.go_to_next_question(question_id)
+        elif action == "prev":
+            return self.go_to_prev_question(question_id)
+
+    def get_question_id(self,request:HttpRequest) -> int | None:
+        question_id_str = request.GET.get("quiz_id","") 
+        if not question_id_str:
+            return None 
+        question_id = 0
+        try:
+           question_id = int(question_id_str) 
+        except:
+            return None 
+        return question_id
+    def get_question_count(self) -> int:
+        return QuizQuestion.objects.all().count()
+
+    def go_to_question(self,question_id:int):
+
+        return HttpResponseRedirect(redirect_to=reverse("quiz") + f"?quiz_id={question_id}")
+    def go_to_results(self,request:HttpRequest,session_data:list[int],question_id:int,form:QuizStepForm) -> HttpResponse:
+        session_data[question_id-1] = form.cleaned_data["selected_option"].pk
+        request.session["quiz_data"] = session_data
+        request.session["last_quiz_data"] = request.session.pop("quiz_data") 
+        return HttpResponseRedirect(reverse("quiz-recommendations"))
+
+    def go_to_next_question(self,question_id:int):
+        question_count = self.get_question_count()
+        assert(question_id + 1 <= question_count)
+        return self.go_to_question(question_id+1) 
+
+    def go_to_prev_question(self,question_id:int):
+        assert(question_id - 1 > 0)
+        return self.go_to_question(question_id-1)
+
+    def get_quiz_session_data(self,request:HttpRequest) -> list[int] | None:
+        return request.session.get("quiz_data",None)
 
 class RecommendationView(LoginRequiredMixin,View):
     def get(self,request:HttpRequest):
@@ -175,23 +185,7 @@ def sort_suitcases(x:Suitcase,categories:dict[str,int]):
             score += categories[cat.name]
     return score
 
-
-def clear_recommendations(request):
-    """Clear any stored quiz recommendations and related session data."""
-    keys_to_remove = [
-        "recommended_suitcases",
-        "quiz_in_progress",
-        "quiz_answers",
-        "quiz_step",
-    ]
-    for key in keys_to_remove:
-        if key in request.session:
-            del request.session[key]
-    return HttpResponseRedirect(reverse_lazy("non-rented-view"))
-
-
 class RentedView(LoginRequiredMixin, TemplateView):
-    """Displays all suitcases currently rented by the user logged in."""
 
     template_name = "user/rented.html"
     login_url = reverse_lazy("login")
