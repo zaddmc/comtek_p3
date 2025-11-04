@@ -74,13 +74,13 @@ char *fetch_string(nvs_handle_t handle, const char *key) {
 
 void password_check(char password[], nvs_handle_t handle) {
     if (strcmp(password, "123456") == 0) {
-        int32_t unlocks = fetch_int(handle, "counter");
+        int32_t unlocks = fetch_int(handle, "unlocks");
         ESP_LOGI(TAG, "Adding 5 ticks to counter");
         unlocks += 5;
-        save_int(handle, "counter", unlocks);
+        save_int(handle, "unlocks", unlocks);
 
-    } else if (strcmp(password, fetch_string(handle, "password")) == 0) {
-        int32_t unlocks = fetch_int(handle, "counter");
+    } else if (strcmp(password, fetch_string(handle, "keycode")) == 0) {
+        int32_t unlocks = fetch_int(handle, "unlocks");
         if (unlocks <= 0) {
             ESP_LOGI(TAG, "Not enough ticks to unlock");
             return;
@@ -89,7 +89,7 @@ void password_check(char password[], nvs_handle_t handle) {
         gpio_set_level(red_led, 0);
         gpio_set_level(green_led, 1);
         is_unlocked = 1;
-        save_int(handle, "counter", unlocks);
+        save_int(handle, "unlocks", unlocks);
     } else {
         gpio_set_level(green_led, 0);
         gpio_set_level(red_led, 1);
@@ -97,7 +97,7 @@ void password_check(char password[], nvs_handle_t handle) {
     }
 }
 
-void keypad_main(void) {
+void keypad_main(nvs_handle_t handle) {
     for (int i = 0; i < INPUT_PINS_SIZE; i++) {
         gpio_set_direction(INPUT_PINS[i], GPIO_MODE_INPUT);
         gpio_set_pull_mode(INPUT_PINS[i], GPIO_PULLDOWN_ONLY);
@@ -109,30 +109,14 @@ void keypad_main(void) {
     }
     gpio_set_level(red_led, 1);
 
-    // Initialize NVS
-    esp_err_t err = nvs_flash_init();
-    if (err == ESP_ERR_NVS_NO_FREE_PAGES ||
-        err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        err = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(err);
-
-    // Open NVS handle
-    nvs_handle_t my_handle;
-    err = nvs_open("storage", NVS_READWRITE, &my_handle);
-    if (err != ESP_OK) {
-        ESP_LOGE("NVS", "Error (%s) opening NVS handle!", esp_err_to_name(err));
-        return;
-    }
-    save_string(my_handle, "password", "1234");
+    save_string(handle, "keycode", "1234");
 
     // Store and read an integer value
-    /* int32_t counter = 42; */
-    /* save_int(my_handle, "counter", counter); */
+    /* int32_t unlocks = 42; */
+    /* save_int(my_handle, "unlocks", unlocks); */
 
     // Read back the value
-    int32_t read_counter = fetch_int(my_handle, "counter");
+    int32_t read_counter = fetch_int(handle, "unlocks");
     ESP_LOGI("NVS", "It worked with val=%i", read_counter);
 
     char keypad_input[100] = {'\0'};
@@ -145,7 +129,7 @@ void keypad_main(void) {
                     char ch = KEYPAD_VALS[i * INPUT_PINS_SIZE + j];
                     if (ch == '#' || ch == '*') {
                         if (ch == '#') {
-                            password_check(keypad_input, my_handle);
+                            password_check(keypad_input, handle);
                         }
                         while (input_idx) {
                             keypad_input[--input_idx] = '\0';

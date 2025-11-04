@@ -66,10 +66,12 @@ static int ble_advertise_cb(struct ble_gap_event *event, void *arg) {
 // Set up and start advertising
 static void ble_start_advertising(uint8_t *adv_raw_data,
                                   size_t adv_raw_data_len) {
-    struct ble_gap_adv_params adv_params = {.conn_mode = BLE_GAP_CONN_MODE_NON,
-                                            .disc_mode = BLE_GAP_DISC_MODE_GEN,
-                                            .itvl_min = 0x20,
-                                            .itvl_max = 0x20};
+    struct ble_gap_adv_params adv_params = {
+        .conn_mode = BLE_GAP_CONN_MODE_NON,
+        .disc_mode = BLE_GAP_DISC_MODE_GEN,
+        .itvl_min = 0x20,
+        .itvl_max = 0x20,
+    };
 
     ble_gap_adv_set_data(adv_raw_data, adv_raw_data_len);
 
@@ -97,7 +99,7 @@ static void on_sync(void) {
     ESP_LOGI(TAG, "adv_raw_data: %s", adv_raw_data);
 }
 
-void location_main() {
+void location_main(nvs_handle_t handle) {
     // Initialize NVS (required for BLE initialization)
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
