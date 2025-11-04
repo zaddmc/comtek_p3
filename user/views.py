@@ -53,7 +53,7 @@ class QuizView(LoginRequiredMixin, View):
         if not question_id:
             return None
         question = QuizQuestion.objects.get(pk=question_id)
-        form = QuizStepForm(questions=question)
+        form = QuizStepForm(question=question)
 
         if not question: 
             return None 
@@ -76,6 +76,7 @@ class QuizView(LoginRequiredMixin, View):
         question_count = self.get_question_count()
         if not session_data:
             session_data = [None for _ in range(question_count)]
+  
         request.session["quiz_data"] = session_data
 
         ctx = self.get_context_data(request)
