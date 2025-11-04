@@ -1,5 +1,6 @@
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
+from datetime import datetime,timedelta
 
 from django.urls import reverse
 from django.views import View
@@ -73,22 +74,28 @@ class AdminSuitcaseCreate(UserAdminRequiredMixin,View):
         request_user = request.POST.get("users",None)
         print(request.POST)
 
-        suitcase = Suitcase.objects.create(name="fart")
-        suitcase.name = request_suitcasename[0]
+        suitcase = Suitcase.objects.create(name=request_suitcasename)
         categories = []
         for x in request_categories:
             x = int(x)
             category = Category.objects.get(pk = x)
             categories.append(category)
-        suitcase.categories = categories
-        if request_user[0] == "None":
+        suitcase.categories.set(categories)
+        if request_user == "None":
             suitcase.save()
             return HttpResponseRedirect(reverse("custom-admin-suitcase-view"))
-        
-        
-        
+        user = User.objects.get(uuid = request_user)
+        user.userinfo.rent_amount += 1
+        user.userinfo.current_rented += 1
+        user.save()
+        suitcase.rented_by = user
+        suitcase.rented = True
+        suitcase.rented_date = datetime.today()
+        suitcase.expiration_date = timedelta(days=90) + datetime.today()
+   
         suitcase.save()
-        Suitcase.objects.values_list("name", flat=True)
+        
+        return HttpResponseRedirect(reverse("custom-admin-suitcase-view"))
         
         
 
