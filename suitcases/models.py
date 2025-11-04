@@ -47,6 +47,7 @@ class Suitcase(models.Model):
         return
 
     def unrent(self):
+        self.rented_by.userinfo.current_rented -= 1
         self.rented = False
         self.rented_by = None 
         self.rented_date= None 
@@ -61,6 +62,9 @@ class Suitcase(models.Model):
 
         if(self.expiration_date <= self.rented_date):
             return "Expiration date must be after today"
+
+        user.userinfo.rent_amount += 1
+        user.userinfo.current_rented+= 1
         self.save()
 
         return None
