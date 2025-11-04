@@ -4,6 +4,7 @@ from suitcases.models import Category, Suitcase
 def calculate_jaccard_similarity(user_categories:list[Category], suitcase_categories:list[Category]):
     """
     Calculate Jaccard similarity between user selected categories and suitcase categories. (0-1 float)
+    It is slighty modified to fit the use case that is to say it is A ∩ B / B
     """
     if len(user_categories) == 0:
         return 0.0
