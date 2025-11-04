@@ -2,7 +2,27 @@
 {% block main %}
 {% load static %}
 
+<link rel="stylesheet" href="{% static 'custom_admin/css/index.css'%}">
 <h1>hej</h1>
+<ul>
+{%for suitcase in suitcases%}
+<div>
+    <li>{{suitcase.name}}</li>
+    <div>
+        <ul>
+            {%for category in suitcase.categories.all%}
+            <li>{{category.name}}</li>
+            {%empty%}
+            <li>None</li>
+            {%endfor%}
+        </ul>
+    </div>
+</div>
+{%empty%}
+<li>no suitcases</li>
+{%endfor%}
+</ul>
 
+<a href="{%url 'custom-admin-suitcase-create'%}">Martin</a>
 
 {% endblock %}

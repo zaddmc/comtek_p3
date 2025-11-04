@@ -8,7 +8,7 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import UserPassesTestMixin
 
 from accounts.models import User
-from suitcases.models import Suitcase
+from suitcases.models import Suitcase, Category
 
 # Create your views here.
 
@@ -54,41 +54,38 @@ class CustAdminIndex(UserAdminRequiredMixin,View):
     
 class AdminSuitcaseView(UserAdminRequiredMixin,View):
     def get(self,request:HttpRequest):
-        ctxt =  {} 
-
+        
         all_suitcases = Suitcase.objects.all()
+        
+        
 
-        suitcase_amount = len(all_suitcases)
+        context = {}
 
-        ctxt["brief_case_amount"] = suitcase_amount 
+        context["suitcases"] = all_suitcases
 
-        rented_amount = 0
-        for i in range(suitcase_amount):
-            if all_suitcases[i].rented:
-                rented_amount += 1
-        ctxt["rented_brief_case_amount"] = rented_amount
-        ctxt["rented_brief_case_amount_procent"] =  1.0 if not suitcase_amount else rented_amount / suitcase_amount 
-        ctxt["not_rented_brief_case_amount"] = len(all_suitcases) - rented_amount
-        sorted_suitcases = sorted(all_suitcases,key= lambda x:x.suitcasedata.rented_amount)[0:3]
-        ctxt["most_rented_suitcases"] = sorted_suitcases
-
-        users = User.objects.all()
-
-        sorted_users_most_active= sorted(users,key= lambda x:x.userinfo.rent_amount,reverse=True)[0:3]
-        sorted_users_current_active= sorted(users,key= lambda x:x.userinfo.current_rented,reverse=True)[0:3]
-
-        ctxt["most_active_customers"] = sorted_users_most_active 
-        ctxt["most_current_active_customers"] =sorted_users_current_active 
-
-
-        return render(request,template_name="templates/custom_admin/suitcase/suitcase_view.html",context=ctxt) 
+        return render(request,template_name="custom_admin/suitcase/suitcase_view.html",context=context) 
     
 
-    
+class AdminSuitcaseCreate(UserAdminRequiredMixin,View):
+    def post(self,request:HttpRequest):
+        suitcasename = request.POST.get("suitcase_name_input",None)
+        categories = request.POST.getlist("categories[]",None)
+        user = request.POST.get("suitcase_name_input",None)
+        
+        
+
+    def get(self,request:HttpRequest):
+        
+        all_users = User.objects.all()        
+        all_categories = Category.objects.all()
+        context = {}
+
+
+
+        context["users"] = all_users
+        context["categories"] = all_categories
+        return render(request,template_name="custom_admin/suitcase/suitcase_create.html",context=context)
 
 class WIPView(TemplateView):
     template_name = "custom_admin/wip.html"
 
-
-
-        

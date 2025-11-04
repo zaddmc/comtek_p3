@@ -1,0 +1,35 @@
+{% extends "custom_admin/common.html"%}
+{% block main %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'custom_admin/css/index.css'%}">
+
+<h1>hej 2</h1>
+<form action="post">
+<input id="suitcase_name_input" name="suitcase_name_input">
+<label for="suitcase_name_input">suitcase name:</label>
+
+{%for category in categories%}
+<input type="checkbox" id="{{category.name}}" name="categories[]"value="{{category.pk}}">
+<label for="{{category.name}}">{{category.name}}</label>
+{%empty%}
+<ul>
+    <li>No categories</li>
+</ul>
+{%endfor%}
+
+
+<input type="radio" id="None" name="users" value="None">
+<label for="None">None</label>
+{%for user in users%}
+<input type="radio" id="{{user.username}}" name="users" value="{{user.uuid}}">
+<label for="{{user.username}}">{{user.username}}</label>
+{%empty%}
+<ul>
+    <li>No users</li>
+</ul>
+{%endfor%}
+
+</form>
+
+{% endblock %}
