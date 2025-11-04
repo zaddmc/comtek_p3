@@ -5,7 +5,8 @@
 <link rel="stylesheet" href="{% static 'custom_admin/css/index.css'%}">
 
 <h1>hej 2</h1>
-<form action="post">
+<form method="post">
+    {% csrf_token %}
 <input id="suitcase_name_input" name="suitcase_name_input">
 <label for="suitcase_name_input">suitcase name:</label>
 
@@ -19,7 +20,7 @@
 {%endfor%}
 
 
-<input type="radio" id="None" name="users" value="None">
+<input type="radio" id="None" name="users" value="None" checked>
 <label for="None">None</label>
 {%for user in users%}
 <input type="radio" id="{{user.username}}" name="users" value="{{user.uuid}}">
@@ -29,6 +30,8 @@
     <li>No users</li>
 </ul>
 {%endfor%}
+
+<button type="submit">Submit</button>
 
 </form>
 

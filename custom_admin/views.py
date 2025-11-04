@@ -68,9 +68,27 @@ class AdminSuitcaseView(UserAdminRequiredMixin,View):
 
 class AdminSuitcaseCreate(UserAdminRequiredMixin,View):
     def post(self,request:HttpRequest):
-        suitcasename = request.POST.get("suitcase_name_input",None)
-        categories = request.POST.getlist("categories[]",None)
-        user = request.POST.get("suitcase_name_input",None)
+        request_suitcasename = request.POST.get("suitcase_name_input",None)
+        request_categories = request.POST.getlist("categories[]",None)
+        request_user = request.POST.get("users",None)
+        print(request.POST)
+
+        suitcase = Suitcase.objects.create(name="fart")
+        suitcase.name = request_suitcasename[0]
+        categories = []
+        for x in request_categories:
+            x = int(x)
+            category = Category.objects.get(pk = x)
+            categories.append(category)
+        suitcase.categories = categories
+        if request_user[0] == "None":
+            suitcase.save()
+            return HttpResponseRedirect(reverse("custom-admin-suitcase-view"))
+        
+        
+        
+        suitcase.save()
+        Suitcase.objects.values_list("name", flat=True)
         
         
 
@@ -80,7 +98,7 @@ class AdminSuitcaseCreate(UserAdminRequiredMixin,View):
         all_categories = Category.objects.all()
         context = {}
 
-
+        
 
         context["users"] = all_users
         context["categories"] = all_categories
