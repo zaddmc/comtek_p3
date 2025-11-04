@@ -1,5 +1,6 @@
 #include "esp_err.h" // For error handling
 #include "esp_log.h"
+#include "gap_events.h"
 #include "location.h"
 #include "nvs_flash.h" // For NVS functions like nvs_flash_init
 #include <stdint.h>
@@ -51,12 +52,31 @@ void hex_string_to_bytes(const char *hex, uint8_t *bytes, size_t len) {
         sscanf(hex + 2 * i, "%2hhx", &bytes[i]);
     }
 }
+
+uint8_t own_addr_type;
+uint8_t addr_val[6] = {0};
+uint8_t esp_uri[16] = {0x17, '/', '/', 'e', 's', 'p', 'r', 'e',
+                       's',  's', 'i', 'f', '.', 'c', 'o', 'm'};
 // BLE advertising callback
-static int ble_advertise_cb(struct ble_gap_event *event, void *arg) {
+int ble_advertise_cb(struct ble_gap_event *event, void *arg) {
+    struct ble_gap_conn_desc connection_description;
+
     switch (event->type) {
     case BLE_GAP_EVENT_ADV_COMPLETE:
         ESP_LOGI(TAG, "Advertising completed");
+        ESP_LOGI(TAG, "Starting alt advertisement");
+        start_alt_advertising();
         break;
+
+    case BLE_GAP_EVENT_CONNECT:
+        return gap_connection_event_handler(event, arg,
+                                            &connection_description);
+    case BLE_GAP_EVENT_DISCONNECT:
+        return gap_disconnect_event_handler(event, arg,
+                                            &connection_description);
+    case BLE_GAP_EVENT_SUBSCRIBE:
+        return gap_subscribe_event_handler(event, arg, &connection_description);
+
     default:
         break;
     }
@@ -73,6 +93,7 @@ static void ble_start_advertising(uint8_t *adv_raw_data,
         .itvl_max = 0x20,
     };
 
+    // Might be promelatic in integration hell
     ble_gap_adv_set_data(adv_raw_data, adv_raw_data_len);
 
     // Start advertising
