@@ -4,6 +4,7 @@
 #include "freertos/projdefs.h"
 #include "freertos/task.h"
 #include "hal/gpio_types.h"
+#include "keypad.h"
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "soc/gpio_num.h"
@@ -96,7 +97,7 @@ void password_check(char password[], nvs_handle_t handle) {
     }
 }
 
-void app_main(void) {
+void keypad_main(void) {
     for (int i = 0; i < INPUT_PINS_SIZE; i++) {
         gpio_set_direction(INPUT_PINS[i], GPIO_MODE_INPUT);
         gpio_set_pull_mode(INPUT_PINS[i], GPIO_PULLDOWN_ONLY);
@@ -163,3 +164,4 @@ void app_main(void) {
         vTaskDelay(pdMS_TO_TICKS(50));
     }
 }
+#undef TAG
