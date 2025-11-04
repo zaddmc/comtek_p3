@@ -100,15 +100,6 @@ static void on_sync(void) {
 }
 
 void location_main(nvs_handle_t handle) {
-    // Initialize NVS (required for BLE initialization)
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
-        ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
-
     // 20-byte ephemeral identifier
     uint8_t eid_bytes[20];
     hex_string_to_bytes(eid_string, eid_bytes, 20);
