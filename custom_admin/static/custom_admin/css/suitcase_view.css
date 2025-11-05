@@ -1,0 +1,26 @@
+.admin_body{
+    align-items: center;
+    display: flex;
+	flex-direction: column;
+	justify-content: center;
+    
+}
+
+.admin_body>ul{
+    padding: 0;
+}
+
+.suitcase_list{
+    flex-direction: row;
+    padding: 1.3rem;
+    padding-inline: 6rem;
+    margin: 0.5rem;
+    border: solid;
+    border-radius: 0.5rem;
+    color: var(--text);
+    background: var(--text);
+
+}
+.suitcase_list>li,.suitcase_list>div{
+    color: var(--background);
+}

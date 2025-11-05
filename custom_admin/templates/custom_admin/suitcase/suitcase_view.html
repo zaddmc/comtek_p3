@@ -3,26 +3,28 @@
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'custom_admin/css/index.css'%}">
-<h1>hej</h1>
-<ul>
-{%for suitcase in suitcases%}
-<div>
-    <li>{{suitcase.name}}: {%if suitcase.rented%} {{suitcase.rented_by.username}} {%else%} Not rented {%endif%}</li>
-    <div>
-        <ul>
-            {%for category in suitcase.categories.all%}
-            <li>{{category.name}}</li>
-            {%empty%}
-            <li>None</li>
-            {%endfor%}
-        </ul>
+<link rel="stylesheet" href="{% static 'custom_admin/css/suitcase_view.css' %}">
+<div class="admin_body">
+    <h1>Briefcase overview</h1>
+    <ul>
+    {%for suitcase in suitcases%}
+    <div class="suitcase_list">
+        <li>{{suitcase.name}}: {%if suitcase.rented%} {{suitcase.rented_by.username}} {%else%} Not rented {%endif%}</li>
+        <div>
+            <ul>
+                {%for category in suitcase.categories.all%}
+                <li>{{category.name}}</li>
+                {%empty%}
+                <li>None</li>
+                {%endfor%}
+            </ul>
+        </div>
     </div>
-</div>
-{%empty%}
-<li>no suitcases</li>
-{%endfor%}
-</ul>
+    {%empty%}
+    <li>no suitcases</li>
+    {%endfor%}
+    </ul>
 
 <a href="{%url 'custom-admin-suitcase-create'%}">Martin</a>
-
+</div>
 {% endblock %}
