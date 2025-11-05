@@ -53,6 +53,27 @@ class CustAdminIndex(UserAdminRequiredMixin,View):
 
         return render(request,template_name="custom_admin/index.html",context=ctxt) 
     
+class AdminCategoryCreate(UserAdminRequiredMixin,View):
+    def post(self,request:HttpRequest):
+        
+        request_categoryname = request.POST.get("category_name_input",None)
+        print(request.POST)
+        
+        category = Category.objects.create(name=request_categoryname)
+   
+        category.save()
+        
+        return HttpResponseRedirect(reverse("custom-admin-categories-create"))
+
+    def get(self,request:HttpRequest):
+        
+        all_categories = Category.objects.all()
+        context = {}
+        context["categories"] = all_categories
+        return render(request,template_name="custom_admin/category/category_create.html",context=context)
+    
+
+
 class AdminSuitcaseView(UserAdminRequiredMixin,View):
     def get(self,request:HttpRequest):
         
@@ -66,13 +87,14 @@ class AdminSuitcaseView(UserAdminRequiredMixin,View):
 
         return render(request,template_name="custom_admin/suitcase/suitcase_view.html",context=context) 
     
+    
 
 class AdminSuitcaseCreate(UserAdminRequiredMixin,View):
     def post(self,request:HttpRequest):
         request_suitcasename = request.POST.get("suitcase_name_input",None)
         request_categories = request.POST.getlist("categories[]",None)
         request_user = request.POST.get("users",None)
-        print(request.POST)
+        
 
         suitcase = Suitcase.objects.create(name=request_suitcasename)
         categories = []
