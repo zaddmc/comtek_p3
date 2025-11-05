@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user', '0002_remove_questionoption_value_and_more'),
+        ("user", "0002_remove_questionoption_value_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='quizquestion',
-            name='question_text',
+            model_name="quizquestion",
+            name="question_text",
             field=models.CharField(max_length=360),
         ),
     ]
