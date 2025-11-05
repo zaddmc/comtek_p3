@@ -1,8 +1,8 @@
 # user/urls.py
 from django.urls import path
-
+from .views import NonRentedView, RecommendationView, RentedView, QuizView
 from home.views import WIPView
-from .views import NonRentedView, RecommendationView, RentedView, QuizView 
+
 urlpatterns = [
     path("", NonRentedView.as_view(), name="non-rented-view"),
     path("quiz/", QuizView.as_view(), name="quiz"),

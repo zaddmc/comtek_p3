@@ -6,11 +6,18 @@ from django.core.signing import Signer
 from accounts.models import User
 from suitcases.forms import RentForm
 
+from .utils import generate_random_color
 
 class Category(models.Model):
     name = models.CharField(max_length=256)
-    hex_color = models.CharField(max_length=7,unique=True)
+    hex_color = models.CharField(max_length=7,unique=True, blank=True, null=True)
     objects = models.Manager
+    
+    def save(self, *args, **kwargs):
+        if not self.hex_color:
+            self.hex_color = generate_random_color()
+        super().save(*args, **kwargs)
+
     def __str__(self): #NOTE: This just displays name instead of UUID
         return self.name
 
