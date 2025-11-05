@@ -4,7 +4,6 @@
 	background: var(--background);
 	color: var(--text);
 	width: 100%;
-	height: 5rem;
 	display: grid;
 	grid-template-columns: repeat(20, [col-start] 1fr);
 	grid-template-rows: 100%;
@@ -16,6 +15,11 @@
 	border-bottom: solid;
 	border-color: var(--primary);
 
+}
+
+.taskbar,
+.taskbar_block {
+	height: 5rem;
 }
 
 .website_title {
@@ -200,4 +204,40 @@
 .taskbar_a:hover>a {
 	color: var(--background);
 	background-color: var(--text);
+}
+
+.hamburger {
+	display: none;
+}
+
+@media (max-width: 600px) {
+	.taskbar_tabs {
+		display: none;
+	}
+
+	.taskbar_login {
+		display: none;
+	}
+
+	.hamburger {
+		display: block;
+	}
+
+	.taskbar {
+		grid-template-columns: repeat(8, [col-start] 1fr);
+	}
+
+	.taskbar,
+	.taskbar_block {
+		height: 12rem;
+	}
+
+	.website_title {
+		font-size: 5rem;
+	}
+
+	.taskbar_title {
+		grid-column-start: 1;
+		grid-column-end: 7;
+	}
 }

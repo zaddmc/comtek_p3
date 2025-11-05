@@ -1,141 +1,164 @@
 /* user/static/user/css/recommendations.css */
+.recommendations-wrapper {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+
+.recommendation-main {
+	grid-column-start: 1;
+	grid-column-end: 4;
+}
 
 .recommendations-section {
-  text-align: center;
-  max-width: 800px;
-  padding: 2rem;
+	text-align: center;
+	max-width: max-content;
+	padding: 2rem;
 }
 
 .recommendation-item {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin: 1.5rem 0;
-  border-left: 6px solid var(--primary);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: left;
+	background: #fff;
+	border-radius: 1rem;
+	padding: 1.5rem;
+	margin: 1.5rem 0;
+	border-left: 6px solid var(--primary);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	text-align: left;
 }
 
 .recommendation-grid {
-  display: grid;
-  grid-template-columns: 1fr 120px;
-  gap: 1rem 1.5rem;
-  align-items: start;
+	display: grid;
+	grid-template-columns: repeat(4, [col-start] 1fr);
+	gap: 1rem 1.5rem;
+	align-items: start;
 }
 
 .recommendation-rail {
-  position: relative;
+	position: relative;
+
+	grid-column-start: 4;
+	grid-column-end: 5;
+	height: fit-content;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .recommendation-header-left h3 {
-  margin: 0 0 0.5rem 0;
-  color: var(--accent);
+	margin: 0 0 0.5rem 0;
+	color: var(--accent);
 }
 
 .recommendation-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 1rem;
+	flex-wrap: wrap;
 }
+
 .recommendation-header h3 {
-  margin: 0;
-  color: var(--accent);
+	margin: 0;
+	color: var(--accent);
 }
+
 .match-score {
-  background: var(--primary);
-  color: #fff;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 0.9rem;
+	background: var(--primary);
+	color: #fff;
+	padding: 0.5rem 1rem;
+	border-radius: 20px;
+	font-weight: bold;
+	font-size: 0.9rem;
+	margin-bottom: 0.5rem;
 }
 
 .recommendation-categories {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  column-gap: 0.5rem;
-  row-gap: 0.4rem;
-  align-items: start;
-  margin-bottom: 1rem;
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	column-gap: 0.5rem;
+	row-gap: 0.4rem;
+	align-items: start;
+	margin-bottom: 1rem;
 }
 
 .features-label {
-  grid-column: 1;
-  white-space: nowrap;
+	grid-column: 1;
+	white-space: nowrap;
 }
 
 .feature-tags {
-  grid-column: 2;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem 0.4rem;
-  min-width: 0;
+	grid-column: 2;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.3rem 0.4rem;
+	min-width: 0;
 }
 
 .category-tag {
-  display: inline-block;
-  background: var(--accent);
-  color: #fff;
-  padding: 0.3rem 0.8rem;
-  border-radius: 15px;
-  font-size: 0.8rem;
-  margin: 0.2rem;
+	display: inline-block;
+	background: var(--accent);
+	color: #fff;
+	padding: 0.3rem 0.8rem;
+	border-radius: 15px;
+	font-size: 0.8rem;
+	margin: 0.2rem;
 }
+
 .recommendation-btn {
-  display: inline-block;
-  background: var(--primary);
-  color: #fff;
-  padding: 0.8rem 1.5rem;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+	display: inline-block;
+	background: var(--primary);
+	color: #fff;
+	padding: 0.8rem 1.5rem;
+	border-radius: 6px;
+	text-decoration: none;
+	font-weight: bold;
+	transition: background-color 0.3s ease;
 }
+
 .recommendation-btn:hover {
-  background: var(--accent);
-  color: #fff;
+	background: var(--accent);
+	color: #fff;
 }
+
 .recommendation-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 2rem;
+	display: flex;
+	gap: 1rem;
+	justify-content: center;
+	margin-top: 2rem;
 }
 
 .match-score-block {
-  position: relative;
-  display: inline-block;
-  min-width: 5rem;
+	position: relative;
+	display: inline-block;
+	min-width: 5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
 }
 
 .match-avatar {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translate(-50%, 8px);
-  width: 7rem;
-  height: 7rem;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid var(--primary);
+	width: 7rem;
+	height: 7rem;
+	border-radius: 50%;
+	overflow: hidden;
+	border: 2px solid var(--primary);
 }
 
 .match-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 .match-avatar.placeholder {
-  background-color: #7fffd4;
+	background-color: #7fffd4;
 }
 
 .recommendations-section.hidden {
-  display: none !important;
+	display: none !important;
 }
 
 .recommendations-section h1 {
-  margin-top: 4rem;
+	margin-top: 4rem;
 }

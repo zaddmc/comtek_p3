@@ -6,9 +6,17 @@ from django.core.signing import Signer
 from accounts.models import User
 from suitcases.forms import RentForm
 
+from .utils import generate_random_color
 
 class Category(models.Model):
     name = models.CharField(max_length=256)
+    hex_color = models.CharField(max_length=7,unique=True, blank=True, null=True)
+    objects = models.Manager
+    
+    def save(self, *args, **kwargs):
+        if not self.hex_color:
+            self.hex_color = generate_random_color()
+        super().save(*args, **kwargs)
 
     def __str__(self): #NOTE: This just displays name instead of UUID
         return self.name
@@ -46,6 +54,7 @@ class Suitcase(models.Model):
         return
 
     def unrent(self):
+        self.rented_by.userinfo.current_rented -= 1
         self.rented = False
         self.rented_by = None 
         self.rented_date= None 
@@ -60,6 +69,9 @@ class Suitcase(models.Model):
 
         if(self.expiration_date <= self.rented_date):
             return "Expiration date must be after today"
+
+        user.userinfo.rent_amount += 1
+        user.userinfo.current_rented+= 1
         self.save()
 
         return None

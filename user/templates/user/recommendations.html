@@ -1,30 +1,37 @@
 {# templates/user/recommendations.html #}
 <!-- Black magic please don't touch anymore it keeps on breaking and making my life misery -->
+{% extends "common/common.html" %}
+{%block main%}
+{% load static %}
 
-<div id="recommendationsSection" class="recommendations-section" {% if not show_recommendations %} hidden {% endif %}>
+
+<link rel="stylesheet" href="{% static 'user/css/recommendations.css' %}">
+<link rel="stylesheet" href="{% static 'user/css/app-common.css'%}">
+<div class="recommendations-wrapper">
+<div id="recommendationsSection" class="recommendations-section">
   <h1>Dine perfekte kuffertmatches</h1>
   <p>Baseret på dine quiz-svar, har vi fundet disse kufferter, der matcher dine behov.</p>
 
   <div id="recommendationsContainer">
-    {% for rec in recommended_suitcases %}
+    {% for rec in recommendations %}
       <div class="recommendation-item">
         <div class="recommendation-grid">
           <!--LEFT column: title, features, CTA -->
           <div class="recommendation-main">
             <div class="recommendation-header-left">
-              <h3>{{ rec.name }}</h3>
+              <h3>{{ rec.suitcase.name}}</h3>
             </div>
 
             <div class="recommendation-categories">
               <strong class="features-label">Features:</strong>
               <div class="feature-tags">
                 {% for category in rec.categories %}
-                  <span class="category-tag">{{ category }}</span>
+				<span class="category-tag" style="background-color: {{category.hex_color}}">{{ category }}</span>
                 {% endfor %}
               </div>
             </div>
 
-            <a href="/suitcases/{{ rec.uuid }}" class="recommendation-btn">Se kuffert</a>
+            <a href="/suitcases/{{ rec.suitcase.uuid }}" class="recommendation-btn">Se kuffert</a>
           </div>
 
           <!--RIGHT column: matchscore box with avatar placefolder if no image have not figured that part out but did setup-->
@@ -33,7 +40,7 @@
               <span class="match-score">{{ rec.score }}% Match</span>
               {% if rec.image_url %}
                 <div class="match-avatar">
-                  <img src="{{ rec.image_url }}" alt="{{ rec.name }} avatar">
+                  <img src="{{ rec.image_url }}" alt="{{ rec.suitcase.name }} avatar">
                 </div>
               {% else %}
                 <div class="match-avatar placeholder"></div>
@@ -51,7 +58,10 @@
   </div>
 
   <div class="recommendation-actions">
-    <a href="{% url 'clear-recommendations' %}" class="secondary-button">Tag quizzen igen</a>
+    <a href="{% url 'quiz' %}" class="secondary-button">Tag quizzen igen</a>
     <button onclick="showSection('suitcases')" class="cta-button">Gennemse alle kufferter</button>
   </div>
 </div>
+</div >
+
+{%endblock %}

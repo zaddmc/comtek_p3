@@ -1,10 +1,9 @@
-{% extends "common/templates/common.html"%}
+{% extends "common/common.html"%}
 {% block main%}
 {% if user.is_authenticated %}
 {% load static %}
     <link rel="stylesheet" href="{% static 'user/css/app-common.css'%}">
     <link rel="stylesheet" href="{% static 'user/css/index.css' %}">
-    <link rel="stylesheet" href="{% static 'user/css/recommendations.css' %}">
         <!-- Main Content -->
         <div class="notuser">
                 <!-- Default landing content (welcome, notices, recommendations) -->
@@ -15,7 +14,7 @@
                     <h1>Velkommen til Figure-it-out!</h1>
                     <p>Find den perfekte kuffert til dig og dit team!</p>
                     <div class="action-buttons">
-                        <a href="{% url 'quiz' %}" class="cta-button">Tag denne quiz for at finde den perfekte kuffert</a>
+                        <a href="{% url 'quiz' %}?quiz_id=1" class="cta-button">Tag denne quiz for at finde den perfekte kuffert</a>
                         <button onclick="showSection('suitcases')" class="secondary-button">Gennemse alle kufferter</button>
                     </div>
                 </div>
@@ -23,15 +22,12 @@
                 <!-- Notice to indicate quiz in progress -->
                 {% if show_quiz %}
                 <div class="notice quiz-notice">
-                    <p>Du har en quiz i gang! <a href="{% url 'quiz' %}">Fortsæt quiz</a> eller 
+					<p>Du har en quiz i gang! <a href="{% url 'quiz' %}?quiz_id={{current_id}}">Fortsæt quiz</a> eller 
                        <a href="{% url 'clear-recommendations' %}">annuller</a>.</p>
                 </div>
                 {% endif %}
 
                 <!-- Recommendations Section visibility controlled by JS and own template -->
-
-                {% include "user/recommendations.html" %}
-
                 <!-- Complete suitcase list of available suitcases again toggled via JS showSection -->
                 <div id="suitcasesList" class="suitcases-list hidden">
                     <h1>Alle tilgængelige kufferter</h1>
@@ -49,24 +45,6 @@
                 </div>
         </div>
 
-        <!-- Minimal JavaScript for UI interactions / toggling -->
-        <script>
-        function showSection(sectionName) {
-            // Hide all sections
-            document.querySelectorAll('.welcome-section, #recommendationsSection, .suitcases-list').forEach(section => {
-                section.classList.add('hidden');
-            });
-            
-            // Show selected section
-            if (sectionName === 'welcome') {
-                document.querySelector('.welcome-section')?.classList.remove('hidden');
-            } else if (sectionName === 'recommendations') {
-                document.getElementById('recommendationsSection')?.classList.remove('hidden');
-            } else if (sectionName === 'suitcases') {
-                document.getElementById('suitcasesList')?.classList.remove('hidden');
-            }
-        }
-        </script>
 
     {% else %}
         <!-- Not authenticated -->
