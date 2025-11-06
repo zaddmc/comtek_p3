@@ -59,7 +59,6 @@ class QuizView(LoginRequiredMixin, View):
             return None 
         ctx = {}
         session_data = self.get_quiz_session_data(request)
-        print(session_data)
         assert(session_data)
 
         current_answer = session_data[question_id - 1]
