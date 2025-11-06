@@ -29,10 +29,10 @@ static void i2s_init(void) {
     };
 
     static const i2s_pin_config_t pin_config = {
-        .bck_io_num = 18,
-        .ws_io_num = 19,
-        .data_out_num = 3,
-        .data_in_num = 2,
+        .bck_io_num = 5,
+        .ws_io_num = 6,
+        .data_out_num = 7,
+        .data_in_num = 8,
     };
     ESP_ERROR_CHECK(i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL));
     ESP_ERROR_CHECK(i2s_set_pin(I2S_NUM_0, &pin_config));
