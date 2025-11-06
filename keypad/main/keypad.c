@@ -16,10 +16,10 @@
 #define green_led GPIO_NUM_9
 #define red_led GPIO_NUM_8
 
-const gpio_num_t INPUT_PINS[] = {GPIO_NUM_19, GPIO_NUM_18, GPIO_NUM_10};
+const gpio_num_t INPUT_PINS[] = {GPIO_NUM_35, GPIO_NUM_36, GPIO_NUM_37};
 const int INPUT_PINS_SIZE = 3;
-const gpio_num_t OUTPUT_PINS[] = {GPIO_NUM_0, GPIO_NUM_1, GPIO_NUM_2,
-                                  GPIO_NUM_3, green_led,  red_led};
+const gpio_num_t OUTPUT_PINS[] = {GPIO_NUM_4, GPIO_NUM_5, GPIO_NUM_6,
+                                  GPIO_NUM_7, green_led,  red_led};
 const int OUTPUT_PINS_SIZE = 4;
 
 const char KEYPAD_VALS[] = "123456789*0#";
