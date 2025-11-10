@@ -6,27 +6,34 @@
 <link rel="stylesheet" href="{% static 'custom_admin/css/index.css'%}">
 <link rel="stylesheet" href="{% static 'custom_admin/css/category_create.css' %}">
 
-<div class="admin_body">
+<div class="categorylist">
+    <div>
+        <label>Existing categories:</label>
+        <ul>
+        {%for category in categories%}
+        <li>
+            {{category.name}}
+        </li>
+        {%empty%}
+        <li>
+            None
+        </li>
+        {%endfor%}
+        </ul>
+    </div>
+</div>
 
-    <h1>Create categories</h1>
+<div class="admin_body">
+    
+
+    <h1>Category overview</h1>
     <form method="post">
     {% csrf_token %}
+    
+    
 
     <div class="box">
-        <div class="create_element">
-            <label>Existing categories:</label>
-            <ul>
-            {%for category in categories%}
-            <li>
-                {{category.name}}
-            </li>
-            {%empty%}
-            <li>
-                None
-            </li>
-            {%endfor%}
-            </ul>
-        </div>
+        
 
         <div class="create_element">
             <label for="category_name_input">Create category:</label>
@@ -39,7 +46,6 @@
     </div>
     </form>
 </div>
-
 
 
 {% endblock %}
