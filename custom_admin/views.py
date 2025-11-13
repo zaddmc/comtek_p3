@@ -102,10 +102,25 @@ class AdminSuitcaseView(UserAdminRequiredMixin,View):
     
 class QuizCreate(UserAdminRequiredMixin,View):
     def post(self, request:HttpRequest):
-        #QuizCreate.
+        
+        request_quizname = request.POST.get("quiz_name_input",None)
+        print(request.POST)
+        
+        quiz = QuizQuestion.objects.create(question_text=request_quizname)
+        
+        quiz.save()
 
-        return HttpResponseRedirect(reverse("custom-admin-categories-create"))
+        return HttpResponseRedirect(reverse("custom-admin-questions-create"))
 
+    def get(self,request:HttpRequest):
+        
+        all_questions = QuizQuestion.objects.all()
+
+        context = {}
+
+        context["questions"] = all_questions
+
+        return render(request,template_name="custom_admin/quiz/quiz_create.html",context=context) 
 
 class AdminSuitcaseCreate(UserAdminRequiredMixin,View):
     def post(self,request:HttpRequest):

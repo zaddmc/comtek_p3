@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import CustAdminIndex,WIPView,AdminSuitcaseView,AdminSuitcaseCreate,AdminCategoryCreate
+from .views import CustAdminIndex,WIPView,AdminSuitcaseView,AdminSuitcaseCreate,AdminCategoryCreate,QuizCreate
 
 urlpatterns = [
         path("",CustAdminIndex.as_view(),name="custom-admin-home"),
@@ -21,7 +21,7 @@ urlpatterns = [
         path("questions/view/",WIPView.as_view(),name="custom-admin-questions-view"),
         path("questions/view/<slug:uuid>/",WIPView.as_view(),name="custom-admin-questions-view"),
 
-        path("questions/create/",WIPView.as_view(),name="custom-admin-questions-create"),
+        path("questions/create/",QuizCreate.as_view(),name="custom-admin-questions-create"),
 
         path("users/view/",WIPView.as_view(),name="custom-admin-users-view"),
         path("users/view/<slug:uuid>/",WIPView.as_view(),name="custom-admin-users-view"),
