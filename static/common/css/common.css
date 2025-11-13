@@ -10,6 +10,12 @@
 	font-size: 1.0vw;
 }
 
+@media (max-width: 600px) {
+	:root {
+		font-size: 1.5vw;
+	}
+}
+
 html[data-theme='light'] {
 	--primary: #FF7A00;
 	--secondary: #FF7A00;

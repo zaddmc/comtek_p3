@@ -1,6 +1,7 @@
 from http import HTTPStatus
 from django.contrib.auth.views import LoginView
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import CreateView
 from django.contrib.auth import login
@@ -22,16 +23,19 @@ class SignUpView(CreateView):
         items = post_form.items()
         for i in items:
             print(f"\nkey: {i[0]}\nvalue: {i[1]}\n")
+
+        print(post_form)
         custom_user_create_form = CustomUserCreate(post_form)
         if not custom_user_create_form.is_valid():
-            return HttpResponse("Not valid form".encode(),HTTPStatus.BAD_REQUEST)
+            return render(request,"registration/signup.html",{"form":custom_user_create_form}) 
         company_cvr_int = 0
         company_industri_code_int = 0
         try:
             company_cvr_int = int(custom_user_create_form.cleaned_data["company_cvr"])
             company_industri_code_int= int(custom_user_create_form.cleaned_data["company_industri_code"])
+
         except:
-            return HttpResponse("Not valid form".encode(),HTTPStatus.BAD_REQUEST)
+            return render(request,"registration/signup.html",{"form":custom_user_create_form}) 
         user:User = custom_user_create_form.save(commit=False)
         user.save()
 

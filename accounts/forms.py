@@ -19,11 +19,10 @@ class CustomUserCreate(UserCreationForm):
     company_name= forms.CharField(widget=forms.TextInput(attrs={"placeholder":"Company Name"}))
     company_cvr = forms.CharField(widget= forms.HiddenInput())
     company_industri_code = forms.CharField(widget=forms.HiddenInput())
-    
 
     class Meta(UserCreationForm.Meta):
         model = User 
-        fields = ["first_name","last_name","email","password1","password2"]
+        fields = ["first_name","last_name","email","password1","password2","company_name","company_cvr","company_industri_code"]
 
 
     def __init__(self, *args, **kwargs):
@@ -36,4 +35,3 @@ class CustomUserCreate(UserCreationForm):
         self.fields["email"].widget.attrs["placeholder"] = "Email"
         self.fields["password1"].widget.attrs["placeholder"] = "Password"
         self.fields["password2"].widget.attrs["placeholder"] = "Confirm password"
-

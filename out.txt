@@ -1,0 +1,47 @@
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 06, 2025 - 10:31:44
+Django version 5.2.6, using settings 'auth_test.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+
+key: csrfmiddlewaretoken
+value: K4jmGi7oCMzMyERnKtUBcJcP4N5xBpRxqFrXpkSZi5hroBLIBiG2xg4vBvbjcmjE
+
+
+key: first_name
+value: john
+
+
+key: last_name
+value: john
+
+
+key: email
+value: mogens@gmail.com
+
+
+key: password1
+value: mogens1234@
+
+
+key: password2
+value: mogens1234@
+
+
+key: company_name
+value: b.as
+
+
+key: company_industri_code
+value: 949900
+
+
+key: company_cvr
+value: 35948171
+
+<QueryDict: {'csrfmiddlewaretoken': ['K4jmGi7oCMzMyERnKtUBcJcP4N5xBpRxqFrXpkSZi5hroBLIBiG2xg4vBvbjcmjE'], 'first_name': ['john'], 'last_name': ['john'], 'email': ['mogens@gmail.com'], 'password1': ['mogens1234@'], 'password2': ['mogens1234@'], 'company_name': ['b.as'], 'company_industri_code': ['949900'], 'company_cvr': ['35948171']}>

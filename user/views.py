@@ -1,196 +1,192 @@
 # user/views.py
-from django.views.generic import TemplateView
-from django.urls import reverse_lazy
+from enum import Enum
+from functools import reduce
+from typing import Any
+from django.contrib.auth import views
+from django.template.loader import render_to_string
+from django.views.generic import TemplateView, View
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
+from django.shortcuts import redirect, render
+
+from auth_test.utils import show_error_page
 
 from .forms import QuizStepForm
-from .models import QuizQuestion
-from suitcases.models import Suitcase
+from .models import QuestionOption, QuizQuestion
+from suitcases.models import Category, Suitcase
 from .utils import get_recommended_suitcases
 
-
-class NonRentedView(LoginRequiredMixin, TemplateView):
+class NonRentedView(LoginRequiredMixin, View):
     """
     Displays all unrented suitcases and optionally shows quiz recommendations / progress status.
     """
-
-    template_name = "user/index.html"
     login_url = reverse_lazy("login")
 
-    def get_context_data(self, **kwargs):
+    def get(self,request:HttpRequest, **kwargs):
         """
         Add user info, available suitcases, quiz questions, and recommendation/quiz status to context.
         """
-        context = super().get_context_data(**kwargs)
-        context["username"] = self.request.user.username
-        context["object_list"] = Suitcase.objects.filter(rented=False)
-        context["quiz_questions"] = QuizQuestion.objects.filter(
-            is_active=True
-        ).prefetch_related("options__categories")
-        context["show_recommendations"] = (
-            "recommended_suitcases" in self.request.session
-        )
-        # Determine if recommendations should be displayed
-        if context["show_recommendations"]:
-            context["recommended_suitcases"] = self.request.session.get(
-                "recommended_suitcases", []
-            )
-        # show quiz notice if a quiz session is in progress/active
-        context["show_quiz"] = "quiz_in_progress" in self.request.session
-        return context
+        context = {} 
+
+        session_data =  request.session.get("quiz_data",None)
+        context["show_quiz"] = True if session_data else False 
+        context["current_id"] = 0 
+        if not session_data:
+            return render(request,"user/index.html",context) 
+        current_id = 0
+        try:
+            current_id = session_data.index(None) + 1
+        except:
+            current_id = False
+        print(current_id)
+        context["current_id"] = current_id if current_id else 1
+        return render(request,"user/index.html",context) 
 
 
-class QuizView(LoginRequiredMixin, TemplateView):
-    """
-    Manages the step-by-step quiz process for users to get suitcase recommendations.
-    Handles quiz navigation, answer validation, and recommendation generation.
-    """
-
-    template_name = "user/quiz.html"
+class QuizView(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
-    def get_context_data(self, **kwargs):
-        """Prepare quiz state, current question, and progress tracking."""
-        context = super().get_context_data(**kwargs)
-        questions = QuizQuestion.objects.filter(is_active=True).prefetch_related(
-            "options__categories"
-        )
-        total_questions = questions.count()
-        current_step = int(self.request.session.get("quiz_step", 0))
-        # Reset step if out of bounds
-        if current_step >= total_questions:
-            current_step = 0
-        # Basic quiz state info
-        context["total_questions"] = total_questions
-        context["current_step"] = current_step
-        context["current_question"] = (
-            questions[current_step] if current_step < total_questions else None
-        )
-        context["progress_percent"] = (
-            int((current_step / total_questions) * 100) if total_questions > 0 else 0
-        )
+    def get_context_data(self,request:HttpRequest) -> dict[str,Any] | None:
+        question_count = self.get_question_count()
+        question_id = self.get_question_id(request)
+        if not question_id:
+            return None
+        question = QuizQuestion.objects.get(pk=question_id)
+        form = QuizStepForm(question=question)
 
-        # Prefill form if user answered this step previously
-        if context["current_question"]:
-            form = QuizStepForm()
-            form.fields["selected_option"].queryset = context[
-                "current_question"
-            ].options.all()
-            answers = self.request.session.get("quiz_answers", {})
-            prev = answers.get(str(current_step))
-            if prev:
-                form.initial = {"selected_option": str(prev.get("option_id"))}
+        if not question: 
+            return None 
+        ctx = {}
+        session_data = self.get_quiz_session_data(request)
+        assert(session_data)
 
-        return context
+        current_answer = session_data[question_id - 1]
+        if current_answer:
+            form.initial["selected_option"] = current_answer
+        ctx["question"] = question
+        ctx["form"] = form 
+        ctx["total_questions"] =question_count 
+        ctx["progress_percent"] =  (question_id ) * 100 / question_count 
 
-    def get(self, request, *args, **kwargs):
-        """Initialize quiz session data and handle reset requests."""
-        if "quiz_answers" not in request.session:
-            request.session["quiz_answers"] = {}
-        request.session["quiz_in_progress"] = True
+        return ctx 
 
-        # Reset quiz manually if requested
-        if "reset_quiz" in request.GET:
-            request.session["quiz_step"] = 0
-            return redirect("quiz")
+    def get(self, request:HttpRequest):
+        session_data =  self.get_quiz_session_data(request) 
+        question_count = self.get_question_count()
+        if not session_data:
+            session_data = [None for _ in range(question_count)]
+  
+        request.session["quiz_data"] = session_data
 
-        # Ensure quiz_step is set
-        request.session.setdefault("quiz_step", 0)
-        return super().get(request, *args, **kwargs)
+        ctx = self.get_context_data(request)
+        if not ctx:
+            return show_error_page(request,"Could not fetch question",400)
 
-    def post(self, request, *args, **kwargs):
-        """handle answer submission, validation, and step navigation."""
+        return render(request,template_name="user/quiz.html",context=ctx) 
+
+    def post(self, request):
+
+        question_id = self.get_question_id(request)
+        if not question_id:
+            return show_error_page(request,"Invalid questoin ID",400)
+
+        session_data =  self.get_quiz_session_data(request) 
+        if not session_data:
+            return show_error_page(request,"No session data",400) 
+
+        question = QuizQuestion.objects.get(pk=question_id)
+        form = QuizStepForm(data=request.POST,question=question)
+
+        if not form.is_valid():
+            return HttpResponseBadRequest("Invalid form".encode()) 
+
         action = request.POST.get("action", "next")  # default to next
-        current_step = int(request.session.get("quiz_step", 0))
-        questions = QuizQuestion.objects.filter(is_active=True).prefetch_related(
-            "options__categories"
-        )
-        total_questions = questions.count()
+        if action == "results":
+            return self.go_to_results(request,session_data,question_id,form)
+        if action != "next" and action != "prev":
+            return show_error_page(request,"Invalid action",400)
+        session_data[question_id-1] = form.cleaned_data["selected_option"].pk
+        request.session["quiz_data"] = session_data
 
-        # Safety: if somehow beyond bounds, treat as complete
-        if current_step >= total_questions:
-            return self.process_complete_quiz(request)
+        if action == "next":
+            return self.go_to_next_question(question_id)
+        elif action == "prev":
+            return self.go_to_prev_question(question_id)
 
-        if action == "prev":
-            # Move back one question (skip validation)
-            request.session["quiz_step"] = max(current_step - 1, 0)
-            return redirect("quiz")
+    def get_question_id(self,request:HttpRequest) -> int | None:
+        question_id_str = request.GET.get("quiz_id","") 
+        if not question_id_str:
+            return None 
+        question_id = 0
+        try:
+           question_id = int(question_id_str) 
+        except:
+            return None 
+        return question_id
+    def get_question_count(self) -> int:
+        return QuizQuestion.objects.all().count()
 
-        # Otherwise, process current answer
-        current_question = questions[current_step]
-        form = QuizStepForm(request.POST)
-        form.fields["selected_option"].queryset = current_question.options.all()
+    def go_to_question(self,question_id:int):
 
-        if form.is_valid():
-            selected_option = form.cleaned_data["selected_option"]
-            answers = request.session.get("quiz_answers", {})
-            answers[str(current_step)] = {
-                "question_id": current_question.id,
-                "option_id": selected_option.id,
-                "categories": list(
-                    selected_option.categories.values_list("name", flat=True)
-                ),
-            }
-            request.session["quiz_answers"] = answers
+        return HttpResponseRedirect(redirect_to=reverse("quiz") + f"?quiz_id={question_id}")
+    def go_to_results(self,request:HttpRequest,session_data:list[int],question_id:int,form:QuizStepForm) -> HttpResponse:
+        session_data[question_id-1] = form.cleaned_data["selected_option"].pk
+        request.session["quiz_data"] = session_data
+        request.session["last_quiz_data"] = request.session.pop("quiz_data") 
+        return HttpResponseRedirect(reverse("quiz-recommendations"))
 
-            # advance to next question
-            next_step = current_step + 1
-            request.session["quiz_step"] = next_step
+    def go_to_next_question(self,question_id:int):
+        question_count = self.get_question_count()
+        assert(question_id + 1 <= question_count)
+        return self.go_to_question(question_id+1) 
 
-            if next_step >= total_questions:
-                return self.process_complete_quiz(request)
-            return redirect("quiz")
+    def go_to_prev_question(self,question_id:int):
+        assert(question_id - 1 > 0)
+        return self.go_to_question(question_id-1)
 
-        # invalid submission - re-render with errors
-        context = self.get_context_data()
-        context["form"] = form
-        return self.render_to_response(context)
+    def get_quiz_session_data(self,request:HttpRequest) -> list[int] | None:
+        return request.session.get("quiz_data",None)
 
-    def process_complete_quiz(self, request):
-        # Collect all categories from answers
-        all_categories = []
-        for answer in request.session.get("quiz_answers", {}).values():
-            all_categories.extend(answer["categories"])
+class RecommendationView(LoginRequiredMixin,View):
+    def get(self,request:HttpRequest):
+        session_data =  request.session.get("last_quiz_data",None)
+        print(session_data)
+        if not session_data:
+            ctx = {}
+            ctx["error_text"] = "No session data."
+            ctx["error_code"] = 400 
+            return render(request,template_name="common/error.html",context=ctx)
+        for i in session_data:
+            if i == None:
+                ctx = {}
+                ctx["error_text"] = "Missing questions."
+                ctx["error_code"] = 400 
+                return render(request,template_name="common/error.html",context=ctx)
+        categories = []
 
-        # generate recommendations
-        recommendations = get_recommended_suitcases(all_categories)
-        recommendations_data = [
-            {
-                "uuid": str(rec["suitcase"].uuid),
-                "name": rec["suitcase"].name,
-                "score": round(rec["score"] * 100, 1),
-                "categories": rec["categories"],
-            }
-            for rec in recommendations
-        ]
+        for pk in session_data:
+            print(pk)
+            ob =  QuestionOption.objects.get(pk=pk)
+            for cat in ob.categories.all():
+                print(f"name:{cat.name}")
+                categories.append(cat)
+        print(f"cat:{len(categories)}")
+        recommendations = get_recommended_suitcases(categories)
 
-        # Store results and clean up session data
-        request.session["recommended_suitcases"] = recommendations_data
-        request.session.pop("quiz_answers", None)
-        request.session.pop("quiz_step", None)
-        request.session.pop("quiz_in_progress", None)
+        ctx = {}
+        ctx["recommendations"] = recommendations
 
-        return redirect("non-rented-view")
+        return render(request,"user/recommendations.html",ctx) 
 
-
-def clear_recommendations(request):
-    """Clear any stored quiz recommendations and related session data."""
-    keys_to_remove = [
-        "recommended_suitcases",
-        "quiz_in_progress",
-        "quiz_answers",
-        "quiz_step",
-    ]
-    for key in keys_to_remove:
-        if key in request.session:
-            del request.session[key]
-    return HttpResponseRedirect(reverse_lazy("non-rented-view"))
-
+def sort_suitcases(x:Suitcase,categories:dict[str,int]):
+    score = 0
+    for cat in x.categories.all():
+        if cat.name in categories:
+            score += categories[cat.name]
+    return score
 
 class RentedView(LoginRequiredMixin, TemplateView):
-    """Displays all suitcases currently rented by the user logged in."""
 
     template_name = "user/rented.html"
     login_url = reverse_lazy("login")

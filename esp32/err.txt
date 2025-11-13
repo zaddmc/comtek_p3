@@ -1,0 +1,406 @@
+Executing action: flash
+Serial port /dev/ttyUSB0
+Connecting....
+Detecting chip type... ESP32-C3
+Running ninja in directory /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/build
+Executing "ninja flash"...
+[1/10] Performing build step for 'bootloader'
+[1/1] cd /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/build/bootloader/esp-idf/esptool_py && /home/hoothoot/.espressif/python_env/idf5.5_py3.13_env/bin/python /home/hoothoot/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/build/bootloader/bootloader.bin
+Bootloader binary size 0x5210 bytes. 0x2df0 bytes (36%) free.
+[2/10] No install step for 'bootloader'
+[3/10] Completed 'bootloader'
+[4/10] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/src/gap/gap_shared.c.obj
+[5/10] Linking C static library esp-idf/main/libmain.a
+[6/10] Generating esp-idf/esp_system/ld/sections.ld
+[7/10] Linking CXX executable hello_world.elf
+[8/10] Generating binary image from built executable
+esptool.py v4.10.0
+Creating esp32c3 image...
+Merged 1 ELF section
+Successfully created esp32c3 image.
+Generated /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/build/hello_world.bin
+[9/10] cd /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/build/esp-idf/esptool_py && /home/hoothoot/.espressif/python_env/idf5.5_py3.13_env/bin/python /home/hoothoot/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/build/partition_table/partition-table.bin /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/build/hello_world.bin
+hello_world.bin binary size 0x97dc0 bytes. Smallest app partition is 0x100000 bytes. 0x68240 bytes (41%) free.
+[9/10] cd /home/hoothoot/esp/esp-idf/components/esptool_py && /usr/bin/cmake -D IDF_PATH=/home/hoothoot/esp/esp-idf -D "SERIAL_TOOL=/home/hoothoot/.espressif/python_env/idf5.5_py3.13_env/bin/python;;/home/hoothoot/esp/esp-idf/components/esptool_py/esptool/esptool.py;--chip;esp32c3" -D "SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args" -D WORKING_DIRECTORY=/home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/build -P /home/hoothoot/esp/esp-idf/components/esptool_py/run_serial_tool.cmake
+esptool.py --chip esp32c3 -p /dev/ttyUSB0 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 80m --flash_size 2MB 0x0 bootloader/bootloader.bin 0x10000 hello_world.bin 0x8000 partition_table/partition-table.bin
+esptool.py v4.10.0
+Serial port /dev/ttyUSB0
+Connecting....
+Chip is ESP32-C3 (QFN32) (revision v0.3)
+Features: WiFi, BLE
+Crystal is 40MHz
+MAC: 58:cf:79:da:49:04
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00000000 to 0x00005fff...
+Flash will be erased from 0x00010000 to 0x000a7fff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+SHA digest in image updated
+Compressed 21008 bytes to 13185...
+Writing at 0x00000000... (100 %)
+Wrote 21008 bytes (13185 compressed) at 0x00000000 in 0.8 seconds (effective 205.5 kbit/s)...
+Hash of data verified.
+Compressed 622016 bytes to 341567...
+Writing at 0x00010000... (4 %)
+Writing at 0x0001bd2a... (9 %)
+Writing at 0x0002413d... (14 %)
+Writing at 0x0002b76b... (19 %)
+Writing at 0x00031a81... (23 %)
+Writing at 0x00038916... (28 %)
+Writing at 0x00040736... (33 %)
+Writing at 0x0004775e... (38 %)
+Writing at 0x0004ef24... (42 %)
+Writing at 0x00055953... (47 %)
+Writing at 0x0005c76a... (52 %)
+Writing at 0x00063f51... (57 %)
+Writing at 0x0006b1b9... (61 %)
+Writing at 0x00071d2c... (66 %)
+Writing at 0x0007870c... (71 %)
+Writing at 0x0007f258... (76 %)
+Writing at 0x0008519b... (80 %)
+Writing at 0x0008b8dc... (85 %)
+Writing at 0x00093abc... (90 %)
+Writing at 0x0009ac00... (95 %)
+Writing at 0x000a18fe... (100 %)
+Wrote 622016 bytes (341567 compressed) at 0x00010000 in 9.5 seconds (effective 523.7 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 103...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (103 compressed) at 0x00008000 in 0.1 seconds (effective 297.5 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+Executing action: monitor
+Running idf_monitor in directory /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32
+Executing "/home/hoothoot/.espressif/python_env/idf5.5_py3.13_env/bin/python /home/hoothoot/esp/esp-idf/tools/idf_monitor.py -p /dev/ttyUSB0 -b 115200 --toolchain-prefix riscv32-esp-elf- --target esp32c3 --revision 3 --decode-panic backtrace /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/build/hello_world.elf /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/build/bootloader/bootloader.elf -m '/home/hoothoot/.espressif/python_env/idf5.5_py3.13_env/bin/python' '/home/hoothoot/esp/esp-idf/tools/idf.py'"...
+660 len 000259A0 (150 KiB): RAM
+[0;32mI (266) heap_init: At 3FCC0000 len 0001C710 (113 KiB): Retention RAM[0m
+�ESP-ROM:esp32c3-api1-20210207
+Build:Feb  7 2021
+rst:0x1 (POWERON),boot:0xc (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fcd5820,len:0x15ac
+load:0x403cbf10,len:0xc34
+load:0x403ce710,len:0x2fd0
+entry 0x403cbf1a
+[0;32mI (30) boot: ESP-IDF v5.5.1-dirty 2nd stage bootloader[0m
+[0;32mI (30) boot: compile time Nov  5 2025 15:37:10[0m
+[0;32mI (30) boot: chip revision: v0.3[0m
+[0;32mI (31) boot: efuse block revision: v1.2[0m
+[0;32mI (34) boot.esp32c3: SPI Speed      : 80MHz[0m
+[0;32mI (38) boot.esp32c3: SPI Mode       : DIO[0m
+[0;32mI (42) boot.esp32c3: SPI Flash Size : 2MB[0m
+[0;32mI (46) boot: Enabling RNG early entropy source...[0m
+[0;32mI (50) boot: Partition Table:[0m
+[0;32mI (53) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (59) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (66) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (72) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (79) boot: End of partition table[0m
+[0;32mI (82) esp_image: segment 0: paddr=00010020 vaddr=3c070020 size=14f48h ( 85832) map[0m
+[0;32mI (103) esp_image: segment 1: paddr=00024f70 vaddr=3fc94c00 size=026d4h (  9940) load[0m
+[0;32mI (105) esp_image: segment 2: paddr=0002764c vaddr=40380000 size=089cch ( 35276) load[0m
+[0;32mI (113) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=6bc1ch (441372) map[0m
+[0;32mI (185) esp_image: segment 4: paddr=0009bc44 vaddr=403889cc size=0c12ch ( 49452) load[0m
+[0;32mI (194) esp_image: segment 5: paddr=000a7d78 vaddr=50000000 size=00020h (    32) load[0m
+[0;32mI (201) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (201) boot: Disabling RNG early entropy source...[0m
+[0;32mI (212) cpu_start: Unicore app[0m
+[0;32mI (220) cpu_start: Pro cpu start user code[0m
+[0;32mI (220) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (220) app_init: Application information:[0m
+[0;32mI (220) app_init: Project name:     hello_world[0m
+[0;32mI (224) app_init: App version:      f6fa995-dirty[0m
+[0;32mI (229) app_init: Compile time:     Nov  5 2025 15:37:05[0m
+[0;32mI (234) app_init: ELF file SHA256:  32336f967...[0m
+[0;32mI (238) app_init: ESP-IDF:          v5.5.1-dirty[0m
+[0;32mI (243) efuse_init: Min chip rev:     v0.3[0m
+[0;32mI (246) efuse_init: Max chip rev:     v1.99 [0m
+[0;32mI (250) efuse_init: Chip rev:         v0.3[0m
+[0;32mI (254) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (261) heap_init: At 3FC9A660 len 000259A0 (150 KiB): RAM[0m
+[0;32mI (266) heap_init: At 3FCC0000 len 0001C710 (113 KiB): Retention RAM[0m
+[0;32mI (272) heap_init: At 3FCDC710 len 00002950 (10 KiB): Retention RAM[0m
+[0;32mI (278) heap_init: At 50000020 len 00001FC8 (7 KiB): RTCRAM[0m
+[0;32mI (284) spi_flash: detected chip: generic[0m
+[0;32mI (287) spi_flash: flash io: dio[0m
+[0;33mW (290) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (302) sleep_gpio: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (308) sleep_gpio: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (315) coexist: coex firmware version: b0bcc39[0m
+[0;32mI (333) coexist: coexist rom version 9387209[0m
+[0;32mI (334) main_task: Started on CPU0[0m
+[0;32mI (334) main_task: Calling app_main()[0m
+[0;32mI (334) NICE: example configured to blink addressable led![0m
+[0;32mI (344) NICE: [0m
+Opening Non-Volatile Storage (NVS) handle...
+[0;32mI (344) NICE: [0m
+Reading counter from NVS...
+[0;32mI (344) NICE: Read counter = 42[0m
+[0;32mI (344) NICE: [0m
+Reading KEY from NVS...
+[0;32mI (354) NICE: Read key= sTos5PGrvL1G9owYE8JITxY81wWo9ZnXtXPtB-vfGts[0m
+[0;32mI (354) BLE_INIT: BT controller compile version [2edb0b0][0m
+[0;32mI (364) BLE_INIT: Using main XTAL as clock source[0m
+[0;32mI (364) BLE_INIT: Feature Config, ADV:1, BLE_50:1, DTM:1, SCAN:1, CCA:0, SMP:1, CONNECT:1[0m
+[0;32mI (374) BLE_INIT: Bluetooth MAC: 58:cf:79:da:49:06[0m
+[0;32mI (374) phy_init: phy_version 1201,bae5dd99,Mar  3 2025,15:36:21[0m
+[0;32mI (414) NICE: nimble host task has been started![0m
+[0;32mI (424) NICE: device address: 06:49:DA:79:CF:58[0m
+Guru Meditation Error: Core  0 panic'ed (Load access fault). Exception was unhandled.
+
+Core  0 register dump:
+MEPC    : 0x42019186  RA      : 0x42009d22  SP      : 0x3fcad390  GP      : 0x3fc95400  
+TP      : 0x3fcad4d0  T0      : 0x0000000f  T1      : 0xffffffff  T2      : 0x00000009  
+S0/FP   : 0x3fcad40c  S1      : 0x00000027  A0      : 0x00000000  A1      : 0x0000001f  
+A2      : 0x00000000  A3      : 0x00000001  A4      : 0x6d7c17d7  A5      : 0x3fc94f88  
+A6      : 0xffffff9f  A7      : 0x00000001  S2      : 0x00000000  S3      : 0x00000000  
+S4      : 0x00000000  S5      : 0x00000000  S6      : 0x00000000  S7      : 0x00000000  
+S8      : 0x00000000  S9      : 0x00000000  S10     : 0x00000000  S11     : 0x00000000  
+T3      : 0x3fcad534  T4      : 0x00000000  T5      : 0x0fffffff  T6      : 0x00000019  
+MSTATUS : 0x00001881  MTVEC   : 0x40380001  MCAUSE  : 0x00000005  MTVAL   : 0x00000000  
+MHARTID : 0x00000000  
+
+add symbol table from file "/home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/build/bootloader/bootloader.elf"
+os_mbuf_get_pkthdr (omp=omp@entry=0x0, user_pkthdr_len=user_pkthdr_len@entry=31 '\037') at /home/hoothoot/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/src/os_mbuf.c:306
+306	    if ((pkthdr_len > omp->omp_databuf_len) || (pkthdr_len > 255)) {
+#0  os_mbuf_get_pkthdr (omp=omp@entry=0x0, user_pkthdr_len=user_pkthdr_len@entry=31 '\037') at /home/hoothoot/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/src/os_mbuf.c:306
+#1  0x42009d22 in start_advertising () at /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/main/src/gap/gap_shared.c:55
+#2  0x42009910 in adv_init () at /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/main/src/gap/gap_init.c:58
+#3  0x420097d8 in on_stack_sync () at /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/main/src/configurations/nimble_config.c:19
+#4  0x4200ba6c in ble_hs_sync () at /home/hoothoot/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/src/ble_hs.c:388
+#5  0x4200bc90 in ble_hs_start () at /home/hoothoot/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/src/ble_hs.c:701
+#6  0x4200bcd6 in ble_hs_event_start_stage2 (ev=<optimized out>) at /home/hoothoot/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/src/ble_hs.c:599
+#7  0x42019d82 in npl_freertos_event_run (ev=<optimized out>) at /home/hoothoot/esp/esp-idf/components/bt/host/nimble/nimble/porting/npl/freertos/src/npl_os_freertos.c:457
+#8  0x40381684 in ble_npl_event_run (ev=0x3fc982f8 <ble_hs_ev_start_stage2>) at /home/hoothoot/esp/esp-idf/components/bt/host/nimble/nimble/porting/npl/freertos/include/nimble/nimble_npl_os.h:185
+#9  nimble_port_run () at /home/hoothoot/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/src/nimble_port.c:313
+#10 0x42009850 in nimble_host_task (param=<error reading variable: value has been optimized out>) at /home/hoothoot/Programming/Tests/py_test/django_test/auth_test/esp32/main/src/configurations/nimble_config.c:38
+#11 0x4038c530 in vPortTaskWrapper (pxCode=<optimized out>, pvParameters=<optimized out>) at /home/hoothoot/esp/esp-idf/components/freertos/FreeRTOS-Kernel/portable/riscv/port.c:255
+
+
+
+ELF file SHA256: 32336f967
+
+Rebooting...
+ESP-ROM:esp32c3-api1-20210207
+Build:Feb  7 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0xc (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4038b468
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fcd5820,len:0x15ac
+load:0x403cbf10,len:0xc34
+load:0x403ce710,len:0x2fd0
+entry 0x403cbf1a
+[0;32mI (35) boot: ESP-IDF v5.5.1-dirty 2nd stage bootloader[0m
+[0;32mI (35) boot: compile time Nov  5 2025 15:37:10[0m
+[0;32mI (35) boot: chip revision: v0.3[0m
+[0;32mI (36) boot: efuse block revision: v1.2[0m
+[0;32mI (39) boot.esp32c3: SPI Speed      : 80MHz[0m
+[0;32mI (43) boot.esp32c3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32c3: SPI Flash Size : 2MB[0m
+[0;32mI (51) boot: Enabling RNG early entropy source...[0m
+[0;32mI (55) boot: Partition Table:[0m
+[0;32mI (58) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (64) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (71) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (77) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (84) boot: End of partition table[0m
+[0;32mI (87) esp_image: segment 0: paddr=00010020 vaddr=3c070020 size=14f48h ( 85832) map[0m
+[0;32mI (108) esp_image: segment 1: paddr=00024f70 vaddr=3fc94c00 size=026d4h (  9940) load[0m
+[0;32mI (110) esp_image: segment 2: paddr=0002764c vaddr=40380000 size=089cch ( 35276) load[0m
+[0;32mI (118) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=6bc1ch (441372) map[0m
+[0;32mI (190) esp_image: segment 4: paddr=0009bc44 vaddr=403889cc size=0c12ch ( 49452) load[0m
+[0;32mI (199) esp_image: segment 5: paddr=000a7d78 vaddr=50000000 size=00020h (    32) load[0m
+[0;32mI (206) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (206) boot: Disabling RNG early entropy source...[0m
+[0;32mI (216) cpu_start: Unicore app[0m
+[0;32mI (225) cpu_start: Pro cpu start user code[0m
+[0;32mI (225) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (225) app_init: Application information:[0m
+[0;32mI (225) app_init: Project name:     hello_world[0m
+[0;32mI (229) app_init: App version:      f6fa995-dirty[0m
+[0;32mI (234) app_init: Compile time:     Nov  5 2025 15:37:05[0m
+[0;32mI (239) app_init: ELF file SHA256:  32336f967...[0m
+[0;32mI (243) app_init: ESP-IDF:          v5.5.1-dirty[0m
+[0;32mI (247) efuse_init: Min chip rev:     v0.3[0m
+[0;32mI (251) efuse_init: Max chip rev:     v1.99 [0m
+[0;32mI (255) efuse_init: Chip rev:         v0.3[0m
+[0;32mI (259) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (265) heap_init: At 3FC9A660 len 000259A0 (150 KiB): RAM[0m
+[0;32mI (270) heap_init: At 3FCC0000 len 0001C710 (113 KiB): Retention RAM[0m
+[0;32mI (277) heap_init: At 3FCDC710 len 00002950 (10 KiB): Retention RAM[0m
+[0;32mI (283) heap_init: At 50000020 len 00001FC8 (7 KiB): RTCRAM[0m
+[0;32mI (289) spi_flash: detected chip: generic[0m
+[0;32mI (292) spi_flash: flash io: dio[0m
+[0;33mW (295) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (307) sleep_gpio: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (313) sleep_gpio: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (320) coexist: coex firmware version: b0bcc39[0m
+[0;32mI (338) coexist: coexist rom version 9387209[0m
+[0;32mI (339) main_task: Started on CPU0[0m
+[0;32mI (339) main_task: Calling app_main()[0m
+[0;32mI (339) NICE: example configured to blink addressable led![0m
+[0;32mI (349) NICE: [0m
+Opening Non-Volatile Storage (NVS) handle...
+[0;32mI (349) NICE: [0m
+Reading counter from NVS...
+[0;32mI (349) NICE: Read counter = 42[0m
+[0;32mI (349) NICE: [0m
+Reading KEY from NVS...
+[0;32mI (359) NICE: Read key= sTos5PGrvL1G9owYE8JITxY81wWo9ZnXtXPtB-vfGts[0m
+[0;32mI (359) BLE_INIT: BT controller compile version [2edb0b0][0m
+[0;32mI (369) BLE_INIT: Using main XTAL as clock source[0m
+[0;32mI (369) BLE_INIT: Feature Config, ADV:1, BLE_50:1, DTM:1, SCAN:1, CCA:0, SMP:1, CONNECT:1[0m
+[0;32mI (379) BLE_INIT: Bluetooth MAC: 58:cf:79:da:49:06[0m
+[0;32mI (379) phy_init: phy_version 1201,bae5dd99,Mar  3 2025,15:36:21[0m
+[0;32mI (419) NICE: nimble host task has been started![0m
+[0;32mI (419) NICE: device address: 06:49:DA:79:CF:58[0m
+Guru Meditation Error: Core  0 panic'ed (Load access fault). Exception was unhandled.
+
+Core  0 register dump:
+MEPC    : 0x42019186  RA      : 0x42009d22  SP      : 0x3fcad390  GP      : 0x3fc95400  
+TP      : 0x3fcad4d0  T0      : 0x0000000f  T1      : 0xffffffff  T2      : 0x00000009  
+S0/FP   : 0x3fcad40c  S1      : 0x00000027  A0      : 0x00000000  A1      : 0x0000001f  
+A2      : 0x00000000  A3      : 0x00000001  A4      : 0x6d7c17d7  A5      : 0x3fc94f88  
+A6      : 0xffffff9f  A7      : 0x00000001  S2      : 0x00000000  S3      : 0x00000000  
+S4      : 0x00000000  S5      : 0x00000000  S6      : 0x00000000  S7      : 0x00000000  
+S8      : 0x00000000  S9      : 0x00000000  S10     : 0x00000000  S11     : 0x00000000  
+T3      : 0x3fcad534  T4      : 0x00000000  T5      : 0x0fffffff  T6      : 0x00000019  
+MSTATUS : 0x00001881  MTVEC   : 0x40380001  MCAUSE  : 0x00000005  MTVAL   : 0x00000000  
+MHARTID : 0x00000000  
+
+Stack memory:
+3fcad390: 0x00000000 0x00000000 0x3fcad40c 0x42009d22 0x00000000 0x00000000 0x00000000 0x00000000
+3fcad3b0: 0x00000000 0x3fcad3ec 0x3c074b38 0x40392282 0x08faf380 0x61994963 0x1c9e8c0b 0xf56268c1
+3fcad3d0: 0x6d7c17d7 0x00000010 0x00000190 0x00000190 0x00000000 0x00000000 0x00000000 0x00000000
+3fcad3f0: 0x3c0747e8 0x00000000 0x3fcad40c 0x42009910 0x3fc98000 0x3fca6c30 0x00000064 0x343a3630
+3fcad410: 0x41443a39 0x3a39373a 0x353a4643 0x00000038 0x00000000 0x00000000 0x00000000 0x420097d8
+3fcad430: 0x00000000 0x00000000 0x00000000 0x4200ba6c 0x00000000 0x00000000 0x00000000 0x4200bc90
+3fcad450: 0x00000000 0x3fca6bf8 0x3fc982f8 0x4200bcd6 0x00000000 0x00000000 0x00000000 0x42019d82
+3fcad470: 0x00000000 0x00000000 0x3fc98000 0x40381684 0x3c0747e8 0x00000153 0x00000000 0x42009850
+3fcad490: 0x00000000 0x00000000 0x00000000 0x4038c530 0x00000000 0x00000000 0x00000000 0x00000000
+3fcad4b0: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0xa5a5a5a5 0xa5a5a5a5 0xa5a5a5a5
+3fcad4d0: 0xa5a5a5a5 0xa5a5a5a5 0x00000150 0x3fcad140 0x00000000 0x3fc97500 0x3fc97500 0x3fcad4dc
+3fcad4f0: 0x3fc974f8 0x00000014 0x00000000 0x00000000 0x3fcad4dc 0x00000000 0x00000005 0x3fcac4d8
+3fcad510: 0x426d694e 0x4820454c 0x0074736f 0x00000000 0x3fcad4d0 0x00000005 0x00000000 0x00000000
+3fcad530: 0x00000000 0x00000000 0x3fc9ac98 0x3fc9ad00 0x3fc9ad68 0x00000000 0x00000000 0x00000001
+3fcad550: 0x00000000 0x00000000 0x00000000 0x42005360 0x00000000 0x00000000 0x00000000 0x00000000
+3fcad570: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+3fcad590: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+3fcad5b0: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+3fcad5d0: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+3fcad5f0: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000
+3fcad610: 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000020
+3fcad630: 0x0003aa50 0x00000000 0x00000000 0x00000000 0x42019f50 0x3fca6c30 0x3fca6b20 0x3fc98430
+3fcad650: 0x00000160 0x3fcad668 0x3fc94c78 0x00010001 0x420162dc 0x3c07eb08 0x3fcad67c 0x3fc94c6c
+3fcad670: 0x00020001 0x42016314 0x3fc95c6c 0x3fcad690 0x3fc94c58 0x00030001 0x420164c6 0x3fc95c6c
+3fcad690: 0x3fcad6a4 0x3fc94c6c 0x00040001 0x42016314 0x3fc95c8c 0x3fcad6b8 0x3fc94c54 0x00050001
+3fcad6b0: 0x420164c6 0x3fc95c8c 0x3fcad6cc 0x3fc94c78 0x00060001 0x420162dc 0x3c07ea74 0x3fcad6e0
+3fcad6d0: 0x3fc94c6c 0x00070001 0x42016314 0x3fc95bec 0x3fcad6f4 0x3fc94c4c 0x00080000 0x420164c6
+3fcad6f0: 0x3fc95bec 0x3fcad708 0x3fc94c68 0x00090003 0x42016180 0x00000000 0x3fcad71c 0x3fc94c6c
+3fcad710: 0x000a0001 0x42016314 0x3fc95c0c 0x3fcad730 0x3fc94c48 0x000b0001 0x420164c6 0x3fc95c0c
+3fcad730: 0x3fcad744 0x3fc94c6c 0x000c0001 0x42016314 0x3fc95c2c 0x3fcad758 0x3fc94c44 0x000d0003
+3fcad750: 0x420164c6 0x3fc95c2c 0x3fcad76c 0x3fc94c78 0x000e0001 0x420162dc 0x3c07ea00 0x3fcad780
+3fcad770: 0x3fc94c6c 0x000f0001 0x42016314 0x3fc94fa8 0x3fcad794 0x3c07ea38 0x00100003 0x420164c6
+
+
+
+ELF file SHA256: 32336f967
+
+Rebooting...
+ESP-ROM:esp32c3-api1-20210207
+Build:Feb  7 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0xc (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4038b468
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fcd5820,len:0x15ac
+load:0x403cbf10,len:0xc34
+load:0x403ce710,len:0x2fd0
+entry 0x403cbf1a
+[0;32mI (35) boot: ESP-IDF v5.5.1-dirty 2nd stage bootloader[0m
+[0;32mI (35) boot: compile time Nov  5 2025 15:37:10[0m
+[0;32mI (35) boot: chip revision: v0.3[0m
+[0;32mI (36) boot: efuse block revision: v1.2[0m
+[0;32mI (39) boot.esp32c3: SPI Speed      : 80MHz[0m
+[0;32mI (43) boot.esp32c3: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32c3: SPI Flash Size : 2MB[0m
+[0;32mI (51) boot: Enabling RNG early entropy source...[0m
+[0;32mI (55) boot: Partition Table:[0m
+[0;32mI (58) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (64) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (71) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (77) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (84) boot: End of partition table[0m
+[0;32mI (87) esp_image: segment 0: paddr=00010020 vaddr=3c070020 size=14f48h ( 85832) map[0m
+[0;32mI (108) esp_image: segment 1: paddr=00024f70 vaddr=3fc94c00 size=026d4h (  9940) load[0m
+[0;32mI (110) esp_image: segment 2: paddr=0002764c vaddr=40380000 size=089cch ( 35276) load[0m
+[0;32mI (118) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=6bc1ch (441372) map[0m
+[0;32mI (190) esp_image: segment 4: paddr=0009bc44 vaddr=403889cc size=0c12ch ( 49452) load[0m
+[0;32mI (199) esp_image: segment 5: paddr=000a7d78 vaddr=50000000 size=00020h (    32) load[0m
+[0;32mI (206) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (206) boot: Disabling RNG early entropy source...[0m
+[0;32mI (216) cpu_start: Unicore app[0m
+[0;32mI (225) cpu_start: Pro cpu start user code[0m
+[0;32mI (225) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (225) app_init: Application information:[0m
+[0;32mI (225) app_init: Project name:     hello_world[0m
+[0;32mI (229) app_init: App version:      f6fa995-dirty[0m
+[0;32mI (234) app_init: Compile time:     Nov  5 2025 15:37:05[0m
+[0;32mI (239) app_init: ELF file SHA256:  32336f967...[0m
+[0;32mI (243) app_init: ESP-IDF:          v5.5.1-dirty[0m
+[0;32mI (247) efuse_init: Min chip rev:     v0.3[0m
+[0;32mI (251) efuse_init: Max chip rev:     v1.99 [0m
+[0;32mI (255) efuse_init: Chip rev:         v0.3[0m
+[0;32mI (259) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (265) heap_init: At 3FC9A660 len 000259A0 (150 KiB): RAM[0m
+[0;32mI (270) heap_init: At 3FCC0000 len 0001C710 (113 KiB): Retention RAM[0m
+[0;32mI (277) heap_init: At 3FCDC710 len 00002950 (10 KiB): Retention RAM[0m
+[0;32mI (283) heap_init: At 50000020 len 00001FC8 (7 KiB): RTCRAM[0m
+[0;32mI (289) spi_flash: detected chip: generic[0m
+[0;32mI (292) spi_flash: flash io: dio[0m
+[0;33mW (295) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (307) sleep_gpio: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (313) sleep_gpio: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (320) coexist: coex firmware version: b0bcc39[0m
+[0;32mI (338) coexist: coexist rom version 9387209[0m
+[0;32mI (339) main_task: Started on CPU0[0m
+[0;32mI (339) main_task: Calling app_main()[0m
+[0;32mI (339) NICE: example configured to blink addressable led![0m
+[0;32mI (349) NICE: [0m
+Opening Non-Volatile Storage (NVS) handle...
+[0;32mI (349) NICE: [0m
+Reading counter from NVS...
+[0;32mI (349) NICE: Read counter = 42[0m
+[0;32mI (349) NICE: [0m
+Reading KEY from NVS...
+[0;32mI (359) NICE: Read key= sTos5PGrvL1G9owYE8JITxY81wWo9ZnXtXPtB-vfGts[0m
+[0;32mI (359) BLE_INIT: BT controller compile version [2edb0b0][0m
+[0;32mI (369) BLE_INIT: Using main XTAL as clock source[0m
+[0;32mI (369) BLE_INIT: Feature Config, ADV:1, BLE_50:1, DTM:1, SCAN:1, CCA:0, SMP:1, CONNECT:1[0m
+[0;32mI (379) BLE_INIT: Bluetooth MAC: 58:cf:79:da:49:06[0m
+[0;32mI (379) phy_init: phy_version 1201,bae5dd99,Mar  3 2025,15:36:21[0m
+[0;32mI (419) NICE: nimble host task has been started![0m
+[0;32mI (419) NICE: device address: 06:49:DA:79:CF:58[0m
+Guru Meditation Error: Core  0 panic'ed (Load access fault). Exception was unhandled.
+
+Core  0 register dump:
+MEPC    : 0x42019186  RA      : 0x42009d22  SP      : 0x3fcad390  GP      : 0x3fc95400  
+TP      : 0x3fcad4d0  T0      : 0x0000000f  T1      : 0xffffffff  T2      : 0x00000009  
+S0/FP   : 0x3fcad40c  S1      : 0x00000027  A0      : 0x00000000  A1      : 0x0000001f  
+A2      : 0x00000000  A3      : 0x00000001  A4      : 0x6d7c17d7  A5      : 0x3fc94f88  
+A6      : 0xffffff9f  A7      : 0x00000001  S2      : 0x00000000  S3      : 0x00000000  
+S4      : 0x00000000  S5      : 0x00000000  S6      : 0x00000000  S7      : 0x00000000  
+S8      : 0x00000000  S9      : 0x00000000  S10     : 0x00000000  S11     : 0x00000000  
+T3      : 0x3fcad534  T4      : 0x00000000  T5      : 0x0fffffff  T6      : 0x00000019  
+MSTATUS : 0x00001881  MTVEC   : 0x40380001  MCAUSE  : 0x00000005  MTVAL   : 0x00000000  
+MHARTID : 0x00000000  
+
+Done
