@@ -13,6 +13,12 @@
         {%for category in categories%}
         <li>
             {{category.name}}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" value="{{category.pk}}" name="category_id">
+                <input type="hidden" value="delete" name="_method">
+                <input type="submit" value="delete">
+            </form>            
         </li>
         {%empty%}
         <li>

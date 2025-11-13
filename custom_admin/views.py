@@ -9,6 +9,7 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import UserPassesTestMixin
 
 from accounts.models import User
+from user.models import QuizQuestion, QuestionOption
 from suitcases.models import Suitcase, Category
 
 # Create your views here.
@@ -56,6 +57,10 @@ class CustAdminIndex(UserAdminRequiredMixin,View):
 class AdminCategoryCreate(UserAdminRequiredMixin,View):
     def post(self,request:HttpRequest):
         
+        request_method = request.POST.get("_method",None)
+        if request_method == "delete":
+            return self.delete(request=request)
+
         request_categoryname = request.POST.get("category_name_input",None)
         print(request.POST)
         
@@ -63,6 +68,13 @@ class AdminCategoryCreate(UserAdminRequiredMixin,View):
    
         category.save()
         
+        return HttpResponseRedirect(reverse("custom-admin-categories-create"))
+    
+    def delete(self,request:HttpRequest):
+
+        category_id = request.POST.get("category_id", None)
+        
+        Category.objects.get(pk=category_id).delete()
         return HttpResponseRedirect(reverse("custom-admin-categories-create"))
 
     def get(self,request:HttpRequest):
@@ -88,6 +100,12 @@ class AdminSuitcaseView(UserAdminRequiredMixin,View):
         return render(request,template_name="custom_admin/suitcase/suitcase_view.html",context=context) 
     
     
+class QuizCreate(UserAdminRequiredMixin,View):
+    def post(self, request:HttpRequest):
+        QuizCreate.
+
+        return HttpResponseRedirect(reverse("custom-admin-categories-create"))
+
 
 class AdminSuitcaseCreate(UserAdminRequiredMixin,View):
     def post(self,request:HttpRequest):

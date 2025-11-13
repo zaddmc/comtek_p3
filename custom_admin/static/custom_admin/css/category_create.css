@@ -10,7 +10,8 @@
 	position: absolute;
 	display: flex;
 	flex-direction: row;
-	height: 89.5%;
+	height: 100%;
+	overflow: hidden;
 }
 
 .categorylist>div{

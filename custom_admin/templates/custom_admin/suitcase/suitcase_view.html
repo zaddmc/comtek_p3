@@ -11,7 +11,7 @@
     <div class="suitcase_list">
         <li>{{suitcase.name}}: {%if suitcase.rented%} {{suitcase.rented_by.username}} {%else%} Not rented {%endif%}</li>
         <div>
-            <ul>
+            <ul class="category_list">
                 {%for category in suitcase.categories.all%}
                 <li>{{category.name}}</li>
                 {%empty%}

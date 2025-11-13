@@ -8,6 +8,18 @@
 
 .admin_body>ul{
     padding: 0;
+    overflow: scroll;
+    height: 30rem;
+
+}
+
+.category_list{
+    display: grid;
+    grid-template-columns: auto auto auto;
+    background-color: dodgerblue;
+    padding: 0.5rem;
+    list-style: none;
+    
 }
 
 .suitcase_list{
