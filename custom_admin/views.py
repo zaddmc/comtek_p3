@@ -102,7 +102,7 @@ class AdminSuitcaseView(UserAdminRequiredMixin,View):
     
 class QuizCreate(UserAdminRequiredMixin,View):
     def post(self, request:HttpRequest):
-        QuizCreate.
+        #QuizCreate.
 
         return HttpResponseRedirect(reverse("custom-admin-categories-create"))
 
