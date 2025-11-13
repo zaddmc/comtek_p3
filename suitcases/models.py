@@ -25,7 +25,7 @@ class Suitcase(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4,editable=False,unique=True,primary_key=True)
 
     rented_by = models.ForeignKey(User,null=True,blank=True,on_delete=models.SET_NULL)
-    rented = models.BooleanField()
+    rented = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     rented_date = models.DateField(blank=True,null=True)
     expiration_date = models.DateField(blank=True,null=True)

@@ -1,0 +1,57 @@
+{% extends "custom_admin/common.html"%}
+{% block main %}
+{% load static %}
+
+
+<link rel="stylesheet" href="{% static 'custom_admin/css/index.css'%}">
+<link rel="stylesheet" href="{% static 'custom_admin/css/category_create.css' %}">
+
+<div class="categorylist">
+    <div>
+        <label>Existing categories:</label>
+        <ul>
+        {%for category in categories%}
+        <li>
+            {{category.name}}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" value="{{category.pk}}" name="category_id">
+                <input type="hidden" value="delete" name="_method">
+                <input type="submit" value="delete">
+            </form>            
+        </li>
+        {%empty%}
+        <li>
+            None
+        </li>
+        {%endfor%}
+        </ul>
+    </div>
+</div>
+
+<div class="admin_body">
+    
+
+    <h1>Category overview</h1>
+    <form method="post">
+    {% csrf_token %}
+    
+    
+
+    <div class="box">
+        
+
+        <div class="create_element">
+            <label for="category_name_input">Create category:</label>
+            <input id="category_name_input" name="category_name_input">
+        </div>
+
+        <div class="submit_button">
+        <button type="submit">Submit</button>
+        </div>
+    </div>
+    </form>
+</div>
+
+
+{% endblock %}
