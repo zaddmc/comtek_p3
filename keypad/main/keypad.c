@@ -8,6 +8,7 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "soc/gpio_num.h"
+#include "ssd1306.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +17,9 @@
 #define green_led GPIO_NUM_9
 #define red_led GPIO_NUM_8
 
-const gpio_num_t INPUT_PINS[] = {GPIO_NUM_35, GPIO_NUM_36, GPIO_NUM_37};
+static SSD1306_t _display;
+
+const gpio_num_t INPUT_PINS[] = {GPIO_NUM_14, GPIO_NUM_13, GPIO_NUM_12};
 const int INPUT_PINS_SIZE = 3;
 const gpio_num_t OUTPUT_PINS[] = {GPIO_NUM_4, GPIO_NUM_5, GPIO_NUM_6,
                                   GPIO_NUM_7, green_led,  red_led};
@@ -78,6 +81,7 @@ void password_check(char password[], nvs_handle_t handle) {
         ESP_LOGI(TAG, "Adding 5 ticks to counter");
         unlocks += 5;
         save_int(handle, "unlocks", unlocks);
+        ssd1306_display_text(&_display, 0, "Added 5 unlocks.", 16, false);
 
     } else if (strcmp(password, fetch_string(handle, "keycode")) == 0) {
         int32_t unlocks = fetch_int(handle, "unlocks");
@@ -90,14 +94,17 @@ void password_check(char password[], nvs_handle_t handle) {
         gpio_set_level(green_led, 1);
         is_unlocked = 1;
         save_int(handle, "unlocks", unlocks);
+        ssd1306_display_text(&_display, 0, "Unlocked le lock", 16, false);
     } else {
         gpio_set_level(green_led, 0);
         gpio_set_level(red_led, 1);
         is_unlocked = 0;
+        ssd1306_display_text(&_display, 0, "Locked the lock.", 16, false);
     }
 }
 
-void keypad_main(nvs_handle_t handle) {
+void keypad_main(nvs_handle_t handle, SSD1306_t *display) {
+    _display = *display;
     for (int i = 0; i < INPUT_PINS_SIZE; i++) {
         gpio_set_direction(INPUT_PINS[i], GPIO_MODE_INPUT);
         gpio_set_pull_mode(INPUT_PINS[i], GPIO_PULLDOWN_ONLY);
