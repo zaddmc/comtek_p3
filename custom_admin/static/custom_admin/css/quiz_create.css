@@ -5,8 +5,12 @@
 	justify-content: center;
 }
 
+.optionlist{
+    overflow: scroll;
+    height: 8rem;
+}
 
-.categorylist{
+.questionlist{
 	position: absolute;
 	display: flex;
 	flex-direction: row;
@@ -14,7 +18,7 @@
 	overflow: hidden;
 }
 
-.categorylist>div{
+.questionlist>div{
 	align-items: start;
     display: flex;
 	flex-direction: column;
