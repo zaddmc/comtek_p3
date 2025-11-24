@@ -1,6 +1,6 @@
+#include "ble_handler.h"
 #include "esp_log.h"
 #include "keypad.h"
-#include "location.h"
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "ssd1306.h"
@@ -63,8 +63,8 @@ void app_main(void) {
 
     ssd1306_display_text(display, 0, "Hello, Patteren!", 16, false);
 
-    ESP_LOGI("MAIN", "Starting location tracking");
-    // location_main(handle);
+    ESP_LOGI("MAIN", "STARTING DUAL ADVERTISEMENT");
+    start_dual_advertising();
 
     ESP_LOGI("MAIN", "Starting Keypad");
     keypad_main(handle, display);

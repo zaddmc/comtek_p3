@@ -1,0 +1,4 @@
+Diagnostics:
+  Suppress:
+    - "-fno-shrink-wrap"
+    - "-drv_unkown_argument"
