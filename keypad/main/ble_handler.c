@@ -20,7 +20,7 @@ static const char *TAG = "DUAL_ADV";
 #define WEBBLE_ADV_INSTANCE 1
 
 static const char *google_find_my_key_str =
-    "2434c5baa32eca9ba7a73d011452dd4411b4894d";
+    "de830a881ae49b8347758540c6008a0373041556";
 static uint8_t google_find_my_key[20];
 
 static const ble_uuid128_t webble_service_uuid =
