@@ -3,6 +3,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "nvs_flash.h"
+#include "nvs_handler.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -19,8 +20,6 @@ static const char *TAG = "DUAL_ADV";
 #define GOOGLE_FIND_MY_ADV_INSTANCE 0
 #define WEBBLE_ADV_INSTANCE 1
 
-static const char *google_find_my_key_str =
-    "de830a881ae49b8347758540c6008a0373041556";
 static uint8_t google_find_my_key[20];
 
 static const ble_uuid128_t webble_service_uuid =
@@ -213,13 +212,6 @@ static void start_google_find_my_adv(void) {
         ESP_LOGE(TAG, "Failed to start advertising: %d", rc);
         return;
     }
-
-    ESP_LOGI(TAG, "===========================================");
-    ESP_LOGI(TAG, "Google Find My Device advertisement STARTED");
-    ESP_LOGI(TAG, "Service UUID: 0xFEAA (FMDN)");
-    ESP_LOGI(TAG, "Frame Type: 0x40");
-    ESP_LOGI(TAG, "EID: %s", google_find_my_key_str);
-    ESP_LOGI(TAG, "===========================================");
 }
 // Start WebBLE advertisement
 static void start_webble_adv(void) {
@@ -361,7 +353,8 @@ void start_dual_advertising(void) {
     ESP_LOGI(TAG, "========================================");
 
     // Convert hex string key to bytes
-    rc = hex_string_to_bytes(google_find_my_key_str, google_find_my_key,
+
+    rc = hex_string_to_bytes(fetch_string("google_find"), google_find_my_key,
                              sizeof(google_find_my_key));
     if (rc != 0) {
         ESP_LOGE(TAG, "Failed to parse Google Find My key!");
@@ -370,15 +363,6 @@ void start_dual_advertising(void) {
 
     ESP_LOGI(TAG, "Ephemeral ID (EID) loaded:");
     ESP_LOG_BUFFER_HEX(TAG, google_find_my_key, sizeof(google_find_my_key));
-
-    // Initialize NVS
-    rc = nvs_flash_init();
-    if (rc == ESP_ERR_NVS_NO_FREE_PAGES ||
-        rc == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        rc = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(rc);
 
     // Initialize NimBLE
     ESP_ERROR_CHECK(nimble_port_init());
