@@ -2,6 +2,7 @@
 #include "esp_random.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "host/ble_gap.h"
 #include "nvs_flash.h"
 #include "nvs_handler.h"
 #include <stdio.h>
@@ -294,6 +295,7 @@ static int gap_event_cb(struct ble_gap_event *event, void *arg) {
         start_webble_adv();
         break;
     default:
+        ESP_LOGI(TAG, "Unknown event");
         break;
     }
     return 0;
@@ -384,4 +386,11 @@ void start_dual_advertising(void) {
     nimble_port_freertos_init(nimble_host_task);
 
     ESP_LOGI(TAG, "Initialization complete, waiting for BLE sync...");
+}
+
+void stop_advertisement(void) {
+    ESP_LOGI(TAG, "Stopping BLE advertisement");
+    ble_gap_adv_stop();
+    nimble_port_stop();
+    nimble_port_deinit();
 }

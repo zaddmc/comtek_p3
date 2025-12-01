@@ -1,19 +1,18 @@
+#include "ble_handler.h"
 #include "display_handler.h"
 #include "driver/gpio.h"
+#include "driver/rtc_io.h"
 #include "esp_log.h"
+#include "esp_sleep.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/projdefs.h"
 #include "freertos/task.h"
 #include "hal/gpio_types.h"
 #include "keypad.h"
-#include "nvs.h"
-#include "nvs_flash.h"
 #include "nvs_handler.h"
 #include "soc/gpio_num.h"
-#include "ssd1306.h"
 #include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 
 #define GREEN_LED GPIO_NUM_9
@@ -72,11 +71,13 @@ int password_check(char password[]) {
 
 void keypad_main() {
     for (int i = 0; i < INPUT_PINS_SIZE; i++) {
+        rtc_gpio_deinit(INPUT_PINS[i]);
         gpio_set_direction(INPUT_PINS[i], GPIO_MODE_INPUT);
         gpio_set_pull_mode(INPUT_PINS[i], GPIO_PULLDOWN_ONLY);
     }
     // The plus 2 is to init the green and red led
     for (int i = 0; i < OUTPUT_PINS_SIZE + 2; i++) {
+        // rtc_gpio_deinit(OUTPUT_PINS[i]);
         gpio_set_direction(OUTPUT_PINS[i], GPIO_MODE_OUTPUT);
         gpio_set_level(OUTPUT_PINS[i], 0);
     }
@@ -84,6 +85,11 @@ void keypad_main() {
 
     // Read back the value
     update_display(0);
+
+    // The amount of loops to go thru before sleeping
+    // As of currently there is a task delay of 50 ms per loop
+    const int loop_target = 2000;
+    int loops = 0;
 
     while (true) {
         for (int i = 0; i < 4; i++) {
@@ -105,6 +111,8 @@ void keypad_main() {
                         keypad_input[input_idx++] = ch;
                         update_display(1);
                     }
+                    // Reset Loop counter
+                    loops = 0;
                 }
                 // Wait for release
                 while (gpio_get_level(INPUT_PINS[j]))
@@ -113,6 +121,22 @@ void keypad_main() {
             gpio_set_level(OUTPUT_PINS[i], 0);
         }
         vTaskDelay(pdMS_TO_TICKS(50));
+
+        // Go to sleep
+        if (loops++ >= loop_target) {
+            stop_advertisement();
+
+            static uint64_t btn_mask = (1ULL << INPUT_PINS[0]) |
+                                       (1ULL << INPUT_PINS[1]) |
+                                       (1ULL << INPUT_PINS[2]);
+            rtc_gpio_pullup_en(OUTPUT_PINS[0]);
+
+            esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
+            esp_sleep_enable_ext1_wakeup_io(btn_mask, ESP_EXT1_WAKEUP_ANY_HIGH);
+
+            ESP_LOGI(TAG, "Going to sleep zzz");
+            esp_deep_sleep_start();
+        }
     }
 }
 #undef TAG
