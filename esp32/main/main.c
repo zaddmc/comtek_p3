@@ -1,12 +1,14 @@
 #include "commmon.h"
 #include "configurations/nimble_config.h"
 #include "esp_log.h"
+#include "external/display_handler.h"
+#include "external/keypad_handler.h"
 #include "gap/gap_init.h"
 #include "gatt/init_services.h"
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "tools/led.h"
-#include "tools/nvs_cust.h"
+#include <nvs/nvs_custom.h>
 #include <stdint.h>
 
 #define ERASE_MODE 0
@@ -29,28 +31,22 @@ void app_main(void) {
     ESP_LOGE(TAG, "FAILED to INITIALIZE nvs flash, error code: %d ", ret);
     return;
   }
-  ret = nvs_init_cust();
+  ret = nvs_init_custom();
   if (ret != ESP_OK) {
     ESP_LOGE(TAG, "FAILED TO INITIALIZE CUST NVS, error code: %d ", ret);
     return;
   }
   if (ERASE_MODE) {
-    ret = nvs_erase_main_keys();
+    ret = nvs_erase_custom_keys();
     if (ret != ESP_OK) {
       ESP_LOGE(TAG, "FAILED TO ERASE NVS, error code: %d ", ret);
       return;
     }
     return;
   }
-  ret = nvs_initialize_counter();
+  ret = nvs_initialize_custom_keys();
   if (ret != ESP_OK) {
-    ESP_LOGE(TAG, "FAILED TO INITIALIZE COUNTET TO NVS, error code: %d ", ret);
-    return;
-  }
-
-  ret = nvs_initialize_key();
-  if (ret != ESP_OK) {
-    ESP_LOGE(TAG, "FAILED TO INITIALIZE KEY TO NVS, error code: %d ", ret);
+    ESP_LOGE(TAG, "FAILED TO INITIALIZE CUSTOM KEYS, error code: %d ", ret);
     return;
   }
 
@@ -60,6 +56,7 @@ void app_main(void) {
     ESP_LOGE(TAG, "FAILED to initialize nimble stack, error code: %d ", ret);
     return;
   }
+  init_display_device();
 
   /* GAP service initialization */
   status_code = gap_init();
@@ -82,5 +79,6 @@ void app_main(void) {
 
   /* Start NimBLE host task thread and return */
   xTaskCreate(nimble_host_task, "NimBLE Host", 4 * 1024, NULL, 5, NULL);
+  keypad_main();
   return;
 }
