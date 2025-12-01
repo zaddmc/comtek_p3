@@ -88,7 +88,7 @@ void keypad_main() {
 
     // The amount of loops to go thru before sleeping
     // As of currently there is a task delay of 50 ms per loop
-    const int loop_target = 2000;
+    const int loop_target = 6000; // This is roughly 5 minutes
     int loops = 0;
 
     while (true) {
@@ -126,9 +126,9 @@ void keypad_main() {
         if (loops++ >= loop_target) {
             stop_advertisement();
 
-            static uint64_t btn_mask = (1ULL << INPUT_PINS[0]) |
-                                       (1ULL << INPUT_PINS[1]) |
-                                       (1ULL << INPUT_PINS[2]);
+            const uint64_t btn_mask = (1ULL << INPUT_PINS[0]) |
+                                      (1ULL << INPUT_PINS[1]) |
+                                      (1ULL << INPUT_PINS[2]);
             rtc_gpio_pullup_en(OUTPUT_PINS[0]);
 
             esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);

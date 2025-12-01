@@ -1,6 +1,6 @@
 #include "display_handler.h"
-#include "esp_log.h"
 #include "ssd1306.h"
+#include "string.h"
 
 #define PIN_NUM_CLK 36  // SCK
 #define PIN_NUM_MOSI 35 // SDA
@@ -10,7 +10,6 @@
 static SSD1306_t DISPLAY;
 
 void init_display_device(void) {
-
     spi_master_init(&DISPLAY, PIN_NUM_MOSI, PIN_NUM_CLK, -1, PIN_NUM_DC,
                     PIN_NUM_RST);
 
