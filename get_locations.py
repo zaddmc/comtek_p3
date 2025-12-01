@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 
 
 def main(target):
@@ -12,4 +13,11 @@ def main(target):
 
 
 if __name__ == "__main__":
-    print(main(4))
+    try:
+        assert len(sys.argv) == 2, "Wrong amount of arguments"
+        assert sys.argv[1].isdigit(), "Second argument is not valid"
+    except AssertionError as e:
+        print("Expected input to be a single int to specify which index the thing need")
+        raise e
+
+    print(main(int(sys.argv[1])))
