@@ -37,9 +37,11 @@
 		<div class="data_section item2">
 			<div class="data_wrapper">
 				<div class="customer_rank">
-					<h2>Most Active Customers:</h2>
+
+					<h2>Most Current Active Customers:</h2>
+
 					<ul>
-						{% for obj in most_active_customers%}
+						{% for obj in most_current_active_customers%}
 						<li>{{forloop.counter}}. {{obj.first_name}} {{obj.last_name}}: {{obj.userinfo.rent_amount}}</li>
 						{% empty %}
 						<li>No users</li>
@@ -48,10 +50,10 @@
 				</div>
 
 				<div class="customer_rank">
-					<h2>Most Current Active Customers:</h2>
 
+					<h2>Most Active Customers:</h2>
 					<ul>
-						{% for obj in most_current_active_customers%}
+						{% for obj in most_active_customers%}
 						<li>{{forloop.counter}}. {{obj.first_name}} {{obj.last_name}}: {{obj.userinfo.rent_amount}}</li>
 						{% empty %}
 						<li>No users</li>

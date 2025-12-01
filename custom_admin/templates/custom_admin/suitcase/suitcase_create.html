@@ -19,14 +19,22 @@
 
     <div class="create_element">
         <label>Select category:</label>
+		<div class="category_list">
         {%for category in categories%}
+		
+		<div class="category_wrapper">
         <input type="checkbox" id="{{category.name}}" name="categories[]"value="{{category.pk}}">
-        <label for="{{category.name}}">{{category.name}}</label>
+		<label for="{{category.name}}"><div>{{category.name}}</div></label>
+
+		</div >
         {%empty%}
         <ul>
             <li>No categories</li>
         </ul>
+
+		</div >
         {%endfor%}
+		</div >
     </div>
 
 

@@ -1,41 +1,41 @@
-.admin_body{
-    align-items: center;
-    display: flex;
+.admin_body {
+	align-items: center;
+	display: flex;
 	flex-direction: column;
 	justify-content: center;
-    
+
 }
 
-.box{
-    margin: 1rem;
-    padding: 2rem;
-    border: solid;
-    border-radius: 0.5rem;
-    color: var(--background);
-    background: var(--text);
+.box {
+	margin: 1rem;
+	padding: 2rem;
+	border: solid;
+	border-radius: 0.5rem;
+	color: var(--background);
+	background: var(--text);
 }
 
-.create_element{
-    flex-direction: row;
-    margin-top: 1rem;
-    margin-bottom: 3rem;
-    justify-content: center;
-    text-align: center;
-    
+.create_element {
+	flex-direction: row;
+	margin-top: 1rem;
+	margin-bottom: 3rem;
+	justify-content: center;
+	text-align: center;
+
 }
 
-.submit_button{
-    align-items: center;
-    display: flex;
+.submit_button {
+	align-items: center;
+	display: flex;
 	flex-direction: row;
 	justify-content: center;
-    padding: 0.5rem;
+	padding: 0.5rem;
 
 }
 
 /* From Uiverse.io by SpatexDEV */
-.submit_button>button{
-    margin: auto;
+.submit_button>button {
+	margin: auto;
 	border: none;
 	display: flex;
 	padding: 0.75rem 1.5rem;
@@ -73,4 +73,37 @@
 .submit_button>button svg {
 	width: 1.25rem;
 	height: 1.25rem;
+}
+
+.category_list {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: 7.5rem;
+	overflow: scroll;
+
+}
+
+.category_wrapper>input[type="checkbox"] {
+	display: none;
+}
+
+.category_wrapper {
+	margin: 0.2rem;
+	width: 5rem;
+	border-radius: 1rem;
+	background-color: var(--background);
+	color: var(--text);
+}
+
+.category_wrapper>label>div {
+	padding-inline: 1rem;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+	cursor: pointer;
+}
+
+.category_wrapper:has(input:checked) {
+	background-color: #00aa00;
+	color: var(--text);
 }

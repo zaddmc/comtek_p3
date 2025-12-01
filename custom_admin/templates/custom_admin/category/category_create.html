@@ -9,9 +9,10 @@
 <div class="categorylist">
     <div>
         <label>Existing categories:</label>
-        <ul>
+        <ul class="category_list">
         {%for category in categories%}
         <li>
+			<div class="category_wrapper" style="background-color: {{category.hex_color}};">
             {{category.name}}
             <form method="post">
                 {% csrf_token %}
@@ -19,6 +20,7 @@
                 <input type="hidden" value="delete" name="_method">
                 <input type="submit" value="delete">
             </form>            
+			</div>
         </li>
         {%empty%}
         <li>
