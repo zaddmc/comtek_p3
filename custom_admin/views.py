@@ -105,7 +105,7 @@ class QuizCreate(UserAdminRequiredMixin,View):
         
         request_quizname = request.POST.get("quiz_name_input",None)
         print(request.POST)
-        
+        """
         quiz = QuizQuestion.objects.create(question_text=request_quizname)
         quiz.save()
 
@@ -113,6 +113,8 @@ class QuizCreate(UserAdminRequiredMixin,View):
 
         quizoption = QuestionOption.objects.create(question=quiz,option_text=request_question_option)
         quizoption.save()
+        """
+        
 
         return HttpResponseRedirect(reverse("custom-admin-questions-create"))
 
