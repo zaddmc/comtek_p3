@@ -5,8 +5,8 @@
 #include "os/os_mbuf.h"
 #include "string.h"
 #include "tools/led.h"
-#include "tools/nvs_cust.h"
 #include "tools/sha256.h"
+#include <nvs/nvs_custom.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -22,12 +22,12 @@ static uint16_t write_chr_handle_conn = 0;
 int write_chr_access(uint16_t conn_handle, uint16_t attr_handle,
                      struct ble_gatt_access_ctxt *ctxt, void *arg) {
 
-  int32_t counter = nvs_read_counter();
+  int32_t counter = nvs_read_i32_custom(NVS_ROLLING_CODE_COUNTER_TAG);
   if (counter < 0) {
     ESP_LOGE(TAG, "COULD NOT READ COUNTER");
     return -1;
   }
-  struct CustStr secret_key = nvs_read_key();
+  struct CustStr secret_key = nvs_read_string_custom(NVS_ROLLING_CODE_KEY_TAG);
   size_t key_len = secret_key.len;
   if (key_len == 0) {
     ESP_LOGE(TAG, "COULD NOT READ KEY");
@@ -59,7 +59,7 @@ int write_chr_access(uint16_t conn_handle, uint16_t attr_handle,
       int32_t start_counter = counter;
       char hashed_key[65];
       bool found_correct_key = false;
-      for (; counter < start_counter + EXTRA_COUNT; counter++) {
+      for (; counter < start_counter + ROLLING_CODE_EXTRA_COUNT; counter++) {
         RollingSHA256(hashed_key, secret_key.pointer, counter, secret_key.len,
                       sizeof(counter));
         int res = memcmp(ctxt->om->om_data, hashed_key, SHA256_OUT_LEN - 1);
@@ -78,7 +78,8 @@ int write_chr_access(uint16_t conn_handle, uint16_t attr_handle,
         printf("COUNTER %d\n", (int)counter);
         write_chr_val[1] = 0;
         counter += 1;
-        if (nvs_write_counter(counter) != ESP_OK) {
+        if (nvs_write_i32_custom(NVS_ROLLING_CODE_COUNTER_TAG, counter) !=
+            ESP_OK) {
           write_chr_val[1] = -1;
           status_code = BLE_ATT_ERR_UNLIKELY;
         }

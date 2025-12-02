@@ -4,7 +4,7 @@
 #include "host/ble_gatt.h"
 #include <stdint.h>
 
-#define EXTRA_COUNT 100
+#define ROLLING_CODE_EXTRA_COUNT 100
 
 extern const ble_uuid16_t test_svc_uuid;
 extern const ble_uuid16_t write_chr_uuid;
