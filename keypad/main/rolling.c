@@ -5,11 +5,15 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "rolling.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
 static const char *TAG = "HMAC_ROLLING";
 
+/**
+ * Initialize NVS and load/create rolling code context
+ */
 esp_err_t rolling_code_init(rolling_code_ctx_t *ctx, const char *device_id) {
     esp_err_t err;
     nvs_handle_t nvs_handle;
@@ -48,6 +52,7 @@ esp_err_t rolling_code_init(rolling_code_ctx_t *ctx, const char *device_id) {
 
         ctx->counter = 0;
         ctx->last_valid_counter = 0;
+        ctx->failed_attempts = 0;
 
         err = nvs_set_u64(nvs_handle, "counter", ctx->counter);
         if (err != ESP_OK) {
@@ -70,6 +75,22 @@ esp_err_t rolling_code_init(rolling_code_ctx_t *ctx, const char *device_id) {
     return ESP_OK;
 }
 
+/**
+ * Convert HMAC output to 6-digit decimal code
+ */
+uint32_t rolling_code_to_digits(const uint8_t *code, size_t len) {
+    // Use first 4 bytes as uint32
+    uint32_t value = 0;
+    for (int i = 0; i < 4 && i < len; i++) {
+        value = (value << 8) | code[i];
+    }
+    // Modulo to get 6 digits (0-999999)
+    return value % 1000000;
+}
+
+/**
+ * Generate HMAC-based rolling code
+ */
 esp_err_t rolling_code_generate(rolling_code_ctx_t *ctx, uint64_t counter,
                                 uint8_t *code_out, size_t code_len) {
     if (code_len != ROLLING_CODE_SIZE) {
@@ -117,6 +138,9 @@ cleanup:
     return ret;
 }
 
+/**
+ * Get next rolling code (increments counter)
+ */
 esp_err_t rolling_code_next(rolling_code_ctx_t *ctx, uint8_t *code_out) {
     esp_err_t err =
         rolling_code_generate(ctx, ctx->counter, code_out, ROLLING_CODE_SIZE);
@@ -138,6 +162,108 @@ esp_err_t rolling_code_next(rolling_code_ctx_t *ctx, uint8_t *code_out) {
     return ESP_OK;
 }
 
+/**
+ * Get next rolling code as 6-digit number (increments counter)
+ */
+esp_err_t rolling_code_next_digits(rolling_code_ctx_t *ctx,
+                                   uint32_t *code_digits) {
+    uint8_t code[ROLLING_CODE_SIZE];
+    esp_err_t err = rolling_code_next(ctx, code);
+    if (err != ESP_OK) {
+        return err;
+    }
+
+    *code_digits = rolling_code_to_digits(code, ROLLING_CODE_SIZE);
+    return ESP_OK;
+}
+
+/**
+ * Verify received rolling code (6-digit version)
+ */
+bool rolling_code_verify_digits(rolling_code_ctx_t *ctx,
+                                uint32_t received_digits,
+                                uint64_t received_counter) {
+    // Check if locked out due to failed attempts
+    if (ctx->failed_attempts >= MAX_FAILED_ATTEMPTS) {
+        ESP_LOGE(TAG, "Device locked due to too many failed attempts");
+        return false;
+    }
+
+    // Check if counter is within acceptable window
+    if (received_counter <= ctx->last_valid_counter) {
+        ESP_LOGW(TAG, "Counter replay detected: %llu <= %llu", received_counter,
+                 ctx->last_valid_counter);
+        ctx->failed_attempts++;
+        return false;
+    }
+
+    if (received_counter > ctx->last_valid_counter + MAX_WINDOW_SIZE) {
+        ESP_LOGW(TAG, "Counter too far ahead: %llu > %llu + %d",
+                 received_counter, ctx->last_valid_counter, MAX_WINDOW_SIZE);
+        ctx->failed_attempts++;
+        return false;
+    }
+
+    // Generate expected code
+    uint8_t expected_code[ROLLING_CODE_SIZE];
+    if (rolling_code_generate(ctx, received_counter, expected_code,
+                              ROLLING_CODE_SIZE) != ESP_OK) {
+        ctx->failed_attempts++;
+        return false;
+    }
+
+    uint32_t expected_digits =
+        rolling_code_to_digits(expected_code, ROLLING_CODE_SIZE);
+
+    if (expected_digits == received_digits) {
+        ctx->last_valid_counter = received_counter;
+        ctx->failed_attempts = 0; // Reset on success
+        ESP_LOGI(TAG, "Valid code accepted, counter: %llu", received_counter);
+
+        // Update NVS
+        nvs_handle_t nvs_handle;
+        if (nvs_open("rolling_code", NVS_READWRITE, &nvs_handle) == ESP_OK) {
+            nvs_set_u64(nvs_handle, "counter", ctx->last_valid_counter);
+            nvs_set_u32(nvs_handle, "failed_attempts", ctx->failed_attempts);
+            nvs_commit(nvs_handle);
+            nvs_close(nvs_handle);
+        }
+        return true;
+    }
+
+    ctx->failed_attempts++;
+    ESP_LOGW(TAG, "Invalid code for counter: %llu (attempt %d/%d)",
+             received_counter, ctx->failed_attempts, MAX_FAILED_ATTEMPTS);
+
+    // Save failed attempts
+    nvs_handle_t nvs_handle;
+    if (nvs_open("rolling_code", NVS_READWRITE, &nvs_handle) == ESP_OK) {
+        nvs_set_u32(nvs_handle, "failed_attempts", ctx->failed_attempts);
+        nvs_commit(nvs_handle);
+        nvs_close(nvs_handle);
+    }
+
+    return false;
+}
+
+/**
+ * Reset failed attempts counter (admin function)
+ */
+void rolling_code_reset_lockout(rolling_code_ctx_t *ctx) {
+    ctx->failed_attempts = 0;
+    ESP_LOGI(TAG, "Lockout reset");
+
+    nvs_handle_t nvs_handle;
+    if (nvs_open("rolling_code", NVS_READWRITE, &nvs_handle) == ESP_OK) {
+        nvs_set_u32(nvs_handle, "failed_attempts", 0);
+        nvs_commit(nvs_handle);
+        nvs_close(nvs_handle);
+    }
+}
+
+/**
+ * Verify received rolling code
+ */
 bool rolling_code_verify(rolling_code_ctx_t *ctx, const uint8_t *received_code,
                          uint64_t received_counter) {
     // Check if counter is within acceptable window
@@ -184,10 +310,90 @@ bool rolling_code_verify(rolling_code_ctx_t *ctx, const uint8_t *received_code,
     return false;
 }
 
+/**
+ * Verify 6-digit code without knowing exact counter (searches window)
+ * Used when only the code is manually entered without counter info
+ */
+bool rolling_code_verify_digits_auto(rolling_code_ctx_t *ctx,
+                                     uint32_t received_digits) {
+    // Check if locked out due to failed attempts
+    if (ctx->failed_attempts >= MAX_FAILED_ATTEMPTS) {
+        ESP_LOGE(TAG, "Device locked due to too many failed attempts");
+        return false;
+    }
+
+    // Try counter values in window: [last_valid + 1] to [last_valid +
+    // MAX_WINDOW_SIZE]
+    uint64_t start_counter = ctx->last_valid_counter + 1;
+    uint64_t end_counter = ctx->last_valid_counter + MAX_WINDOW_SIZE;
+
+    ESP_LOGI(TAG, "Searching for code in counter range %llu to %llu",
+             start_counter, end_counter);
+
+    for (uint64_t test_counter = start_counter; test_counter <= end_counter;
+         test_counter++) {
+        // Generate expected code for this counter
+        uint8_t expected_code[ROLLING_CODE_SIZE];
+        if (rolling_code_generate(ctx, test_counter, expected_code,
+                                  ROLLING_CODE_SIZE) != ESP_OK) {
+            continue;
+        }
+
+        uint32_t expected_digits =
+            rolling_code_to_digits(expected_code, ROLLING_CODE_SIZE);
+
+        if (expected_digits == received_digits) {
+            // Found matching code!
+            ctx->last_valid_counter = test_counter;
+            ctx->failed_attempts = 0; // Reset on success
+
+            ESP_LOGI(TAG, "Valid code found at counter: %llu", test_counter);
+
+            // Update NVS
+            nvs_handle_t nvs_handle;
+            if (nvs_open("rolling_code", NVS_READWRITE, &nvs_handle) ==
+                ESP_OK) {
+                nvs_set_u64(nvs_handle, "counter", ctx->last_valid_counter);
+                nvs_set_u32(nvs_handle, "failed_attempts",
+                            ctx->failed_attempts);
+                nvs_commit(nvs_handle);
+                nvs_close(nvs_handle);
+            }
+            return true;
+        }
+    }
+
+    // No match found in window
+    ctx->failed_attempts++;
+    ESP_LOGW(TAG, "No valid code found in window (attempt %d/%d)",
+             ctx->failed_attempts, MAX_FAILED_ATTEMPTS);
+
+    // Save failed attempts
+    nvs_handle_t nvs_handle;
+    if (nvs_open("rolling_code", NVS_READWRITE, &nvs_handle) == ESP_OK) {
+        nvs_set_u32(nvs_handle, "failed_attempts", ctx->failed_attempts);
+        nvs_commit(nvs_handle);
+        nvs_close(nvs_handle);
+    }
+
+    return false;
+}
+
+/**
+ * Print code in hex format
+ */
 void rolling_code_print(const uint8_t *code, size_t len) {
     printf("Code: ");
     for (size_t i = 0; i < len; i++) {
         printf("%02X", code[i]);
+    }
+    printf("\n");
+}
+
+void rolling_key_print(const uint8_t *key) {
+    printf("Key: ");
+    for (size_t i = 0; i < HMAC_KEY_SIZE; i++) {
+        printf("%02X", key[i]);
     }
     printf("\n");
 }

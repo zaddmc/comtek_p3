@@ -1,5 +1,5 @@
-import hmac
 import hashlib
+import hmac
 import json
 import os
 from pathlib import Path
@@ -14,6 +14,7 @@ class RollingCodeTransmitter:
 
     HMAC_KEY_SIZE = 32
     ROLLING_CODE_SIZE = 8
+    ROLLING_CODE_DIGITS = 6  # 6-digit decimal code for display
 
     def __init__(self, device_id: str, storage_path: str = "./rolling_codes"):
         """
@@ -87,19 +88,48 @@ class RollingCodeTransmitter:
         # Return first 8 bytes
         return hmac_result[: self.ROLLING_CODE_SIZE]
 
-    def next_code(self) -> Tuple[int, bytes]:
+    def code_to_digits(self, code: bytes) -> int:
+        """
+        Convert code bytes to 6-digit decimal number.
+
+        Args:
+            code: Rolling code bytes
+
+        Returns:
+            6-digit integer (0-999999)
+        """
+        # Use first 4 bytes as integer
+        value = int.from_bytes(code[:4], byteorder="big")
+        # Modulo to get 6 digits
+        return value % 1000000
+
+    def generate_code_digits(self, counter: int) -> int:
+        """
+        Generate rolling code as 6-digit number.
+
+        Args:
+            counter: Counter value to use
+
+        Returns:
+            6-digit code
+        """
+        code = self.generate_code(counter)
+        return self.code_to_digits(code)
+
+    def next_code(self) -> Tuple[int, bytes, int]:
         """
         Generate next rolling code and increment counter.
 
         Returns:
-            Tuple of (counter, code)
+            Tuple of (counter, code_bytes, code_digits)
         """
         code = self.generate_code(self.counter)
+        code_digits = self.code_to_digits(code)
         current_counter = self.counter
         self.counter += 1
         self._save_state()
 
-        return current_counter, code
+        return current_counter, code, code_digits
 
     def get_key_hex(self) -> str:
         """Get HMAC key in hex format for sharing with receiver."""
@@ -126,10 +156,15 @@ class RollingCodeTransmitter:
         Ready to be serialized and sent to receiver.
 
         Returns:
-            Dictionary with device_id, counter, and code
+            Dictionary with device_id, counter, code (hex), and code_digits
         """
-        counter, code = self.next_code()
-        return {"device_id": self.device_id, "counter": counter, "code": code.hex()}
+        counter, code, code_digits = self.next_code()
+        return {
+            "device_id": self.device_id,
+            "counter": counter,
+            "code": code.hex(),
+            "code_digits": f"{code_digits:06d}",  # 6-digit formatted string
+        }
 
     def reset_counter(self, new_counter: int = 0):
         """Reset counter to specific value (use with caution)."""
@@ -141,7 +176,7 @@ class RollingCodeTransmitter:
 def demo():
     """Demonstration of transmitter functionality."""
     print("=" * 60)
-    print("HMAC Rolling Code Transmitter Demo")
+    print("HMAC Rolling Code Transmitter")
     print("=" * 60)
 
     # Create transmitter
@@ -152,10 +187,12 @@ def demo():
     print(f"Current Counter: {tx.counter}")
 
     # Generate some codes
-    print("\n--- Generating 5 Rolling Codes ---")
-    for i in range(5):
-        counter, code = tx.next_code()
-        print(f"Counter: {counter:4d} | Code: {code.hex().upper()}")
+    print("\n--- Generating 1 Rolling Codes (6-digit format) ---")
+    for i in range(1):
+        counter, code_bytes, code_digits = tx.next_code()
+        print(
+            f"Counter: {counter:4d} | Hex: {code_bytes.hex().upper()} | Digits: {code_digits:06d}"
+        )
 
     # Show export format
     print("\n--- Export for ESP32 Receiver ---")
@@ -163,15 +200,32 @@ def demo():
     print(json.dumps(config, indent=2))
 
     # Create transmission packets
-    print("\n--- Sample Transmission Packets ---")
-    for i in range(3):
-        packet = tx.create_transmission_packet()
-        print(json.dumps(packet, indent=2))
+    # print("\n--- Sample Transmission Packets (for Django/API) ---")
+    # for i in range(3):
+    #     packet = tx.create_transmission_packet()
+    #     print(json.dumps(packet, indent=2))
+    #     print(f"   → User enters: {packet['code_digits']}")
 
     print("\n" + "=" * 60)
     print("Demo Complete")
     print("=" * 60)
 
 
+import sys
+
 if __name__ == "__main__":
-    demo()
+    if sys.argv[1].isdigit():
+        tx = RollingCodeTransmitter("TX_001")
+
+        print(f"\nDevice ID: {tx.device_id}")
+        print(f"HMAC Key: {tx.get_key_hex()}")
+
+        tx.counter = int(sys.argv[1])
+
+        counter, code_bytes, code_digits = tx.next_code()
+        print(
+            f"Counter: {counter:4d} | Hex: {code_bytes.hex().upper()} | Digits: {code_digits:06d}"
+        )
+
+    else:
+        demo()

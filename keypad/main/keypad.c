@@ -2,14 +2,17 @@
 #include "display_handler.h"
 #include "driver/gpio.h"
 #include "driver/rtc_io.h"
+#include "esp_err.h"
 #include "esp_log.h"
 #include "esp_sleep.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/projdefs.h"
 #include "freertos/task.h"
 #include "hal/gpio_types.h"
+#include "hal/rtc_io_types.h"
 #include "keypad.h"
 #include "nvs_handler.h"
+#include "rolling.h"
 #include "soc/gpio_num.h"
 #include <stddef.h>
 #include <stdint.h>
@@ -36,6 +39,8 @@ const char KEYPAD_VALS[] = "123456789*0#";
 
 int is_unlocked = 0;
 
+rolling_code_ctx_t hmac_ctx;
+
 char keypad_input[17] = {'\0'};
 int input_idx = 0;
 
@@ -48,8 +53,9 @@ int password_check(char password[]) {
         unlocks += 5;
         save_int("unlocks", unlocks);
         return 2;
-
-    } else if (strcmp(password, fetch_string("keycode")) == 0) {
+    }
+    // if (strcmp(password, fetch_string("keycode")) == 0) {
+    if (rolling_code_verify_digits_auto(&hmac_ctx, atoi(keypad_input))) {
         int32_t unlocks = fetch_int("unlocks");
         if (unlocks <= 0) {
             ESP_LOGI(TAG, "Not enough ticks to unlock");
@@ -61,12 +67,12 @@ int password_check(char password[]) {
         is_unlocked = 1;
         save_int("unlocks", unlocks);
         return 1;
-    } else {
-        gpio_set_level(GREEN_LED, 0);
-        gpio_set_level(RED_LED, 1);
-        is_unlocked = 0;
-        return 1;
     }
+
+    gpio_set_level(GREEN_LED, 0);
+    gpio_set_level(RED_LED, 1);
+    is_unlocked = 0;
+    return 1;
 }
 
 void keypad_main() {
@@ -77,7 +83,7 @@ void keypad_main() {
     }
     // The plus 2 is to init the green and red led
     for (int i = 0; i < OUTPUT_PINS_SIZE + 2; i++) {
-        // rtc_gpio_deinit(OUTPUT_PINS[i]);
+        rtc_gpio_deinit(OUTPUT_PINS[i]);
         gpio_set_direction(OUTPUT_PINS[i], GPIO_MODE_OUTPUT);
         gpio_set_level(OUTPUT_PINS[i], 0);
     }
@@ -86,10 +92,24 @@ void keypad_main() {
     // Read back the value
     update_display(0);
 
+    ESP_LOGI("HMAC_TEST", "Starting HMAC TEST");
+    ESP_ERROR_CHECK(rolling_code_init(&hmac_ctx, "TX_001"));
+    /* uint8_t new_key[HMAC_KEY_SIZE] = {
+        0xf9, 0x89, 0x2e, 0xe8, 0x0b, 0x95, 0xe6, 0x9b, 0x03, 0x42, 0x32,
+        0xc2, 0xbd, 0xd8, 0x7e, 0x16, 0xc2, 0xe5, 0x45, 0x7d, 0xde, 0xa1,
+        0x56, 0xd8, 0xdf, 0x9e, 0xb5, 0x33, 0x12, 0x1f, 0x8e, 0x39};
+    memcpy(&hmac_ctx.key, new_key, HMAC_KEY_SIZE); */
+
+    ESP_LOGI("HMAC_TEST", "The thing is open, printing key");
+    rolling_key_print(hmac_ctx.key);
+    ESP_LOGI("HMAC_TEST", "The counter is %llu", hmac_ctx.counter);
+    ESP_LOGI("HMAC_TEST", "The last valid counter is %llu",
+             hmac_ctx.last_valid_counter);
+
     // The amount of loops to go thru before sleeping
     // As of currently there is a task delay of 50 ms per loop
-    const int loop_target = 6000; // This is roughly 5 minutes
-    int loops = 0;
+    const int loop_target = 600000; // 6000 is roughly 5 minutes
+    int keypad_loops = 0;
 
     while (true) {
         for (int i = 0; i < 4; i++) {
@@ -112,7 +132,7 @@ void keypad_main() {
                         update_display(1);
                     }
                     // Reset Loop counter
-                    loops = 0;
+                    keypad_loops = 0;
                 }
                 // Wait for release
                 while (gpio_get_level(INPUT_PINS[j]))
@@ -123,13 +143,25 @@ void keypad_main() {
         vTaskDelay(pdMS_TO_TICKS(50));
 
         // Go to sleep
-        if (loops++ >= loop_target) {
+        if (keypad_loops++ >= loop_target) {
             stop_advertisement();
+
+            for (int i = 0; i < OUTPUT_PINS_SIZE; i++) {
+                rtc_gpio_init(OUTPUT_PINS[i]);
+                rtc_gpio_set_direction(OUTPUT_PINS[i],
+                                       RTC_GPIO_MODE_OUTPUT_ONLY);
+                rtc_gpio_set_level(OUTPUT_PINS[i], 1);
+            }
+
+            for (int i = 0; i < INPUT_PINS_SIZE; i++) {
+                rtc_gpio_init(INPUT_PINS[i]);
+                rtc_gpio_set_direction(INPUT_PINS[i], RTC_GPIO_MODE_INPUT_ONLY);
+                rtc_gpio_pulldown_en(INPUT_PINS[i]);
+            }
 
             const uint64_t btn_mask = (1ULL << INPUT_PINS[0]) |
                                       (1ULL << INPUT_PINS[1]) |
                                       (1ULL << INPUT_PINS[2]);
-            rtc_gpio_pullup_en(OUTPUT_PINS[0]);
 
             esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
             esp_sleep_enable_ext1_wakeup_io(btn_mask, ESP_EXT1_WAKEUP_ANY_HIGH);

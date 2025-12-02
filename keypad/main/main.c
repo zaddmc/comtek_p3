@@ -9,7 +9,7 @@ void app_main(void) {
     init_nvs_handle();
 
     save_string("google_find", "de830a881ae49b8347758540c6008a0373041556");
-    save_string("keycode", "12345");
+    // save_string("keycode", "12345");
 
     ESP_LOGI("MAIN", "Initializing SSD1306 Display");
     init_display_device();
