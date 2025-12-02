@@ -17,6 +17,11 @@ from .models import QuestionOption, QuizQuestion
 from suitcases.models import Category, Suitcase
 from .utils import get_recommended_suitcases
 
+class ClearRecommendationsView(LoginRequiredMixin, View):
+    def get(self,request:HttpRequest,**kwargs):
+        request.session["last_quiz_data"] = request.session.pop("quiz_data") 
+        return HttpResponseRedirect(reverse("non-rented-view"))
+
 class NonRentedView(LoginRequiredMixin, View):
     """
     Displays all unrented suitcases and optionally shows quiz recommendations / progress status.
@@ -36,11 +41,11 @@ class NonRentedView(LoginRequiredMixin, View):
             return render(request,"user/index.html",context) 
         current_id = 0
         try:
-            current_id = session_data.index(None) + 1
+            current_id = session_data.index(None) 
         except:
             current_id = False
         print(current_id)
-        context["current_id"] = current_id if current_id else 1
+        context["current_id"] = current_id if current_id else 0
         return render(request,"user/index.html",context) 
 
 
@@ -136,7 +141,7 @@ class QuizView(LoginRequiredMixin, View):
 
         return HttpResponseRedirect(redirect_to=reverse("quiz") + f"?quiz_id={question_id}")
     def go_to_results(self,request:HttpRequest,session_data:list[int],question_id:int,form:QuizStepForm) -> HttpResponse:
-        session_data[question_id-1] = form.cleaned_data["selected_option"].pk
+        session_data[question_id] = form.cleaned_data["selected_option"].pk
         request.session["quiz_data"] = session_data
         request.session["last_quiz_data"] = request.session.pop("quiz_data") 
         return HttpResponseRedirect(reverse("quiz-recommendations"))
@@ -156,7 +161,6 @@ class QuizView(LoginRequiredMixin, View):
 class RecommendationView(LoginRequiredMixin,View):
     def get(self,request:HttpRequest):
         session_data =  request.session.get("last_quiz_data",None)
-        print(session_data)
         if not session_data:
             ctx = {}
             ctx["error_text"] = "No session data."
