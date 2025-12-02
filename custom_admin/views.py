@@ -105,15 +105,23 @@ class QuizCreate(UserAdminRequiredMixin,View):
         
         request_quizname = request.POST.get("quiz_name_input",None)
         print(request.POST)
-        
-        quiz = QuizQuestion.objects.create(question_text=request_quizname)
+        question_order = QuizQuestion.objects.all().count()
+        quiz = QuizQuestion.objects.create(question_text=request_quizname,question_order=question_order)
         quiz.save()
 
-        request_question_option = request.POST.get("question_text_input",None)
-
-        quizoption = QuestionOption.objects.create(question=quiz,option_text=request_question_option)
-        quizoption.save()
-
+        index = request.POST.getlist("index",None)
+        print(index)
+        for i in index:
+            optionname = request.POST.get("option_name-"+i,None)
+            categories = request.POST.getlist("category-"+i,None)
+            option = QuestionOption.objects.create(option_text=optionname,question=quiz)
+            for p in categories:
+                category = Category.objects.get(pk=p)
+                option.categories.add(category)
+            option.save()
+            quiz.options.add(option)
+        
+        quiz.save()
         return HttpResponseRedirect(reverse("custom-admin-questions-create"))
 
     def get(self,request:HttpRequest):
