@@ -50,9 +50,10 @@ class QuizView(LoginRequiredMixin, View):
     def get_context_data(self,request:HttpRequest) -> dict[str,Any] | None:
         question_count = self.get_question_count()
         question_id = self.get_question_id(request)
-        if not question_id:
+        if not question_id and question_id != 0:
             return None
-        question = QuizQuestion.objects.get(pk=question_id)
+        question = QuizQuestion.objects.get(question_order=question_id)
+
         form = QuizStepForm(question=question)
 
         if not question: 
@@ -61,7 +62,7 @@ class QuizView(LoginRequiredMixin, View):
         session_data = self.get_quiz_session_data(request)
         assert(session_data)
 
-        current_answer = session_data[question_id - 1]
+        current_answer = session_data[question_id]
         if current_answer:
             form.initial["selected_option"] = current_answer
         ctx["question"] = question
@@ -95,7 +96,7 @@ class QuizView(LoginRequiredMixin, View):
         if not session_data:
             return show_error_page(request,"No session data",400) 
 
-        question = QuizQuestion.objects.get(pk=question_id)
+        question = QuizQuestion.objects.get(question_order=question_id)
         form = QuizStepForm(data=request.POST,question=question)
 
         if not form.is_valid():
@@ -106,7 +107,7 @@ class QuizView(LoginRequiredMixin, View):
             return self.go_to_results(request,session_data,question_id,form)
         if action != "next" and action != "prev":
             return show_error_page(request,"Invalid action",400)
-        session_data[question_id-1] = form.cleaned_data["selected_option"].pk
+        session_data[question_id] = form.cleaned_data["selected_option"].pk
         request.session["quiz_data"] = session_data
 
         if action == "next":

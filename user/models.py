@@ -11,6 +11,7 @@ class QuizQuestion(models.Model):
     """
 
     question_text = models.CharField(max_length=360)
+    question_order = models.IntegerField(blank=False,null=False,unique=True)
     objects = models.Manager()
 
     def __str__(self):
