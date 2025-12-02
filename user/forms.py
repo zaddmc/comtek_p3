@@ -18,8 +18,6 @@ class QuizStepForm(forms.Form):
     )
     def __init__(self, *args, **kwargs):
         question = kwargs.pop("question", None)
-        print(f"Args: {args}")
-        print(f"KWArgs: {kwargs}")
         super().__init__(*args, **kwargs)
         if question:
             self.fields["selected_option"].queryset = QuestionOption.objects.filter(question=question)

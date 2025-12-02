@@ -77,6 +77,10 @@ class QuizView(LoginRequiredMixin, View):
         question_count = self.get_question_count()
         if not session_data:
             session_data = [None for _ in range(question_count)]
+
+        if question_count > len(session_data):
+            for _ in range(question_count - len(session_data)):
+                session_data.append(None)
   
         request.session["quiz_data"] = session_data
 
@@ -89,7 +93,7 @@ class QuizView(LoginRequiredMixin, View):
     def post(self, request):
 
         question_id = self.get_question_id(request)
-        if not question_id:
+        if not question_id and question_id != 0:
             return show_error_page(request,"Invalid questoin ID",400)
 
         session_data =  self.get_quiz_session_data(request) 
@@ -143,7 +147,7 @@ class QuizView(LoginRequiredMixin, View):
         return self.go_to_question(question_id+1) 
 
     def go_to_prev_question(self,question_id:int):
-        assert(question_id - 1 > 0)
+        assert(question_id - 1 >= 0)
         return self.go_to_question(question_id-1)
 
     def get_quiz_session_data(self,request:HttpRequest) -> list[int] | None:

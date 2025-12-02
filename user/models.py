@@ -34,7 +34,7 @@ class QuestionOption(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return f"{self.question.question_text} - {self.option_text}"
+        return f"{self.option_text}"
 
     def get_category_names(self):
         """Helper to get all category names"""
