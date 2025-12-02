@@ -5,7 +5,66 @@
 
 <link rel="stylesheet" href="{% static 'custom_admin/css/index.css'%}">
 <link rel="stylesheet" href="{% static 'custom_admin/css/quiz_create.css' %}">
+<script src="{% static 'custom_admin/js/quiz_create.js' %}" defer></script>
 
-<h1>hej</h1>
+    
+<div class="questionlist">
+<div>
+    <label>Existing questions:</label>
+    <ul>
+    {%for question in questions%}
+    <li>
+        {{question.question_text}}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" value="{{question.pk}}" name="question_id">
+            <input type="hidden" value="delete" name="_method">
+            <input type="submit" value="delete">
+        </form>
+    </li>
+    {%empty%}
+    <li>
+        None
+    </li>
+    {%endfor%}
+    </ul>
+</div>
+</div>
+
+<div class="admin_body">
+
+
+    <h1>Create Question</h1>
+    <form method="post">
+    {% csrf_token %}
+    <div class="box">
+
+        <div class="create_element">
+            <label for="quiz_name_input">Create question:</label>
+            <input id="quiz_name_input" name="quiz_name_input">
+        </div>
+        
+        <div>
+            <label for="question_text_input">Options: </label>
+            <div class="optionlist"></div>
+        </div>
+        <button type="button" id="option_button">+</button>
+        <div class="submit_button">
+        <button type="submit">Submit</button>
+        </div>
+    </div>
+    </form>
+</div>
+<ul style="display: hidden;" class="invisiblecategories">
+    {%for category in categories%}
+    <li>
+        <label for="{{category.pk}}">{{category}}</label>
+        <input name="category" id="{{category.pk}}" type="checkbox" value="{{category.pk}}">
+        
+        
+    </li>
+
+    {%endfor%}
+</ul>
 
 {% endblock %}
