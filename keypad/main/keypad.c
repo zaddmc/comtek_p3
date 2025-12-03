@@ -14,6 +14,7 @@
 #include "nvs_handler.h"
 #include "rolling.h"
 #include "soc/gpio_num.h"
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -37,7 +38,7 @@ const int OUTPUT_PINS_SIZE = 4;
 
 const char KEYPAD_VALS[] = "123456789*0#";
 
-int is_unlocked = 0;
+bool is_unlocked = false;
 
 rolling_code_ctx_t hmac_ctx;
 
@@ -46,17 +47,15 @@ int input_idx = 0;
 
 #define TAG "KEYPAD"
 
-int password_check(char password[]) {
-    if (strcmp(password, "123456") == 0) {
-        int32_t unlocks = fetch_int("unlocks");
-        ESP_LOGI(TAG, "Adding 5 ticks to counter");
-        unlocks += 5;
-        save_int("unlocks", unlocks);
-        return 2;
-    }
-    // if (strcmp(password, fetch_string("keycode")) == 0) {
-    if (rolling_code_verify_digits_auto(&hmac_ctx, atoi(keypad_input))) {
-        int32_t unlocks = fetch_int("unlocks");
+void change_hmac_ctx(int64_t new_counter) {
+    hmac_ctx.counter = new_counter;
+    hmac_ctx.last_valid_counter = new_counter;
+    hmac_ctx.failed_attempts = 0;
+}
+
+int set_briefcase_state(bool new_state) {
+    if (new_state) {
+        int32_t unlocks = fetch_int(NVS_UNLOCKS);
         if (unlocks <= 0) {
             ESP_LOGI(TAG, "Not enough ticks to unlock");
             return -1;
@@ -64,14 +63,28 @@ int password_check(char password[]) {
         unlocks--;
         gpio_set_level(RED_LED, 0);
         gpio_set_level(GREEN_LED, 1);
-        is_unlocked = 1;
-        save_int("unlocks", unlocks);
+        is_unlocked = true;
+        save_int(NVS_UNLOCKS, unlocks);
         return 1;
     }
-
     gpio_set_level(GREEN_LED, 0);
     gpio_set_level(RED_LED, 1);
-    is_unlocked = 0;
+    is_unlocked = false;
+    return 1;
+}
+
+int password_check(char password[]) {
+    if (strcmp(password, "123456") == 0) {
+        int32_t unlocks = fetch_int(NVS_UNLOCKS);
+        ESP_LOGI(TAG, "Adding 5 ticks to counter");
+        unlocks += 5;
+        save_int(NVS_UNLOCKS, unlocks);
+        return 2;
+    }
+    if (rolling_code_verify_digits_auto(&hmac_ctx, atoi(keypad_input))) {
+        return set_briefcase_state(true);
+    }
+    set_briefcase_state(false);
     return 1;
 }
 
@@ -94,12 +107,6 @@ void keypad_main() {
 
     ESP_LOGI("HMAC_TEST", "Starting HMAC TEST");
     ESP_ERROR_CHECK(rolling_code_init(&hmac_ctx, "TX_001"));
-    /* uint8_t new_key[HMAC_KEY_SIZE] = {
-        0xf9, 0x89, 0x2e, 0xe8, 0x0b, 0x95, 0xe6, 0x9b, 0x03, 0x42, 0x32,
-        0xc2, 0xbd, 0xd8, 0x7e, 0x16, 0xc2, 0xe5, 0x45, 0x7d, 0xde, 0xa1,
-        0x56, 0xd8, 0xdf, 0x9e, 0xb5, 0x33, 0x12, 0x1f, 0x8e, 0x39};
-    memcpy(&hmac_ctx.key, new_key, HMAC_KEY_SIZE); */
-
     ESP_LOGI("HMAC_TEST", "The thing is open, printing key");
     rolling_key_print(hmac_ctx.key);
     ESP_LOGI("HMAC_TEST", "The counter is %llu", hmac_ctx.counter);

@@ -1,18 +1,27 @@
+#include "ble_handler.h"
 #include "esp_log.h"
 #include "esp_random.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "host/ble_gap.h"
+#include "host/ble_gatt.h"
+#include "keypad.h"
 #include "nvs_flash.h"
 #include "nvs_handler.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 
 /* NimBLE */
 #include "host/ble_hs.h"
 #include "host/util/util.h"
 #include "nimble/nimble_port.h"
 #include "nimble/nimble_port_freertos.h"
+#include "rolling.h"
 #include "services/gap/ble_svc_gap.h"
 #include "services/gatt/ble_svc_gatt.h"
 
@@ -28,7 +37,10 @@ static const ble_uuid128_t webble_service_uuid =
                      0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, );
 
 static uint16_t webble_char_val_handle;
-static uint8_t webble_data[20] = "Hello from ESP32!";
+static char webble_data[50] = "Hello from ESP32!";
+
+static char webble_response[50];
+static bool webble_has_response = false;
 
 static int hex_string_to_bytes(const char *hex_str, uint8_t *out,
                                size_t out_len) {
@@ -50,26 +62,97 @@ static int hex_string_to_bytes(const char *hex_str, uint8_t *out,
     return 0;
 }
 
+static int webble_handle_command(uint16_t conn_handle, uint16_t attr_handle,
+                                 struct ble_gatt_access_ctxt *ctxt) {
+    const char tag[] = "WEBBLE_COMMAND";
+    if (sizeof(webble_data) < 1) {
+        ESP_LOGW(tag, "not enough data to take command");
+        return 1;
+    }
+    webble_has_response = false;
+    int command_len = strlen(webble_data);
+
+    switch (webble_data[0]) {
+    case 'u':
+        if (command_len == 1) {
+            ESP_LOGI(tag, "Command get unlocks was received");
+            snprintf(webble_response, sizeof(webble_response), "%i",
+                     fetch_int(NVS_UNLOCKS));
+            os_mbuf_append(ctxt->om, &webble_response, sizeof(webble_response));
+            webble_has_response = true;
+            ble_gatts_notify(conn_handle, attr_handle);
+        } else {
+            ESP_LOGI(tag, "Command set unlocks was received");
+            save_int(NVS_UNLOCKS, atoi(&webble_data[1]));
+        }
+        break;
+    case 'g':
+        if (command_len > 40 && command_len < 43) {
+            ESP_LOGI(tag, "Command set google_find_my_key was received");
+            save_string(NVS_GOOGLE_KEY, &webble_data[command_len - 40]);
+            break;
+        }
+        // Default to return key
+        ESP_LOGI(tag, "Command get google_find_my_key was received");
+        snprintf(webble_response, sizeof(webble_response), "%s",
+                 fetch_string(NVS_GOOGLE_KEY));
+        os_mbuf_append(ctxt->om, &webble_response, sizeof(webble_response));
+        webble_has_response = true;
+        ble_gatts_notify(conn_handle, attr_handle);
+        break;
+    case 'c':
+        ESP_LOGI(tag, "Command reset counter was received");
+        rolling_save_u64("counter", 0);
+        change_hmac_ctx(0);
+        snprintf(webble_response, sizeof(webble_response), "Counter was reset");
+        os_mbuf_append(ctxt->om, &webble_response, sizeof(webble_response));
+        webble_has_response = true;
+        ble_gatts_notify(conn_handle, attr_handle);
+        break;
+    case 'o':
+        ESP_LOGI(tag, "Command reset counter was received");
+        /* if (rolling_code_verify(&hmac_ctx, &webble_data[2],
+                                atoi(&webble_data[19])))
+            set_briefcase_state(true); */
+        break;
+
+    default:
+        ESP_LOGI(tag, "Unrecognized command char: %c", webble_data[0]);
+        break;
+    }
+    return 0;
+}
+
 static int webble_char_access(uint16_t conn_handle, uint16_t attr_handle,
                               struct ble_gatt_access_ctxt *ctxt, void *arg) {
     switch (ctxt->op) {
     case BLE_GATT_ACCESS_OP_READ_CHR:
         ESP_LOGI(TAG, "WebBLE: Read request");
-        os_mbuf_append(ctxt->om, &webble_data, sizeof(webble_data));
+        if (webble_has_response) {
+            ESP_LOGI(TAG, "WebBLE: Returning response");
+            os_mbuf_append(ctxt->om, &webble_response, sizeof(webble_response));
+            webble_has_response = false;
+        } else {
+            ESP_LOGI(TAG, "WebBLE: Returning data");
+            os_mbuf_append(ctxt->om, &webble_data, sizeof(webble_data));
+        }
         return 0;
     case BLE_GATT_ACCESS_OP_WRITE_CHR: {
         ESP_LOGI(TAG, "WebBLE: Write request");
+        memset(webble_data, '\0', sizeof(webble_data));
         uint16_t om_len = OS_MBUF_PKTLEN(ctxt->om);
         if (om_len > sizeof(webble_data))
             om_len = sizeof(webble_data);
         ble_hs_mbuf_to_flat(ctxt->om, webble_data, om_len, NULL);
         ESP_LOGI(TAG, "Received: %.*s", om_len, webble_data);
+        webble_handle_command(conn_handle, attr_handle, ctxt);
         return 0;
     }
     default:
         return BLE_ATT_ERR_UNLIKELY;
     }
 }
+
 static const struct ble_gatt_svc_def webble_services[] = {
     {
         .type = BLE_GATT_SVC_TYPE_PRIMARY,
@@ -79,7 +162,8 @@ static const struct ble_gatt_svc_def webble_services[] = {
                 {
                     .uuid = BLE_UUID16_DECLARE(0x2A3D),
                     .access_cb = webble_char_access,
-                    .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE,
+                    .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE |
+                             BLE_GATT_CHR_F_NOTIFY,
                     .val_handle = &webble_char_val_handle,
                 },
                 {0},

@@ -3,6 +3,7 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "nvs_handler.h"
+#include <stdint.h>
 
 static nvs_handle_t HANDLE;
 
@@ -68,4 +69,17 @@ char *fetch_string(const char *key) {
         value = "\0";
     }
     return value;
+}
+
+void rolling_save_u64(const char *key, const uint64_t value) {
+    nvs_handle_t nvs_handle;
+
+    if (nvs_open("rolling_code", NVS_READWRITE, &nvs_handle) == ESP_OK) {
+        nvs_set_u64(nvs_handle, key, value);
+        nvs_commit(nvs_handle);
+        nvs_close(nvs_handle);
+        ESP_LOGI("ROL_NVS", "Set key %s with %llu", key, value);
+    } else {
+        ESP_LOGW("ROL_NVS", "Failed to save");
+    }
 }
