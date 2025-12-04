@@ -81,7 +81,7 @@ class SuitcaseDisplayView(LoginRequiredMixin,DetailView):
             messages.error(request,"Suitcase is already rented") 
             return HttpResponseRedirect(request.path)
 
-        rent_err = request.user.rent(suitcase,post_form) 
+        rent_err = request.user.rent_briefcase(suitcase,post_form) 
 
         if(rent_err):
             messages.error(request,rent_err) 
@@ -102,7 +102,7 @@ class SuitcaseDisplayView(LoginRequiredMixin,DetailView):
             if(suitcase.rented_by.uuid != self.request.user.uuid):
                 return HttpResponse("You are not allowed to unrent this >(".encode(),HTTPStatus.BAD_REQUEST)
 
-        request.user.unrent(suitcase)
+        request.user.unrent_briefcase(suitcase)
 
         return HttpResponseRedirect(request.path)
 
