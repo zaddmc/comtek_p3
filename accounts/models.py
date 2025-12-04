@@ -1,6 +1,8 @@
 import uuid
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+
+from suitcases.forms import RentForm
 class CustomUserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -34,7 +36,7 @@ class User(AbstractUser):
     uuid = models.UUIDField(default=uuid.uuid4,editable=False,unique=True,primary_key=True)
     objects = CustomUserManager()
 
-    def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None) -> None:
         print(f"Name: {self.get_full_name()}")
         self.username = self.email
 
@@ -47,6 +49,17 @@ class User(AbstractUser):
             user_info.company_industri_code=0 
             user_info.save()
         return
+    def rent_briefcase(self,briefcase,rent_form:RentForm) -> str | None:
+        self.userinfo.rent_amount += 1
+        self.userinfo.current_rented+= 1
+        self.save()
+        return briefcase.rent(self,rent_form)
+
+    def unrent_briefcase(self,briefcase) -> None:
+        self.userinfo.current_rented -=1
+        self.save()
+        return briefcase.unrent()
+        
 
 class UserInfo(models.Model):
     user = models.OneToOneField(to=User,on_delete=models.CASCADE,related_name="userinfo")

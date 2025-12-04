@@ -3,7 +3,7 @@
 #include "host/ble_hs_adv.h"
 #include <stdint.h>
 #include <string.h>
-const char *eid_string = "5589656432df127befd5bdceee51e89f39bdad8f";
+const char *eid_string = "05d5e563d9f2bd36446149f4cdb40af5105996d1";
 uint8_t adv_raw_data[31] = {
     0x02, // Length
     0x01, // Flags data type value

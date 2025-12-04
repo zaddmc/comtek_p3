@@ -43,8 +43,8 @@
 
         <!-- Actions pinned to the bottom of the quiz prev disabled if current_step == 0 -->
         <div class="quiz-actions">
-          <button type="submit" name="action" value="prev" class="cta-button" {% if question.pk == 1 %}disabled aria-disabled="true"{% endif %}>← Forrige spørgsmål</button>
-		  {% if question.pk == total_questions %}
+          <button type="submit" name="action" value="prev" class="cta-button" {% if question.question_order == 0 %}disabled aria-disabled="true"{% endif %}>← Forrige spørgsmål</button>
+		  {% if question.question_order|add:1 == total_questions %}
           <button type="submit" name="action" value="results" class="cta-button">
             Se resultater
           </button>

@@ -56,7 +56,7 @@ void app_main(void) {
     ESP_LOGE(TAG, "FAILED to initialize nimble stack, error code: %d ", ret);
     return;
   }
-  init_display_device();
+  // init_display_device();
 
   /* GAP service initialization */
   status_code = gap_init();
@@ -79,6 +79,6 @@ void app_main(void) {
 
   /* Start NimBLE host task thread and return */
   xTaskCreate(nimble_host_task, "NimBLE Host", 4 * 1024, NULL, 5, NULL);
-  keypad_main();
+  // keypad_main();
   return;
 }

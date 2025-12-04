@@ -3,10 +3,10 @@
 #include "commmon.h"
 #include "esp_log.h"
 #include "nvs.h"
-#define NVS_ROLLING_CODE_KEY_TAG "rolling_code_key"
-#define NVS_ROLLING_CODE_COUNTER_TAG "rolling_code_counter"
-#define NVS_KEYPAD_CODE_TAG "keypad_code"
-#define NVS_KEYPAD_TICKETS_TAG "keypad_tickets"
+#define NVS_ROLLING_CODE_KEY_TAG "roll_key"
+#define NVS_ROLLING_CODE_COUNTER_TAG "roll_c"
+#define NVS_KEYPAD_CODE_TAG "kp_c"
+#define NVS_KEYPAD_TICKETS_TAG "kp_t"
 
 esp_err_t nvs_init_custom();
 int32_t nvs_read_i32_custom(char *key);

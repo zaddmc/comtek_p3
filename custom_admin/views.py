@@ -9,6 +9,7 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import UserPassesTestMixin
 
 from accounts.models import User
+from suitcases.google_fmd import fmd_get_briefcase_location, fmd_refresh_device_list, fmd_register_briefcase 
 from user.models import QuizQuestion, QuestionOption
 from suitcases.models import Suitcase, Category
 
@@ -90,8 +91,6 @@ class AdminSuitcaseView(UserAdminRequiredMixin,View):
     def get(self,request:HttpRequest):
         
         all_suitcases = Suitcase.objects.all()
-        
-        
 
         context = {}
 
@@ -101,19 +100,36 @@ class AdminSuitcaseView(UserAdminRequiredMixin,View):
     
     
 class QuizCreate(UserAdminRequiredMixin,View):
+
+    def delete(self,request:HttpRequest):
+
+        quiz_id= request.POST.get("question_id", None)
+        
+        QuizQuestion.objects.get(pk=quiz_id).delete()
+
+        return HttpResponseRedirect(reverse("custom-admin-questions-create"))
+
     def post(self, request:HttpRequest):
+
+        request_method = request.POST.get("_method",None)
+        if request_method == "delete":
+            return self.delete(request=request)
         
         request_quizname = request.POST.get("quiz_name_input",None)
-        print(request.POST)
+        index = request.POST.getlist("index",None)
+        if index == None:
+            return HttpResponseRedirect(reverse("custom-admin-questions-create"))
         question_order = QuizQuestion.objects.all().count()
         quiz = QuizQuestion.objects.create(question_text=request_quizname,question_order=question_order)
         quiz.save()
 
-        index = request.POST.getlist("index",None)
-        print(index)
         for i in index:
             optionname = request.POST.get("option_name-"+i,None)
             categories = request.POST.getlist("category-"+i,None)
+
+            if optionname== None or categories == None:
+                quiz.delete()
+                return HttpResponseRedirect(reverse("custom-admin-questions-create"))
             option = QuestionOption.objects.create(option_text=optionname,question=quiz)
             for p in categories:
                 category = Category.objects.get(pk=p)
@@ -143,14 +159,26 @@ class AdminSuitcaseCreate(UserAdminRequiredMixin,View):
         request_categories = request.POST.getlist("categories[]",None)
         request_user = request.POST.get("users",None)
         
+        fmd_refresh_device_list()
+        suitcase_fmd_data = fmd_register_briefcase()
+        print("SUI")
 
-        suitcase = Suitcase.objects.create(name=request_suitcasename)
+        print(suitcase_fmd_data)
+        if suitcase_fmd_data == None:
+            return HttpResponseRedirect(reverse("custom-admin-suitcase-view"))
+
+        suitcase:Suitcase = Suitcase.objects.create(name=request_suitcasename)
+
+        suitcase.canonic_id = suitcase_fmd_data.canonic_id
+        suitcase.ephemeral_id= suitcase_fmd_data.ephemeral_key
+
         categories = []
         for x in request_categories:
             x = int(x)
             category = Category.objects.get(pk = x)
             categories.append(category)
         suitcase.categories.set(categories)
+
         if request_user == "None":
             suitcase.save()
             return HttpResponseRedirect(reverse("custom-admin-suitcase-view"))
@@ -162,6 +190,10 @@ class AdminSuitcaseCreate(UserAdminRequiredMixin,View):
         suitcase.rented = True
         suitcase.rented_date = datetime.today()
         suitcase.expiration_date = timedelta(days=90) + datetime.today()
+
+
+
+
    
         suitcase.save()
         

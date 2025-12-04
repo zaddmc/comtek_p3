@@ -1,0 +1,43 @@
+Getting location
+{"data": "{\"longitude\": 57.0138139, \"latitude\": 9.986306, \"altitude\": 57}", "error_msg": null}
+9.986306
+Registering device
+Iteration: 0
+{"data": "{\"ephemeral_key\": \"73945c26072b884b44ac22a1e05011535efaea98\", \"canonic_id\": [\"GoogleFindMyTools \\u00b5C\", \"692a03fd-0000-2fcd-bcf9-24058871ac00\"]}", "error_msg": null}
+73945c26072b884b44ac22a1e05011535efaea98
+['GoogleFindMyTools µC', '692a03fd-0000-2fcd-bcf9-24058871ac00']
+Iteration: 1
+{"data": "{\"ephemeral_key\": \"58d5d72a2b114bb997308a14c284174719b63908\", \"canonic_id\": [\"GoogleFindMyTools \\u00b5C\", \"692a06e3-0000-2361-a986-883d24f0c838\"]}", "error_msg": null}
+58d5d72a2b114bb997308a14c284174719b63908
+['GoogleFindMyTools µC', '692a06e3-0000-2361-a986-883d24f0c838']
+Iteration: 2
+{"data": "{\"ephemeral_key\": \"b2a83a2d19137de9b6bacfc5b85fccdcb922503b\", \"canonic_id\": [\"GoogleFindMyTools \\u00b5C\", \"692a0606-0000-2a68-a1ea-30fd381282d8\"]}", "error_msg": null}
+b2a83a2d19137de9b6bacfc5b85fccdcb922503b
+['GoogleFindMyTools µC', '692a0606-0000-2a68-a1ea-30fd381282d8']
+Iteration: 3
+{"data": "{\"ephemeral_key\": \"75f52e18f2dbe90c55b441f75ccd5ad2fb864bde\", \"canonic_id\": [\"GoogleFindMyTools \\u00b5C\", \"692a2441-0000-2951-af4b-d4f547eebe2c\"]}", "error_msg": null}
+75f52e18f2dbe90c55b441f75ccd5ad2fb864bde
+['GoogleFindMyTools µC', '692a2441-0000-2951-af4b-d4f547eebe2c']
+Iteration: 4
+{"data": "{\"ephemeral_key\": \"b8cab56a785242a82839b6dade02687cba613096\", \"canonic_id\": [\"GoogleFindMyTools \\u00b5C\", \"692a0807-0000-2281-a61d-2405887036ac\"]}", "error_msg": null}
+b8cab56a785242a82839b6dade02687cba613096
+['GoogleFindMyTools µC', '692a0807-0000-2281-a61d-2405887036ac']
+Iteration: 5
+{"data": "{\"ephemeral_key\": \"0cbb64150c384050ec2d4fef38172671bdafa13a\", \"canonic_id\": [\"GoogleFindMyTools \\u00b5C\", \"692a070f-0000-2d37-810b-3c286d42ed9e\"]}", "error_msg": null}
+0cbb64150c384050ec2d4fef38172671bdafa13a
+['GoogleFindMyTools µC', '692a070f-0000-2d37-810b-3c286d42ed9e']
+Iteration: 6
+{"data": "{\"ephemeral_key\": \"472140ed633ff941f79d2f8b10f4b9a969824706\", \"canonic_id\": [\"GoogleFindMyTools \\u00b5C\", \"692a1f33-0000-2700-b665-883d24f8f740\"]}", "error_msg": null}
+472140ed633ff941f79d2f8b10f4b9a969824706
+['GoogleFindMyTools µC', '692a1f33-0000-2700-b665-883d24f8f740']
+Iteration: 7
+{"data": "{\"ephemeral_key\": \"e89729c2be1ee986cf8281e5c15a60b5806f4613\", \"canonic_id\": [\"GoogleFindMyTools \\u00b5C\", \"692f3d7e-0000-2779-9707-883d24f6954c\"]}", "error_msg": null}
+e89729c2be1ee986cf8281e5c15a60b5806f4613
+['GoogleFindMyTools µC', '692f3d7e-0000-2779-9707-883d24f6954c']
+Iteration: 8
+{"data": "{\"ephemeral_key\": \"c084ca9950bb6dae5f6c9089e55e27e92d7436d0\", \"canonic_id\": [\"GoogleFindMyTools \\u00b5C\", \"692a0979-0000-26bd-bdd3-582429a66da0\"]}", "error_msg": null}
+c084ca9950bb6dae5f6c9089e55e27e92d7436d0
+['GoogleFindMyTools µC', '692a0979-0000-26bd-bdd3-582429a66da0']
+Iteration: 9
+{"data": null, "error_msg": "Error refreshing device listInvalid GRPC payload"}
+Error refreshing device listInvalid GRPC payload
