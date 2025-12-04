@@ -4,7 +4,8 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'suitcases/css/get_suitcase.css'%}">
 <div class="suitcase_wrapper">
-<h2>Suitcase name: {{object.name}}<h2>
+<div>
+<h2>Suitcase name: {{object.name}}
 <ul>
 {% for category in categories %}
   <li>
@@ -28,7 +29,7 @@
 <form action="/suitcases/{{object.uuid}}" method="post">
 	{% csrf_token %}
 	{{ form }}
-	<input type="submit" value="Rent">
+	<input type="submit" value="Rent" class="inputclass">
 {% else %}
 {% load static %}
 <h2>BLE</h2>
@@ -49,5 +50,6 @@
 	setup("ID1","{{encoded_key}}");
 </script>
 {% endif %}
+</div>
 </div>
 {% endblock %}
