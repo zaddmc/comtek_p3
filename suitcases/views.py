@@ -81,7 +81,7 @@ class SuitcaseDisplayView(LoginRequiredMixin,DetailView):
             messages.error(request,"Suitcase is already rented") 
             return HttpResponseRedirect(request.path)
 
-        rent_err = suitcase.rent(request.user,post_form)
+        rent_err = request.user.rent(suitcase,post_form) 
 
         if(rent_err):
             messages.error(request,rent_err) 
@@ -93,8 +93,6 @@ class SuitcaseDisplayView(LoginRequiredMixin,DetailView):
         #Prøv at fjerne linjen og se om det stadigvæk virker
         suitcase = Suitcase.objects.get(uuid=uuid)
         self.object = suitcase  
-        self.request.user.userinfo.rent_amount += 1
-        self.request.user.userinfo.current_rented += 1
         return HttpResponseRedirect(request.path)
 
     def handle_put(self,request:HttpRequest,uuid:str):
@@ -104,9 +102,7 @@ class SuitcaseDisplayView(LoginRequiredMixin,DetailView):
             if(suitcase.rented_by.uuid != self.request.user.uuid):
                 return HttpResponse("You are not allowed to unrent this >(".encode(),HTTPStatus.BAD_REQUEST)
 
-        suitcase.unrent()
-        suitcase.save()
-        self.request.user.userinfo.current_rented -= 1
+        request.user.unrent(suitcase)
 
         return HttpResponseRedirect(request.path)
 

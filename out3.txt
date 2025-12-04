@@ -1,0 +1,2 @@
+Getting location
+{"data": "something", "error_msg": null}{"data": "{\"longitude\": 57.0138139, \"latitude\": 9.986306, \"altitude\": 57}", "error_msg": null}

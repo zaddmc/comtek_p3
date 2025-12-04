@@ -134,6 +134,11 @@ esp_err_t nvs_initialize_i32_key(char *key, int32_t val) {
     ESP_LOGI(TAG, "INITIALIZING %s", key);
     ret = nvs_write_i32_custom(key, val);
     break;
+  case -1:
+    ESP_LOGW(TAG, "%s IS NOT INITIALIZED", key);
+    ESP_LOGI(TAG, "INITIALIZING %s", key);
+    ret = nvs_write_i32_custom(key, val);
+    break;
   default:
     ESP_LOGE(TAG, "Error (%s) reading!", esp_err_to_name(ret));
   }
