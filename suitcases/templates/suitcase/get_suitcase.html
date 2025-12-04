@@ -1,4 +1,10 @@
+{% extends "common/common.html"%}
+{% block main %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'suitcases/css/get_suitcase.css'%}">
+
 <input type=button value="Back" onClick="javascript:history.go(-1);">
+<div class="idk">
 <h1>Suitcase view</h1>
 <h2>Suitcase uuid: {{object.uuid}}</h2>
 <h2>Created at: {{object.created_at}}</h2>
@@ -51,3 +57,5 @@
 	setup("ID1","{{encoded_key}}");
 </script>
 {% endif %}
+</div>
+{% endblock %}
