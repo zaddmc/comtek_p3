@@ -1,3 +1,4 @@
+#include "actuator.h"
 #include "ble_handler.h"
 #include "display_handler.h"
 #include "driver/gpio.h"
@@ -19,9 +20,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#define GREEN_LED GPIO_NUM_9
-#define RED_LED GPIO_NUM_8
-
 // Naming convention for pins, Nx, where x is the pin number from left to right
 #define PIN_N1_Y2 GPIO_NUM_4
 #define PIN_N3_X2 GPIO_NUM_5
@@ -32,8 +30,7 @@
 #define PIN_N8_Y1 GPIO_NUM_14
 const gpio_num_t INPUT_PINS[] = {PIN_N3_X2, PIN_N6_X3, PIN_N7_X4};
 const int INPUT_PINS_SIZE = 3;
-const gpio_num_t OUTPUT_PINS[] = {PIN_N8_Y1, PIN_N1_Y2, PIN_N4_Y3,
-                                  PIN_N5_Y4, GREEN_LED, RED_LED};
+const gpio_num_t OUTPUT_PINS[] = {PIN_N8_Y1, PIN_N1_Y2, PIN_N4_Y3, PIN_N5_Y4};
 const int OUTPUT_PINS_SIZE = 4;
 
 const char KEYPAD_VALS[] = "123456789*0#";
@@ -46,6 +43,7 @@ char keypad_input[17] = {'\0'};
 int input_idx = 0;
 
 #define TAG "KEYPAD"
+// #define POWER_PIN GPIO_NUM_11
 
 void change_hmac_ctx(int64_t new_counter) {
     hmac_ctx.counter = new_counter;
@@ -61,15 +59,15 @@ int set_briefcase_state(bool new_state) {
             return -1;
         }
         unlocks--;
-        gpio_set_level(RED_LED, 0);
-        gpio_set_level(GREEN_LED, 1);
         is_unlocked = true;
+        // husb238_toggle_power(true);
+        // gpio_set_level(POWER_PIN, 0);
         save_int(NVS_UNLOCKS, unlocks);
         return 1;
     }
-    gpio_set_level(GREEN_LED, 0);
-    gpio_set_level(RED_LED, 1);
     is_unlocked = false;
+    // gpio_set_level(POWER_PIN, 1);
+    //  husb238_toggle_power(false);
     return 1;
 }
 
@@ -95,12 +93,13 @@ void keypad_main() {
         gpio_set_pull_mode(INPUT_PINS[i], GPIO_PULLDOWN_ONLY);
     }
     // The plus 2 is to init the green and red led
-    for (int i = 0; i < OUTPUT_PINS_SIZE + 2; i++) {
+    for (int i = 0; i < OUTPUT_PINS_SIZE; i++) {
         rtc_gpio_deinit(OUTPUT_PINS[i]);
         gpio_set_direction(OUTPUT_PINS[i], GPIO_MODE_OUTPUT);
         gpio_set_level(OUTPUT_PINS[i], 0);
     }
-    gpio_set_level(RED_LED, 1);
+    /* gpio_set_direction(POWER_PIN, GPIO_MODE_OUTPUT);
+    gpio_set_level(POWER_PIN, 1); */
 
     // Read back the value
     update_display(0);
