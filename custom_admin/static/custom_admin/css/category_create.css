@@ -28,7 +28,6 @@
 .box{
     margin: 1rem;
     padding: 3rem;
-    border: solid;
     border-radius: 0.5rem;
     color: var(--background);
     background: var(--text);
