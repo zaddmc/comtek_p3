@@ -91,7 +91,8 @@ class QuizView(LoginRequiredMixin, View):
 
         ctx = self.get_context_data(request)
         if not ctx:
-            return show_error_page(request,"Could not fetch question",400)
+            return HttpResponseRedirect(reverse("non-rented-view"))
+            #return show_error_page(request,"Could not fetch question",400)
 
         return render(request,template_name="user/quiz.html",context=ctx) 
 

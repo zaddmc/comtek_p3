@@ -70,22 +70,32 @@ def fmd_register_briefcase() -> BriefcaseFMDData | None:
     return data
 
 def main():
-    briefcase_location = None
-    while briefcase_location == None:
-        out_status = fmd_refresh_device_list()
-        if out_status == None:
-            return
+    print("Refreshing list")
+    out_status = fmd_refresh_device_list()
+    """
+    if out_status == None:
+        return
 
-        print("Getting location")
-        briefcase_location = fmd_get_briefcase_location("692a0e8f-0000-2281-a61d-2405887036ac")
-        #briefcase_location = fmd_get_briefcase_location("68a98641-0000-2671-82d5-34c7e91a39ca")
-        if briefcase_location == None:
-            print("No location")
-            continue
-        else:
-            print(briefcase_location.latitude)
-            print(briefcase_location.longitude)
-            print(briefcase_location.altitude)
+    print("Getting location")
+    briefcase_location = fmd_get_briefcase_location("692a0e8f-0000-2281-a61d-2405887036ac")
+    #briefcase_location = fmd_get_briefcase_location("68a98641-0000-2671-82d5-34c7e91a39ca")
+    if briefcase_location == None:
+        print("No location")
+        continue
+    else:
+        print(briefcase_location.latitude)
+        print(briefcase_location.longitude)
+        print(briefcase_location.altitude)
+    """
+
+    print("Registering device")
+    out_status = fmd_register_briefcase()
+    if out_status == None:
+        print("Could not register device")
+        return
+    print(f"eph: {out_status.ephemeral_key}")
+    print(f"cannon: {out_status.canonic_id}")
+
 
 
 

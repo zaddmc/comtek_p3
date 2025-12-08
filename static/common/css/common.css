@@ -21,7 +21,7 @@ html[data-theme='light'] {
 	--secondary: #FF7A00;
 	--background: #FFD6A5;
 	--text: #1F3B73;
-	--accent: #1F3B73;
+	--accent: #FF7A00;
 }
 
 html[data-theme='dark'] {
@@ -68,4 +68,25 @@ main {
 	height: 2rem;
 	background-color: var(--accent);
 	color: var(--background);
+}
+
+.current_link_wrapper {
+	display: flex;
+	flex-direction: row;
+	font-size: 2rem;
+	padding-top: 1rem;
+	padding-left: 1rem;
+}
+
+.current_link {
+	text-decoration: none;
+	color: var(--accent);
+}
+
+.current_link:hover {
+	text-decoration: underline;
+}
+
+.current_link_break {
+	padding-inline: 0.5rem;
 }
