@@ -16,7 +16,7 @@ class CustomLogin(AdminSite):
     pass
 
 class CustomUserCreate(UserCreationForm):
-    company_name= forms.CharField(widget=forms.TextInput(attrs={"placeholder":"Company Name"}))
+    company_name= forms.CharField(widget=forms.TextInput(attrs={"placeholder":"Company Name/CVR"}))
     company_cvr = forms.CharField(widget= forms.HiddenInput())
     company_industri_code = forms.CharField(widget=forms.HiddenInput())
 

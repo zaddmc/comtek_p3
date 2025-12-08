@@ -12,6 +12,7 @@
 	<div >
   {% csrf_token %}
 
+	<div class="input-wrapper">
 	<h2>Sign Up</h2>
 	{% for field in form%}
 
@@ -23,13 +24,17 @@
 	{% endfor %}
 	{% endif %}
 	{{ field }}
+		<br>
 	{% endfor %}
 	    {% for error in form.non_field_errors %}
         <div class="alert alert-danger">
             <strong>{{ error|escape }}</strong>
         </div>
     {% endfor %}
-	<button id="drop_down_button" type="button" class="showbutton">Show</button>
+	</div>
+	<button id="drop_down_button" type="button" class="showbutton" disabled=true>
+		Show
+	</button>
 	<div id="drop_down">
 	<ul id="drop_down_values">
 	</ul>

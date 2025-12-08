@@ -16,6 +16,42 @@
 				<button id="theme_toggle">O</button>
 			</div>
 			{% include 'common/taskbar_modified.html'%}
+			<div class="current_link_wrapper">
+				<a class="current_link" href="/">
+					Home
+				</a>
+			</div>
+			<script>
+				const break_symbol = ">";
+				let current_link_wrapper = document.querySelector(".current_link_wrapper");
+				let current_url = window.location.href;
+
+				let paths = current_url.split("/");
+				let previous_path = "/"
+				for (let i = 3; i< paths.length - 1;i++) {
+					previous_path += paths[i] + "/";
+					let current_path = paths[i];
+
+					current_path = current_path[0].toUpperCase() + current_path.slice(1);
+
+
+					let new_link = document.createElement("a");
+					let new_break= document.createElement("a");
+
+					new_link.classList.add("current_link");
+					new_break.classList.add("current_link_break");
+
+					new_link.text = current_path;
+					new_break.text = break_symbol;
+
+					new_link.href = previous_path;
+
+					current_link_wrapper.appendChild(new_break);
+					current_link_wrapper.appendChild(new_link);
+
+				}
+			</script>
+
 			{% block main %}
 			{% endblock %}
 		</body>
