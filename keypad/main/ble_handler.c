@@ -21,7 +21,6 @@
 #include "host/util/util.h"
 #include "nimble/nimble_port.h"
 #include "nimble/nimble_port_freertos.h"
-#include "rolling.h"
 #include "services/gap/ble_svc_gap.h"
 #include "services/gatt/ble_svc_gatt.h"
 
@@ -73,7 +72,7 @@ static int webble_handle_command(uint16_t conn_handle, uint16_t attr_handle,
     int command_len = strlen(webble_data);
 
     switch (webble_data[0]) {
-    case 'u':
+    case 'u': // Unlock counter
         if (command_len == 1) {
             ESP_LOGI(tag, "Command get unlocks was received");
             snprintf(webble_response, sizeof(webble_response), "%i",
@@ -86,13 +85,12 @@ static int webble_handle_command(uint16_t conn_handle, uint16_t attr_handle,
             save_int(NVS_UNLOCKS, atoi(&webble_data[1]));
         }
         break;
-    case 'g':
+    case 'g': // Google Find My Tools key
         if (command_len > 40 && command_len < 43) {
             ESP_LOGI(tag, "Command set google_find_my_key was received");
             save_string(NVS_GOOGLE_KEY, &webble_data[command_len - 40]);
             break;
         }
-        // Default to return key
         ESP_LOGI(tag, "Command get google_find_my_key was received");
         snprintf(webble_response, sizeof(webble_response), "%s",
                  fetch_string(NVS_GOOGLE_KEY));
@@ -100,7 +98,7 @@ static int webble_handle_command(uint16_t conn_handle, uint16_t attr_handle,
         webble_has_response = true;
         ble_gatts_notify(conn_handle, attr_handle);
         break;
-    case 'c':
+    case 'r': // Rolling codes counter
         ESP_LOGI(tag, "Command reset counter was received");
         rolling_save_u64("counter", 0);
         change_hmac_ctx(0);
@@ -109,11 +107,11 @@ static int webble_handle_command(uint16_t conn_handle, uint16_t attr_handle,
         webble_has_response = true;
         ble_gatts_notify(conn_handle, attr_handle);
         break;
-    case 'o':
+    case 'o': // Unlock the briefcase
         ESP_LOGI(tag, "Command reset counter was received");
-        /* if (rolling_code_verify(&hmac_ctx, &webble_data[2],
+        if (rolling_code_verify(&hmac_ctx, (uint8_t *)&webble_data[2],
                                 atoi(&webble_data[19])))
-            set_briefcase_state(true); */
+            set_briefcase_state(true);
         break;
 
     default:
