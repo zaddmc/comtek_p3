@@ -1,17 +1,13 @@
+#include "common.h"
 #include "display_handler.h"
 #include "ssd1306.h"
 #include "string.h"
 
-#define PIN_NUM_CLK 36  // SCK
-#define PIN_NUM_MOSI 35 // SDA
-#define PIN_NUM_RST 47  // RES
-#define PIN_NUM_DC 20   // DC
-
 static SSD1306_t DISPLAY;
 
 void init_display_device(void) {
-    spi_master_init(&DISPLAY, PIN_NUM_MOSI, PIN_NUM_CLK, -1, PIN_NUM_DC,
-                    PIN_NUM_RST);
+    spi_master_init(&DISPLAY, DISP_PIN_NUM_MOSI, DISP_PIN_NUM_CLK, -1,
+                    DISP_PIN_NUM_DC, DISP_PIN_NUM_RST);
 
     // The original size is 128x64
     ssd1306_init(&DISPLAY, 128, 32); // Lower number to increase font size

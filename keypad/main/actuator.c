@@ -1,4 +1,5 @@
 #include "actuator.h"
+#include "common.h"
 #include "driver/gpio.h"
 #include "driver/i2c_master.h"
 #include "driver/i2c_types.h"
@@ -16,8 +17,6 @@
 // The pin to kill power
 // #define POWER_PIN GPIO_NUM_11 // Single Purple
 
-#define I2C_SDA 8 // Gray
-#define I2C_SCL 9 // Purple
 #define I2C_MASTER_FREQ_HZ 100 * 1000
 #define HUSB238_ADDR 0x08 // HUSB238 I2C address
 
@@ -54,8 +53,8 @@ void husb238_toggle_power(bool new_state) {
 esp_err_t husb238_i2c_init(void) {
     i2c_master_bus_config_t conf = {
         .i2c_port = I2C_NUM_0,
-        .sda_io_num = I2C_SDA,
-        .scl_io_num = I2C_SCL,
+        .sda_io_num = ACT_PIN_I2C_SDA,
+        .scl_io_num = ACT_PIN_I2C_SCL,
         .clk_source = I2C_CLK_SRC_DEFAULT,
         .glitch_ignore_cnt = 7,
         .flags.enable_internal_pullup = true,
@@ -246,7 +245,3 @@ esp_err_t husb238_request_voltage(uint8_t voltage_select) {
 
     return ESP_OK;
 }
-
-#undef I2C_SCL
-#undef I2C_SDA
-#undef I2C_MASTER_NUM

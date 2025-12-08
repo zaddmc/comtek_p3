@@ -1,5 +1,6 @@
 #include "actuator.h"
 #include "ble_handler.h"
+#include "common.h"
 #include "display_handler.h"
 #include "driver/gpio.h"
 #include "driver/rtc_io.h"
@@ -20,17 +21,10 @@
 #include <stdint.h>
 #include <string.h>
 
-// Naming convention for pins, Nx, where x is the pin number from left to right
-#define PIN_N1_Y2 GPIO_NUM_4
-#define PIN_N3_X2 GPIO_NUM_5
-#define PIN_N4_Y3 GPIO_NUM_6
-#define PIN_N5_Y4 GPIO_NUM_7
-#define PIN_N6_X3 GPIO_NUM_12
-#define PIN_N7_X4 GPIO_NUM_13
-#define PIN_N8_Y1 GPIO_NUM_14
-const gpio_num_t INPUT_PINS[] = {PIN_N3_X2, PIN_N6_X3, PIN_N7_X4};
+const gpio_num_t INPUT_PINS[] = {KEY_PIN_N3_X2, KEY_PIN_N6_X3, KEY_PIN_N7_X4};
 const int INPUT_PINS_SIZE = 3;
-const gpio_num_t OUTPUT_PINS[] = {PIN_N8_Y1, PIN_N1_Y2, PIN_N4_Y3, PIN_N5_Y4};
+const gpio_num_t OUTPUT_PINS[] = {KEY_PIN_N8_Y1, KEY_PIN_N1_Y2, KEY_PIN_N4_Y3,
+                                  KEY_PIN_N5_Y4};
 const int OUTPUT_PINS_SIZE = 4;
 
 const char KEYPAD_VALS[] = "123456789*0#";
@@ -115,9 +109,8 @@ void keypad_main() {
     // The amount of loops to go thru before sleeping
     // As of currently there is a task delay of 50 ms per loop
     const int loop_target = 600000; // 6000 is roughly 5 minutes
-    int keypad_loops = 0;
 
-    while (true) {
+    for (int c = 0; c < loop_target; c++) {
         for (int i = 0; i < 4; i++) {
             gpio_set_level(OUTPUT_PINS[i], 1);
             for (int j = 0; j < INPUT_PINS_SIZE; j++) {
@@ -138,7 +131,7 @@ void keypad_main() {
                         update_display(1);
                     }
                     // Reset Loop counter
-                    keypad_loops = 0;
+                    c = 0;
                 }
                 // Wait for release
                 while (gpio_get_level(INPUT_PINS[j]))
@@ -147,34 +140,30 @@ void keypad_main() {
             gpio_set_level(OUTPUT_PINS[i], 0);
         }
         vTaskDelay(pdMS_TO_TICKS(50));
-
-        // Go to sleep
-        if (keypad_loops++ >= loop_target) {
-            stop_advertisement();
-
-            for (int i = 0; i < OUTPUT_PINS_SIZE; i++) {
-                rtc_gpio_init(OUTPUT_PINS[i]);
-                rtc_gpio_set_direction(OUTPUT_PINS[i],
-                                       RTC_GPIO_MODE_OUTPUT_ONLY);
-                rtc_gpio_set_level(OUTPUT_PINS[i], 1);
-            }
-
-            for (int i = 0; i < INPUT_PINS_SIZE; i++) {
-                rtc_gpio_init(INPUT_PINS[i]);
-                rtc_gpio_set_direction(INPUT_PINS[i], RTC_GPIO_MODE_INPUT_ONLY);
-                rtc_gpio_pulldown_en(INPUT_PINS[i]);
-            }
-
-            const uint64_t btn_mask = (1ULL << INPUT_PINS[0]) |
-                                      (1ULL << INPUT_PINS[1]) |
-                                      (1ULL << INPUT_PINS[2]);
-
-            esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
-            esp_sleep_enable_ext1_wakeup_io(btn_mask, ESP_EXT1_WAKEUP_ANY_HIGH);
-
-            ESP_LOGI(TAG, "Going to sleep zzz");
-            esp_deep_sleep_start();
-        }
     }
+
+    // Go to sleep
+    stop_advertisement();
+
+    for (int i = 0; i < OUTPUT_PINS_SIZE; i++) {
+        rtc_gpio_init(OUTPUT_PINS[i]);
+        rtc_gpio_set_direction(OUTPUT_PINS[i], RTC_GPIO_MODE_OUTPUT_ONLY);
+        rtc_gpio_set_level(OUTPUT_PINS[i], 1);
+    }
+
+    for (int i = 0; i < INPUT_PINS_SIZE; i++) {
+        rtc_gpio_init(INPUT_PINS[i]);
+        rtc_gpio_set_direction(INPUT_PINS[i], RTC_GPIO_MODE_INPUT_ONLY);
+        rtc_gpio_pulldown_en(INPUT_PINS[i]);
+    }
+
+    const uint64_t btn_mask = (1ULL << INPUT_PINS[0]) |
+                              (1ULL << INPUT_PINS[1]) | (1ULL << INPUT_PINS[2]);
+
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
+    esp_sleep_enable_ext1_wakeup_io(btn_mask, ESP_EXT1_WAKEUP_ANY_HIGH);
+
+    ESP_LOGI(TAG, "Going to sleep zzz");
+    esp_deep_sleep_start();
 }
 #undef TAG
