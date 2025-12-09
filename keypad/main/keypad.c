@@ -37,7 +37,6 @@ char keypad_input[17] = {'\0'};
 int input_idx = 0;
 
 #define TAG "KEYPAD"
-// #define POWER_PIN GPIO_NUM_11
 
 void change_hmac_ctx(int64_t new_counter) {
     hmac_ctx.counter = new_counter;
@@ -54,14 +53,12 @@ int set_briefcase_state(bool new_state) {
         }
         unlocks--;
         is_unlocked = true;
-        // husb238_toggle_power(true);
-        // gpio_set_level(POWER_PIN, 0);
+        gpio_set_level(KEY_PIN_POWER, 0);
         save_int(NVS_UNLOCKS, unlocks);
         return 1;
     }
     is_unlocked = false;
-    // gpio_set_level(POWER_PIN, 1);
-    //  husb238_toggle_power(false);
+    gpio_set_level(KEY_PIN_POWER, 1);
     return 1;
 }
 
@@ -92,8 +89,11 @@ void keypad_main() {
         gpio_set_direction(OUTPUT_PINS[i], GPIO_MODE_OUTPUT);
         gpio_set_level(OUTPUT_PINS[i], 0);
     }
-    /* gpio_set_direction(POWER_PIN, GPIO_MODE_OUTPUT);
-    gpio_set_level(POWER_PIN, 1); */
+    // Actuator things
+    gpio_set_direction(KEY_PIN_POWER, GPIO_MODE_OUTPUT);
+    gpio_set_level(KEY_PIN_POWER, 1);
+    gpio_set_direction(KEY_PIN_GROUND, GPIO_MODE_INPUT);
+    gpio_set_pull_mode(KEY_PIN_GROUND, GPIO_PULLDOWN_ENABLE);
 
     // Read back the value
     update_display(0);

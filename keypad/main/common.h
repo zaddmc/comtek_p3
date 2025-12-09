@@ -17,8 +17,8 @@
 #define KEY_PIN_N7_X4 GPIO_NUM_13
 #define KEY_PIN_N8_Y1 GPIO_NUM_14
 
-// Intended for actuator.c
-#define ACT_PIN_I2C_SDA 8 // Gray
-#define ACT_PIN_I2C_SCL 9 // Purple
+// Control Actuator power
+#define KEY_PIN_POWER GPIO_NUM_11  // Blue
+#define KEY_PIN_GROUND GPIO_NUM_10 // Torquise
 
 #endif // !COMMON
