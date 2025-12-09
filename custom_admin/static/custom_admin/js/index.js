@@ -47,9 +47,13 @@ function setup_pie(rented, not_rented) {
 function make_time(data) {
 
 	let style = window.getComputedStyle(document.body)
+	let days = [];
+	for (let i = 0; i < data.length; i++) {
+		days.push(i);
+	}
 	var trace1 = {
-		x: [1, 2, 3, 4],
-		y: [10, 15, 13, 17],
+		x: days,
+		y: data,
 		type: 'scatter'
 	};
 
@@ -62,7 +66,7 @@ function make_time(data) {
 		height: 180,
 		xaxis: {
 			title: {
-				text: 'Month'
+				text: 'Days'
 			},
 			showgrid: true,
 			gridcolor: style.getPropertyValue("--background"),
@@ -105,5 +109,32 @@ function setup_map(data) {
 	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 	}).addTo(map);
+
+	min_lat = 100
+	min_lon = 100
+	max_lat = -100
+	max_lon = -100
+
+	for (let i = 0; i < data.length; i++) {
+		let data_point = data[i];
+		min_lat = data_point.lat < min_lat ? data_point.lat : min_lat
+		min_lon = data_point.lon < min_lon ? data_point.lon : min_lon
+
+		max_lat = data_point.lat > max_lat ? data_point.lat : max_lat
+		max_lon = data_point.lon > max_lon ? data_point.lon : max_lon
+
+
+		let marker = L.marker([data_point.lat, data_point.lon]);
+		marker.bindPopup(data_point.name).openPopup();
+		marker.addTo(map);
+	}
+	console.log(min_lat);
+	console.log(min_lon);
+	console.log(max_lon);
+	console.log(max_lat);
+
+	map.fitBounds([
+		[min_lat, min_lon], [max_lat, max_lon]
+	]);
 
 }

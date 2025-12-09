@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import datetime
 from django.urls import reverse, reverse_lazy
 from django.views.generic.detail import DetailView
 from .forms import RentForm
@@ -33,23 +34,6 @@ class SuitcaseDisplayView(LoginRequiredMixin,DetailView):
         context["encoded_key"] = self.object.suitcasebleinfo.get_hashed_secret_key() 
 
         return context
-
-    def handle_put(self,request:HttpRequest,uuid:str):
-
-        suitcase:Suitcase = Suitcase.objects.get(uuid=uuid)
-
-        if(suitcase.rented):
-            if(suitcase.rented_by.uuid != self.request.user.uuid):
-                return HttpResponse("You are not allowed to unrent this >(".encode(),HTTPStatus.BAD_REQUEST)
-
-        suitcase.rented = False
-        suitcase.rented_by = None 
-        suitcase.rented_date= None 
-        suitcase.expiration_date= None 
-
-        suitcase.save()
-
-        return HttpResponseRedirect(request.path)
 
 
     def get(self, request:HttpRequest, uuid:str):

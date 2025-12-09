@@ -11,37 +11,37 @@
                 <!-- Welcome Section hidden when quiz or recommendations are shown -->
                 <div class="welcome-section" id="welcomeSection" 
                      {% if show_recommendations or show_quiz %}style="display: none;"{% endif %}>
-                    <h1>Velkommen til Figure-it-out!</h1>
-                    <p>Find den perfekte kuffert til dig og dit team!</p>
+                    <h1>Welcome to Figure-it-out!</h1>
+                    <p>Get the perfect briefcase for you and your team!</p>
                     <div class="action-buttons">
-                        <a href="{% url 'quiz' %}?quiz_id=0" class="cta-button">Tag denne quiz for at finde den perfekte kuffert</a>
-                        <button onclick="showSection('suitcases')" class="secondary-button">Gennemse alle kufferter</button>
+                        <a href="{% url 'quiz' %}?quiz_id=0" class="cta-button">Take this quiz to get a suitable briefcase</a>
+                        <button onclick="showSection('suitcases')" class="secondary-button">View all available briefcases</button>
                     </div>
                 </div>
 
                 <!-- Notice to indicate quiz in progress -->
                 {% if show_quiz %}
                 <div class="notice quiz-notice">
-					<p>Du har en quiz i gang! <a href="{% url 'quiz' %}?quiz_id={{current_id}}">Fortsæt quiz</a> eller 
-                       <a href="{% url 'clear-recommendations' %}">annuller</a>.</p>
+					<p>Du har en quiz i gang! <a href="{% url 'quiz' %}?quiz_id={{current_id}}">Continue quiz</a> eller 
+                       <a href="{% url 'clear-recommendations' %}">cancel </a>.</p>
                 </div>
                 {% endif %}
 
                 <!-- Recommendations Section visibility controlled by JS and own template -->
                 <!-- Complete suitcase list of available suitcases again toggled via JS showSection -->
                 <div id="suitcasesList" class="suitcases-list hidden">
-                    <h1>Alle tilgængelige kufferter</h1>
+                    <h1>All available briefcases</h1>
                     <ul class="available-suitcase-list">
                         {% for suitcase in object_list %}
                         <li class="suitcase-item">
                             <a href="/suitcases/{{suitcase.uuid}}">{{suitcase.name}}</a>
                         </li>
                         {% empty %}
-                        <li>Ingen tilgængelige kufferter</li>
+                        <li>No available briefcases</li>
                         {% endfor %}
                     </ul>
                     <br/>
-                    <a href="{% url 'rented-view' %}">Dine kufferter</a>
+                    <a href="{% url 'rented-view' %}">Your briefcases</a>
                 </div>
         </div>
 
@@ -49,8 +49,8 @@
     {% else %}
         <!-- Not authenticated -->
         <div class="auth-gate-center">
-            <p>Du er ikke logget ind</p>
-            <a href="{% url 'login' %}">Log ind</a>
+            <p>You are not signed in</p>
+            <a href="{% url 'login' %}">Sign in</a>
         </div>
     {% endif %}
 {% endblock %}

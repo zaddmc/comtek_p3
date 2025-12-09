@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="{% static 'user/css/rented.css' %}">
 
 <div class="notuser">
-<h1>Your suitcases</h1>
+<h1>Your briefcases</h1>
 <ul class="rented-list">
 	{% for suitcase in object_list %}
 	{% if suitcase.rented_by.uuid == user_uuid%}
@@ -19,7 +19,7 @@
 	<br>
 	{% endif %}
 	{% empty %}
-	<li>No rented suitcases</li>
+	<li>No rented briefcases</li>
 	{% endfor %}
 
 </ul>

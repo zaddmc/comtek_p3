@@ -10,10 +10,12 @@
     {%for suitcase in suitcases%}
     <div class="suitcase_list">
         <li>{{suitcase.name}}: {%if suitcase.rented%} {{suitcase.rented_by.username}} {%else%} Not rented {%endif%}</li>
-        <div>
+        <div class="category_wrapper">
             <ul class="category_list">
                 {%for category in suitcase.categories.all%}
+				<div class="category_elem" style="background: {{category.hex_color}};">
                 <li>{{category.name}}</li>
+				</div>
                 {%empty%}
                 <li>None</li>
                 {%endfor%}

@@ -12,7 +12,8 @@ class QuizStepForm(forms.Form):
     selected_option = forms.ModelChoiceField(
         queryset=QuestionOption.objects.none(),
         widget=forms.RadioSelect(),
-        empty_label=None,
+        empty_label=True,
+        label="",
         required=True,
         error_messages={"required": "Vælg venligst et svar før du fortsætter."},
     )

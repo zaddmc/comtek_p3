@@ -22,10 +22,10 @@ def calculate_jaccard_similarity(user_categories:list[Category], suitcase_catego
                     unique_matches += 1
                     seen.append(user_cat)
                     
-    category_count= len(suitcase_categories) 
+    category_count= len(suitcase_categories) /100.0
 
     overall_score = matches / category_count
-    unique_score = unique_matches/ category_count
+    unique_score = round(unique_matches/ category_count,2)
     
     return unique_score, overall_score 
 

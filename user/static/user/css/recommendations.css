@@ -138,8 +138,8 @@
 }
 
 .match-avatar {
-	width: 7rem;
-	height: 7rem;
+	width: 5rem;
+	height: 5rem;
 	border-radius: 50%;
 	overflow: hidden;
 	border: 2px solid var(--primary);
@@ -157,8 +157,4 @@
 
 .recommendations-section.hidden {
 	display: none !important;
-}
-
-.recommendations-section h1 {
-	margin-top: 4rem;
 }

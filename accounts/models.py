@@ -53,11 +53,13 @@ class User(AbstractUser):
         self.userinfo.rent_amount += 1
         self.userinfo.current_rented+= 1
         self.save()
+        self.userinfo.save()
         return briefcase.rent(self,rent_form)
 
     def unrent_briefcase(self,briefcase) -> None:
         self.userinfo.current_rented -=1
         self.save()
+        self.userinfo.save()
         return briefcase.unrent()
         
 

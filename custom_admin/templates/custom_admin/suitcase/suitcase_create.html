@@ -6,27 +6,32 @@
 <link rel="stylesheet" href="{% static 'custom_admin/css/suitcase_create.css' %}">
 
 <div class="admin_body">
-    <h1>Create Suitcase</h1>
+    <h1>Create Briefcase</h1>
     <div class="box">
     <form method="post">
     {% csrf_token %}
     
     <div class="create_element">
-        <label for="suitcase_name_input">suitcase name:</label>
-        <input id="suitcase_name_input" name="suitcase_name_input" placeholder="suitcase name">
+        <label for="suitcase_name_input">Briefcase name:</label>
+        <input id="suitcase_name_input" name="suitcase_name_input" placeholder="briefcase name">
     </div>
     
 
     <div class="create_element">
-        <label>Select category:</label>
+        <label>Select categories:</label>
+		<div class="category_wrapper">
         {%for category in categories%}
-        <input type="checkbox" id="{{category.name}}" name="categories[]"value="{{category.pk}}">
-        <label for="{{category.name}}">{{category.name}}</label>
+		<div class="category_elem">
+			<input type="checkbox" id="{{category.name}}" name="categories[]" value="{{category.pk}}" >
+			<label for="{{category.name}}"><div style="background: {{category.hex_color}};" ><p>{{category.name}}</p></div></label>
+		</div>
         {%empty%}
         <ul>
             <li>No categories</li>
         </ul>
         {%endfor%}
+
+		</div>
     </div>
 
 

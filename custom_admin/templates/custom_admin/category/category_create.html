@@ -8,10 +8,11 @@
 
 <div class="categorylist">
     <div>
-        <label>Existing categories:</label>
-        <ul>
+        <label>Existing features:</label>
+        <ul class="category_wrapper_list">
         {%for category in categories%}
         <li>
+			<div class="category_wrapper" style="background: {{category.hex_color}};">
             {{category.name}}
             <form method="post">
                 {% csrf_token %}
@@ -19,6 +20,7 @@
                 <input type="hidden" value="delete" name="_method">
                 <input type="submit" value="delete">
             </form>            
+			</div>
         </li>
         {%empty%}
         <li>
@@ -32,7 +34,7 @@
 <div class="admin_body">
     
 
-    <h1>Category overview</h1>
+    <h1>Feature overview</h1>
     <form method="post">
     {% csrf_token %}
     

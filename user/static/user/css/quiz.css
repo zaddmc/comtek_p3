@@ -1,5 +1,10 @@
 /* user/static/user/css/quiz.css */
 
+.quiz-wrapper {
+	height: 75%;
+	overflow-y: hidden;
+}
+
 /* prettier-ignore */
 .quiz-container {
 	/* min, fluid, max */
@@ -18,7 +23,7 @@
 	justify-content: center;
 	padding: 1rem;
 	width: 40vw;
-	height: 40vh;
+	height: 50vh;
 }
 
 .quiz-form {
@@ -108,10 +113,12 @@
 
 #id_selected_option {
 	width: 100%;
-	height: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+
+	overflow-y: scroll;
+	height: 13rem;
 }
 
 #id_selected_option>div {

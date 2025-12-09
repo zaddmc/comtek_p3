@@ -73,9 +73,13 @@ class Suitcase(models.Model):
         self.rented_date = datetime.today()
         self.expiration_date = rent_form.cleaned_data["expiration_date"]
 
-        if(self.expiration_date <= self.rented_date):
+        if(self.expiration_date <= self.rented_date.date()):
             return "Expiration date must be after today"
         self.save()
+        self.suitcasedata.save()
+
+        log = SuitcaseRentLogs.objects.create(renter = user, suitcase = self)
+        log.save()
 
         return None
 
@@ -93,7 +97,6 @@ class SuitcaseLocation(models.Model):
     suitcase = models.ForeignKey(Suitcase,on_delete=models.CASCADE,related_name="suitcaselocation")
     longitude = models.FloatField(default=0)
     lattitude = models.FloatField(default=0)
-    altitude = models.FloatField(default=0)
     time_stamp = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()
 
@@ -124,4 +127,9 @@ class SuitcaseBleInfo(models.Model):
 
         return m.hexdigest()
 
+class SuitcaseRentLogs(models.Model):
+    renter = models.ForeignKey(to=User,on_delete=models.CASCADE)
+    suitcase = models.ForeignKey(to=Suitcase,on_delete=models.CASCADE)
+    created_at= models.DateField(auto_now_add=True,blank=False,null=False)
+    objects = models.Manager()
 

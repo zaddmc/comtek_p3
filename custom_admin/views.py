@@ -1,6 +1,12 @@
+import calendar
+import json
+from django.db.models import QuerySet
+from django.db.models.base import connection
+from django.db.models.functions import Lower
+from django.db.models.sql import Query
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
-from datetime import datetime,timedelta
+from datetime import datetime, time,timedelta
 
 from django.urls import reverse
 from django.views import View
@@ -11,7 +17,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from accounts.models import User
 from suitcases.google_fmd import fmd_get_briefcase_location, fmd_refresh_device_list, fmd_register_briefcase 
 from user.models import QuizQuestion, QuestionOption
-from suitcases.models import Suitcase, Category
+from suitcases.models import Suitcase, Category, SuitcaseLocation, SuitcaseRentLogs
 
 # Create your views here.
 
@@ -41,7 +47,7 @@ class CustAdminIndex(UserAdminRequiredMixin,View):
         ctxt["rented_brief_case_amount"] = rented_amount
         ctxt["rented_brief_case_amount_procent"] =  1.0 if not suitcase_amount else rented_amount / suitcase_amount 
         ctxt["not_rented_brief_case_amount"] = len(all_suitcases) - rented_amount
-        sorted_suitcases = sorted(all_suitcases,key= lambda x:x.suitcasedata.rented_amount)[0:3]
+        sorted_suitcases = sorted(all_suitcases,key= lambda x:x.suitcasedata.rented_amount,reverse=True)[0:3]
         ctxt["most_rented_suitcases"] = sorted_suitcases
 
         users = User.objects.all()
@@ -49,9 +55,28 @@ class CustAdminIndex(UserAdminRequiredMixin,View):
         sorted_users_most_active= sorted(users,key= lambda x:x.userinfo.rent_amount,reverse=True)[0:3]
         sorted_users_current_active= sorted(users,key= lambda x:x.userinfo.current_rented,reverse=True)[0:3]
 
+
         ctxt["most_active_customers"] = sorted_users_most_active 
         ctxt["most_current_active_customers"] =sorted_users_current_active 
 
+        cur_date = datetime.now()
+        out_days = [0 for _ in range(calendar.monthrange(cur_date.year,cur_date.month)[1])]
+        rent_logs:list[SuitcaseRentLogs] = SuitcaseRentLogs.objects.all()
+        for log in rent_logs:
+            timestamp:datetime = log.created_at
+            out_days[timestamp.day-1] += 1
+        ctxt["rent_data"] = json.dumps(out_days)
+
+        location_out = []
+
+        for suitcase in all_suitcases:
+            suitcase_location_data_points: QuerySet[SuitcaseLocation]  = SuitcaseLocation.objects.filter(suitcase=suitcase)
+            if not suitcase_location_data_points:
+                continue
+            location_data_point= suitcase_location_data_points.latest("time_stamp")
+            out_obj = {"name":suitcase.name,"lon":location_data_point.longitude,"lat":location_data_point.lattitude}
+            location_out.append(out_obj)
+        ctxt["location_data"] = json.dumps(location_out)
 
         return render(request,template_name="custom_admin/index.html",context=ctxt) 
     
@@ -158,19 +183,11 @@ class AdminSuitcaseCreate(UserAdminRequiredMixin,View):
         request_suitcasename = request.POST.get("suitcase_name_input",None)
         request_categories = request.POST.getlist("categories[]",None)
         request_user = request.POST.get("users",None)
-        
-        fmd_refresh_device_list()
-        suitcase_fmd_data = fmd_register_briefcase()
-        print("SUI")
-
-        print(suitcase_fmd_data)
-        if suitcase_fmd_data == None:
-            return HttpResponseRedirect(reverse("custom-admin-suitcase-view"))
 
         suitcase:Suitcase = Suitcase.objects.create(name=request_suitcasename)
 
-        suitcase.canonic_id = suitcase_fmd_data.canonic_id
-        suitcase.ephemeral_id= suitcase_fmd_data.ephemeral_key
+        suitcase.canonic_id = "a"; 
+        suitcase.ephemeral_id="b"; 
 
         categories = []
         for x in request_categories:
@@ -190,10 +207,6 @@ class AdminSuitcaseCreate(UserAdminRequiredMixin,View):
         suitcase.rented = True
         suitcase.rented_date = datetime.today()
         suitcase.expiration_date = timedelta(days=90) + datetime.today()
-
-
-
-
    
         suitcase.save()
         
