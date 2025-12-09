@@ -16,16 +16,16 @@ void init_display_device(void) {
     return;
 }
 
-void update_display(int state) {
+void update_display(screen_state_t state) {
     ssd1306_clear_screen(&DISPLAY, false);
     switch (state) {
-    case 0:
+    case WELCOME_MSG:
         ssd1306_display_text(&DISPLAY, 0, "I am Thorkild!", 14, false);
         ssd1306_display_text(&DISPLAY, 1, "Enter code to,", 14, false);
         ssd1306_display_text(&DISPLAY, 2, "Figure-It-Out", 13, false);
         ssd1306_display_text(&DISPLAY, 3, "with me\\ (^_^) /", 16, false);
         break;
-    case 1:
+    case KEYPAD_UNLOCK:
         if (is_unlocked)
             ssd1306_display_text(&DISPLAY, 0, "Unlocked", 8, false);
         else
@@ -35,16 +35,20 @@ void update_display(int state) {
                              false);
         ssd1306_display_text(&DISPLAY, 3, "   \\ (^_^) /", 13, false);
         break;
-    case -1:
+    case LACKING_TICKS:
         ssd1306_display_text(&DISPLAY, 0, "Sorry", 5, false);
         ssd1306_display_text(&DISPLAY, 1, "No more ticks", 13, false);
         ssd1306_display_text(&DISPLAY, 2, "Contact renters", 15, false);
         ssd1306_display_text(&DISPLAY, 3, "Place for code", 14, false);
         break;
-    case 2:
+    case DEBUG:
         ssd1306_display_text(&DISPLAY, 0, "THIS DEBUG ONLY!", 16, false);
         ssd1306_display_text(&DISPLAY, 1, "Added 5 ticks", 13, false);
         ssd1306_display_text(&DISPLAY, 3, "REMOVE THIS CODE", 16, false);
+        break;
+    case BLE_UNLOCK:
+        ssd1306_display_text(&DISPLAY, 1, "    Unlocked!", 13, false);
+        ssd1306_display_text(&DISPLAY, 2, "    \\ (^_^) /", 13, false);
         break;
     default:
         ssd1306_display_text(&DISPLAY, 0, "Invalid state", 13, false);

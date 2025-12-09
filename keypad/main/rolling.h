@@ -30,6 +30,8 @@ bool rolling_code_verify(rolling_code_ctx_t *ctx, const uint8_t *received_code,
                          uint64_t received_counter);
 bool rolling_code_verify_digits_auto(rolling_code_ctx_t *ctx,
                                      uint32_t received_digits);
+bool rolling_code_verify_auto(rolling_code_ctx_t *ctx,
+                              const char *received_code);
 void rolling_code_reset_lockout(rolling_code_ctx_t *ctx);
 void rolling_code_print(const uint8_t *code, size_t len);
 void rolling_key_print(const uint8_t *key);

@@ -82,7 +82,19 @@ Sending the special letter will reset the internal counter
 
 This command will unlock the briefcase if the code is correct
 
-> [!NOTE]
-> Not yet implented
-
 ### Special Letter: 'o'
+
+### Command structure
+
+Sending the special letter with a rolling code will unlock the briefcase
+Sending just the special letter or incorrect length code, will result in locking the briefcase
+
+### Examples
+
+> [!NOTE]
+> The example codes's are not valid, nor correct formatting, actual usecases assume 8 bytes as 16 hex chars
+
+"o" -> Locks the briefcase
+"oOYKCnvHEh1w94oLM" -> Assuming valid will unlock the briefcase, else remain locked
+"o 65ASkdSHVkx1oUjq" -> Assuming valid will unlock the briefcase, else remain locked
+"o WYXTeRIN" -> Locks the briefcase

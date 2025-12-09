@@ -1,4 +1,5 @@
 #include "ble_handler.h"
+#include "display_handler.h"
 #include "esp_log.h"
 #include "esp_random.h"
 #include "freertos/FreeRTOS.h"
@@ -108,12 +109,18 @@ static int webble_handle_command(uint16_t conn_handle, uint16_t attr_handle,
         ble_gatts_notify(conn_handle, attr_handle);
         break;
     case 'o': // Unlock the briefcase
-        ESP_LOGI(tag, "Command reset counter was received");
-        if (rolling_code_verify(&hmac_ctx, (uint8_t *)&webble_data[2],
-                                atoi(&webble_data[19])))
-            set_briefcase_state(true);
+        if (command_len > 16 && command_len < 19) {
+            ESP_LOGI(tag, "Command Unlock briefcase was received");
+            if (rolling_code_verify_auto(&hmac_ctx,
+                                         &webble_data[command_len - 16])) {
+                set_briefcase_state(true);
+                update_display(BLE_UNLOCK);
+                break;
+            }
+        }
+        ESP_LOGI(tag, "Command Lock briefcase was received");
+        set_briefcase_state(false);
         break;
-
     default:
         ESP_LOGI(tag, "Unrecognized command char: %c", webble_data[0]);
         break;
@@ -437,7 +444,6 @@ void start_dual_advertising(void) {
     ESP_LOGI(TAG, "========================================");
 
     // Convert hex string key to bytes
-
     rc = hex_string_to_bytes(fetch_string("google_find"), google_find_my_key,
                              sizeof(google_find_my_key));
     if (rc != 0) {

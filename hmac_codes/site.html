@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ESP32 WebBLE Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .subtitle {
+        color: #666;
+        margin-bottom: 30px;
+      }
+      button {
+        background: #4caf50;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+        transition: background 0.3s;
+      }
+      button:hover {
+        background: #45a049;
+      }
+      button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+      #disconnect {
+        background: #f44336;
+      }
+      #disconnect:hover {
+        background: #da190b;
+      }
+      .status {
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+      }
+      .error {
+        background: #ffebee;
+        border-left-color: #f44336;
+      }
+      .success {
+        background: #e8f5e9;
+        border-left-color: #4caf50;
+      }
+      .input-group {
+        margin: 20px 0;
+      }
+      input[type="text"] {
+        width: calc(100% - 110px);
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      .data-display {
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+        font-family: monospace;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+      .info {
+        background: #fff3e0;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+        border-left: 4px solid #ff9800;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>ESP32 WebBLE Test</h1>
+      <div class="subtitle">Connect to your ESP32-S3 via Web Bluetooth</div>
+
+      <div class="info">
+        <strong>Requirements:</strong>
+        <ul>
+          <li>Chrome/Edge browser (Web Bluetooth supported)</li>
+          <li>HTTPS connection (or localhost)</li>
+          <li>ESP32 running the dual advertisement code</li>
+          <li>Have experimental Web Bluetooth enabled in flags</li>
+        </ul>
+      </div>
+
+      <div>
+        <button id="connect" onclick="connectDevice()">Connect to ESP32</button>
+        <button id="disconnect" onclick="disconnectDevice()" disabled>
+          Disconnect
+        </button>
+      </div>
+
+      <div id="status" class="status" style="display: none"></div>
+
+      <div id="dataSection" style="display: none">
+        <h3>Data Exchange</h3>
+
+        <div class="input-group">
+          <input
+            type="text"
+            id="writeData"
+            placeholder="Enter message to send"
+            maxlength="50"
+          />
+          <button onclick="writeData()">Send</button>
+        </div>
+
+        <div>
+          <button onclick="readData()">Read Data</button>
+        </div>
+
+        <div class="data-display" id="dataDisplay">No data yet...</div>
+      </div>
+    </div>
+
+    <script>
+      // Service and Characteristic UUIDs (must match ESP32 code)
+      const SERVICE_UUID = "efcdab90-7856-3412-efcd-ab9078563412";
+      const CHAR_UUID = "00002a3d-0000-1000-8000-00805f9b34fb";
+
+      let device;
+      let server;
+      let service;
+      let characteristic;
+
+      // document.getElementById("connect").addEventListener("click", () => {
+      //   connectDevice();
+      // });
+
+      function showStatus(message, type = "info") {
+        const statusDiv = document.getElementById("status");
+        statusDiv.textContent = message;
+        statusDiv.className = "status " + type;
+        statusDiv.style.display = "block";
+        console.log(message);
+      }
+
+      async function connectDevice() {
+        try {
+          showStatus("Requesting Bluetooth device...", "info");
+
+          // Request device with filters
+          device = await navigator.bluetooth.requestDevice({
+            filters: [{ namePrefix: "ESP32" }],
+            optionalServices: [SERVICE_UUID],
+          });
+
+          showStatus("Connecting to GATT server...", "info");
+
+          // Connect to GATT server
+          server = await device.gatt.connect();
+
+          showStatus("Getting service...", "info");
+
+          // Get service
+          service = await server.getPrimaryService(SERVICE_UUID);
+
+          showStatus("Getting characteristic...", "info");
+
+          // Get characteristic
+          characteristic = await service.getCharacteristic(CHAR_UUID);
+
+          await characteristic.startNotifications();
+          characteristic.addEventListener(
+            "characteristicvaluechanged",
+            handleNotification,
+          );
+
+          showStatus("Connected successfully!", "success");
+
+          // Update UI
+          document.getElementById("connect").disabled = true;
+          document.getElementById("disconnect").disabled = false;
+          document.getElementById("dataSection").style.display = "block";
+
+          // Handle disconnection
+          device.addEventListener("gattserverdisconnected", onDisconnected);
+        } catch (error) {
+          showStatus("Error: " + error.message, "error");
+          console.error("Connection failed:", error);
+        }
+      }
+
+      async function disconnectDevice() {
+        if (device && device.gatt.connected) {
+          device.gatt.disconnect();
+          showStatus("Disconnected", "info");
+        }
+      }
+
+      function onDisconnected() {
+        showStatus("Device disconnected", "info");
+        document.getElementById("connect").disabled = false;
+        document.getElementById("disconnect").disabled = true;
+        document.getElementById("dataSection").style.display = "none";
+      }
+
+      async function readData() {
+        try {
+          if (!characteristic) {
+            showStatus("Not connected", "error");
+            return;
+          }
+
+          showStatus("Reading data...", "info");
+          const value = await characteristic.readValue();
+          const decoder = new TextDecoder("utf-8");
+          const text = decoder.decode(value);
+
+          document.getElementById("dataDisplay").textContent =
+            "Received: " +
+            text +
+            "\n\nHex: " +
+            Array.from(new Uint8Array(value.buffer))
+              .map((b) => "0x" + b.toString(16).padStart(2, "0"))
+              .join(" ");
+
+          showStatus("Data read successfully", "success");
+        } catch (error) {
+          showStatus("Read error: " + error.message, "error");
+          console.error("Read failed:", error);
+        }
+      }
+
+      function handleNotification(event) {
+        const value = event.target.value;
+        const decoder = new TextDecoder("utf-8");
+        const text = decoder.decode(value);
+
+        console.log("Received notification:", text);
+        document.getElementById("dataDisplay").textContent =
+          "Response: " + text;
+        showStatus("Received response: " + text, "success");
+      }
+
+      async function writeData() {
+        try {
+          if (!characteristic) {
+            showStatus("Not connected", "error");
+            return;
+          }
+
+          const text = document.getElementById("writeData").value;
+          if (!text) {
+            showStatus("Please enter a message", "error");
+            return;
+          }
+
+          showStatus("Writing data...", "info");
+
+          const encoder = new TextEncoder();
+          const data = encoder.encode(text);
+
+          await characteristic.writeValue(data);
+
+          document.getElementById("dataDisplay").textContent = "Sent: " + text;
+          document.getElementById("writeData").value = "";
+
+          showStatus("Data written successfully", "success");
+        } catch (error) {
+          showStatus("Write error: " + error.message, "error");
+          console.error("Write failed:", error);
+        }
+      }
+
+      // Check Web Bluetooth support
+      if (!navigator.bluetooth) {
+        showStatus(
+          "Web Bluetooth is not supported in this browser. Please use Chrome or Edge.",
+          "error",
+        );
+        document.getElementById("connect").disabled = true;
+      }
+    </script>
+  </body>
+</html>

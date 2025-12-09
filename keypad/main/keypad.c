@@ -1,4 +1,3 @@
-#include "actuator.h"
 #include "ble_handler.h"
 #include "common.h"
 #include "display_handler.h"
@@ -44,22 +43,22 @@ void change_hmac_ctx(int64_t new_counter) {
     hmac_ctx.failed_attempts = 0;
 }
 
-int set_briefcase_state(bool new_state) {
+screen_state_t set_briefcase_state(bool new_state) {
     if (new_state) {
         int32_t unlocks = fetch_int(NVS_UNLOCKS);
         if (unlocks <= 0) {
             ESP_LOGI(TAG, "Not enough ticks to unlock");
-            return -1;
+            return LACKING_TICKS;
         }
         unlocks--;
         is_unlocked = true;
         gpio_set_level(KEY_PIN_POWER, 0);
         save_int(NVS_UNLOCKS, unlocks);
-        return 1;
+        return KEYPAD_UNLOCK;
     }
     is_unlocked = false;
     gpio_set_level(KEY_PIN_POWER, 1);
-    return 1;
+    return KEYPAD_UNLOCK;
 }
 
 int password_check(char password[]) {
@@ -95,16 +94,13 @@ void keypad_main() {
     gpio_set_direction(KEY_PIN_GROUND, GPIO_MODE_INPUT);
     gpio_set_pull_mode(KEY_PIN_GROUND, GPIO_PULLDOWN_ENABLE);
 
-    // Read back the value
-    update_display(0);
+    update_display(WELCOME_MSG);
 
     ESP_LOGI("HMAC_TEST", "Starting HMAC TEST");
     ESP_ERROR_CHECK(rolling_code_init(&hmac_ctx, "TX_001"));
     ESP_LOGI("HMAC_TEST", "The thing is open, printing key");
     rolling_key_print(hmac_ctx.key);
     ESP_LOGI("HMAC_TEST", "The counter is %llu", hmac_ctx.counter);
-    ESP_LOGI("HMAC_TEST", "The last valid counter is %llu",
-             hmac_ctx.last_valid_counter);
 
     // The amount of loops to go thru before sleeping
     // As of currently there is a task delay of 50 ms per loop
@@ -117,7 +113,7 @@ void keypad_main() {
                 if (gpio_get_level(INPUT_PINS[j])) {
                     char ch = KEYPAD_VALS[i * INPUT_PINS_SIZE + j];
                     if (ch == '#' || ch == '*') {
-                        int rc = 0;
+                        screen_state_t rc = WELCOME_MSG;
                         if (ch == '#') {
                             rc = password_check(keypad_input);
                         }
@@ -128,7 +124,7 @@ void keypad_main() {
                         if (input_idx == 16)
                             input_idx--;
                         keypad_input[input_idx++] = ch;
-                        update_display(1);
+                        update_display(KEYPAD_UNLOCK);
                     }
                     // Reset Loop counter
                     c = 0;

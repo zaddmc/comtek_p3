@@ -214,7 +214,7 @@ def demo():
 import sys
 
 if __name__ == "__main__":
-    if sys.argv[1].isdigit():
+    if len(sys.argv) == 2 and sys.argv[1].isdigit():
         tx = RollingCodeTransmitter("TX_001")
 
         print(f"\nDevice ID: {tx.device_id}")
@@ -228,4 +228,14 @@ if __name__ == "__main__":
         )
 
     else:
-        demo()
+        tx = RollingCodeTransmitter("TX_001")
+
+        print(f"\nDevice ID: {tx.device_id}")
+        print(f"HMAC Key: {tx.get_key_hex()}")
+
+        tx.counter += 1
+
+        counter, code_bytes, code_digits = tx.next_code()
+        print(
+            f"Counter: {counter:4d} | Hex: {code_bytes.hex().upper()} | Digits: {code_digits:06d}"
+        )

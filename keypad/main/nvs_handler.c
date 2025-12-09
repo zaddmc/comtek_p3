@@ -4,6 +4,7 @@
 #include "nvs_flash.h"
 #include "nvs_handler.h"
 #include <stdint.h>
+#include <string.h>
 
 static nvs_handle_t HANDLE;
 
@@ -65,6 +66,12 @@ char *fetch_string(const char *key) {
         value = malloc(rsize);
         nvs_get_str(HANDLE, key, value, &rsize);
         ESP_LOGI("NVS", "Read key %s = %s", key, value);
+        return value;
+    }
+    ESP_LOGW("NVS", "Failed to read key %s", key);
+    if (strcmp(key, NVS_GOOGLE_KEY) == 0) {
+        ESP_LOGW("NVS", "Google Key detected, returning default key");
+        value = "de830a881ae49b8347758540c6008a0373041556";
     } else {
         value = "\0";
     }

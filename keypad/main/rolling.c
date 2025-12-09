@@ -11,6 +11,13 @@
 
 static const char *TAG = "HMAC_ROLLING";
 
+// Function to convert a hex string into a byte array
+void hex_string_to_bytes(const char *hex, uint8_t *bytes, size_t len) {
+    for (size_t i = 0; i < len; i++) {
+        sscanf(hex + 2 * i, "%2hhx", &bytes[i]);
+    }
+}
+
 /**
  * Initialize NVS and load/create rolling code context
  */
@@ -306,7 +313,32 @@ bool rolling_code_verify(rolling_code_ctx_t *ctx, const uint8_t *received_code,
         return true;
     }
 
-    ESP_LOGW(TAG, "Invalid code for counter: %llu", received_counter);
+    // ESP_LOGW(TAG, "Invalid code for counter: %llu", received_counter);
+    return false;
+}
+
+/**
+ * Verify code without knowing exact counter (searches window)
+ */
+bool rolling_code_verify_auto(rolling_code_ctx_t *ctx,
+                              const char *received_code) {
+    // Try counter values in window: [last_valid + 1] to [last_valid +
+    // MAX_WINDOW_SIZE]
+    uint64_t start_counter = ctx->last_valid_counter + 1;
+    uint64_t end_counter = ctx->last_valid_counter + MAX_WINDOW_SIZE;
+
+    ESP_LOGI(TAG, "Searching for code in counter range %llu to %llu",
+             start_counter, end_counter);
+
+    uint8_t received_hex[ROLLING_CODE_SIZE];
+    hex_string_to_bytes(received_code, received_hex, ROLLING_CODE_SIZE);
+
+    for (uint64_t test_counter = start_counter; test_counter <= end_counter;
+         test_counter++) {
+        if (rolling_code_verify(ctx, received_hex, test_counter)) {
+            return true;
+        }
+    }
     return false;
 }
 
@@ -317,7 +349,7 @@ bool rolling_code_verify(rolling_code_ctx_t *ctx, const uint8_t *received_code,
 bool rolling_code_verify_digits_auto(rolling_code_ctx_t *ctx,
                                      uint32_t received_digits) {
     // Check if locked out due to failed attempts
-    if (ctx->failed_attempts >= MAX_FAILED_ATTEMPTS) {
+    if (ctx->failed_attempts >= MAX_FAILED_ATTEMPTS && false) {
         ESP_LOGE(TAG, "Device locked due to too many failed attempts");
         return false;
     }
