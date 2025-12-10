@@ -1,3 +1,7 @@
+"""
+TODO: Make this script make it own venv
+"""
+
 import os
 import subprocess
 import sys
