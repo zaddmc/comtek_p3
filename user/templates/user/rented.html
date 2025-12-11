@@ -24,10 +24,12 @@
 
 </ul>
 <a href="{% url 'non-rented-view' %}">See not rented</a>
+<div class="logout_button">
 <form action="{% url 'logout' %}" method="post">
   {% csrf_token %}
   <button type="submit">Log Out</button>
 </form>
+</div>
 {% else %}
 <p>You are not logged in</p>
 <a href="{% url 'login' %}">Log In</a>
